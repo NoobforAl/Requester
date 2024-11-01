@@ -1,0 +1,112 @@
+{% extends "assets/body.html" %} {% block content %}
+<header class="p-4 bg-dark text-white">
+    <div
+        class="container d-flex flex-wrap justify-content-between align-items-center"
+    >
+        <ul class="nav me-auto">
+            <li class="nav-item">
+                <a
+                    href="{% url 'offer_dashboard' %}"
+                    class="nav-link link-light px-3 active"
+                    aria-current="page"
+                    >خانه</a
+                >
+            </li>
+            <li class="nav-item">
+                <a
+                    href="{% url 'offer_jobs' %}"
+                    class="nav-link link-light px-3"
+                    >شغل ها</a
+                >
+            </li>
+            <li class="nav-item">
+                <a
+                    href="{% url 'offer_settings' %}"
+                    class="nav-link link-light px-3"
+                    >تنظیمات</a
+                >
+            </li>
+        </ul>
+        <ul class="nav">
+            <li class="nav-item">
+                <a
+                    href="{% url 'offer_logout' %}"
+                    class="nav-link link-light px-3"
+                    >خروج</a
+                >
+            </li>
+        </ul>
+    </div>
+</header>
+
+<div class="container py-4">
+    <h2 class="text-center mb-4">ایجاد شغل جدید</h2>
+    <form
+        action="{% url 'offer_jobs' %}"
+        method="post"
+        class="bg-light p-4 rounded shadow"
+    >
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-outline mb-3">
+            اسم شغل
+            {{ form.job_name }}
+            {{ form.job_name.errors }}
+        </div>
+
+        <div class="form-outline mb-3">
+            توضیحات
+            {{ form.detail }}
+            {{ form.detail.errors }}
+        </div>
+
+        <div class="form-outline mb-3">
+            برچسب‌ها
+            {{ form.tags }}
+            {{ form.tags.errors }}
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block mb-4">
+            ایجاد شغل
+        </button>
+    </form>
+
+    <h2 class="text-center mt-5 mb-4">لیست شغل‌ها</h2>
+    <table class="table table-striped table-dark rounded-3">
+        <thead>
+            <tr>
+                <th scope="col">نام شغل</th>
+                <th scope="col">جزئیات</th>
+                <th scope="col">برچسب‌ها</th>
+                <th scope="col">عملیات</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for job in jobs %}
+            <tr>
+                <td>{{ job.job_name }}</td>
+                <td>{{ job.detail }}</td>
+                <td>{{ job.tag }}</td>
+                <td>
+                    <a href="/offer/jobs/{{ job.pk }}" class="btn btn-info"
+                        >مشاهده رزومه</a
+                    >
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if messages %}
+    <div class="mt-4">
+        {% for message in messages %}
+        <div
+            class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}"
+        >
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+{% endblock content %}

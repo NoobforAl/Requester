@@ -1,0 +1,60 @@
+{% extends "assets/body.html" %} {% block content %}
+<div
+    class="container d-flex flex-column justify-content-center align-items-center min-vh-100"
+>
+    <div class="col-md-6 col-lg-5 p-5 border rounded shadow-lg bg-white">
+        <h1 class="fw-bold text-center mb-4">ورود به پنل کارفرما</h1>
+        <form action="/offer/login/" method="POST">
+            {% csrf_token %}
+
+            <div class="form-outline mb-4 position-relative">
+                {{ form.username.label_tag }} {{ form.username }}
+                <span
+                    class="position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"
+                >
+                    <i class="fas fa-user"></i>
+                </span>
+            </div>
+
+            <div class="form-outline mb-4 position-relative">
+                {{ form.password.label_tag }} {{ form.password }}
+                <span
+                    class="position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"
+                >
+                    <i class="fas fa-lock"></i>
+                </span>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                ورود
+            </button>
+
+            <div class="text-center">
+                <a
+                    href="/offer/register/"
+                    class="btn btn-secondary btn-lg w-100"
+                >
+                    <i class="fas fa-user-plus me-2"></i>
+                    ثبت نام
+                </a>
+            </div>
+
+            <div class="text-center">
+                <a href="/" class="btn btn-link text-secondary"> خانه </a>
+            </div>
+        </form>
+
+        {% if messages %}
+        <ul class="messages list-unstyled mt-4">
+            {% for message in messages %}
+            <li
+                class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %} mt-2"
+            >
+                {{ message }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock content %}

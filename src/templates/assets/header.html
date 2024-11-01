@@ -1,0 +1,30 @@
+{% extends "assets/body.html" %} {% block content %}
+<header class="p-3 bg-dark text-white">
+    <div class="container d-flex flex-wrap text-white">
+        <ul class="nav me-auto">
+            <li class="nav-item">
+                <a
+                    href="{{ home }}"
+                    class="nav-link link-white px-2 active"
+                    aria-current="page"
+                    >خانه</a
+                >
+            </li>
+            <li class="nav-item">
+                <a href="{{ jobs }}" class="nav-link link-white px-2">شغل ها</a>
+            </li>
+            <li class="nav-item">
+                <a href="{{ setting }}" class="nav-link link-white px-2"
+                    >تنظیمات</a
+                >
+            </li>
+        </ul>
+        <ul class="nav">
+            <li class="nav-item">
+                <a href="{{ logout }}" class="nav-link link-white px-2">خروج</a>
+            </li>
+        </ul>
+    </div>
+</header>
+
+{% block dashbord %} {% endblock dashbord %} {% endblock content %}

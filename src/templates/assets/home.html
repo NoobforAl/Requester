@@ -1,0 +1,23 @@
+{% extends "assets/body.html" %} {% block content %}
+<div class="container py-5 bg-light text-dark text-center">
+    <h1 class="display-5 fw-bold text-primary">پلتفرم درخواستی</h1>
+    <div class="col-lg-8 mx-auto">
+        <p class="lead mb-4 text-secondary">
+            خوش‌آمدید به پلتفرم درخواستی! ابزاری که به شما کمک می‌کند تا
+            فرصت‌های شغلی موردنظر خود را به‌راحتی پیدا کنید. اگر کارجو هستید،
+            می‌توانید در صفحه‌ی کاربر با وارد کردن اطلاعات و مهارت‌های خود، به
+            شغل‌های متناسب دسترسی پیدا کنید. همچنین کارفرمایان می‌توانند با
+            مراجعه به صفحه‌ی کارفرما، افراد واجد شرایط را برای پروژه‌ها و
+            موقعیت‌های شغلی خود بیابند.
+        </p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+            <a href="/worker/" class="btn btn-primary btn-lg px-4">
+                صفحه کارجو
+            </a>
+            <a href="/offer/" class="btn btn-outline-secondary btn-lg px-4">
+                صفحه کارفرما
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock content %}

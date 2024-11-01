@@ -1,0 +1,20 @@
+services:
+    mysql:
+        image: mysql:8.0.37-debian
+        container_name: mysql_server
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: mydatabase
+            MYSQL_USER: myuser
+            MYSQL_PASSWORD: mypassword
+            MYSQL_ROOT_PASSWORD: rootpassword
+        ports:
+            - "3306:3306"
+
+    redis:
+        image: redis:7.2.4
+        container_name: redis_server
+        restart: unless-stopped
+        command: ["redis-server", "--requirepass", "yourpassword"]
+        ports:
+            - "6379:6379"
