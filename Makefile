@@ -46,3 +46,6 @@ insert_mock_data: create_migrate
 
 	@echo "Inserting mock data for jobs"
 	cd ./src && sh ./scripts/insert_jobs.sh
+
+	@echo "Inserting mock data for applications"
+	cd ./src && sh ./scripts/insert_applications.sh
