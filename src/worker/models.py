@@ -32,9 +32,9 @@ class JobRequest(models.Model):
     status = models.CharField(
         max_length=20,
         choices=[
-            ('pending', 'Pending'),
-            ('accepted', 'Accepted'),
-            ('rejected', 'Rejected')
+            ('pending', 'در انتظار'),
+            ('accepted', 'پذیرفته شده'),
+            ('rejected', 'رد شده')
         ],
         default='pending'
     )

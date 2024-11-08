@@ -1,34 +1,80 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Worker
+from .models import Worker, JobRequest
 
 
-class LoginForm(AuthenticationForm):
-    username = forms.CharField(widget=forms.TextInput(
-        attrs={'class': 'form-control', 'placeholder': 'Username'}))
-    password = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class': 'form-control', 'placeholder': 'Password'}))
-
-    class Meta:
-        model = User
-        fields = ['username', 'password']
+class UserLoginForm(AuthenticationForm):
+    username = forms.CharField(
+        label="نام کاربری",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام کاربری'
+        })
+    )
+    password = forms.CharField(
+        label="رمز عبور",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'رمز عبور'
+        })
+    )
 
 
 class UserRegistrationForm(UserCreationForm):
+    username = forms.CharField(
+        label="نام کاربری",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام کاربری'
+        })
+    )
+
     first_name = forms.CharField(
+        label="نام",
         max_length=30,
         required=True,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'}))
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام'
+        })
+    )
+
     last_name = forms.CharField(
+        label="نام خانوادگی",
         max_length=30,
         required=True,
-        widget=forms.TextInput(
-            attrs={'class': 'form-control'}))
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام خانوادگی'
+        })
+    )
+
     email = forms.EmailField(
-        required=True, widget=forms.EmailInput(
-            attrs={'class': 'form-control'}))
+        label="ایمیل",
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'ایمیل'
+        }
+        )
+    )
+
+    password1 = forms.CharField(
+        label="رمز عبور",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'رمز عبور'
+        })
+    )
+
+    password2 = forms.CharField(
+        label="تأیید رمز عبور",
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'تأیید رمز عبور'
+        })
+    )
 
     class Meta:
         model = User
@@ -55,12 +101,57 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class ResumeUploadForm(forms.ModelForm):
+    resume = forms.FileField(
+        label="رزومه",
+        widget=forms.ClearableFileInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'رزومه'
+        })
+    )
+    cover_letter = forms.CharField(
+        label="توضیحات بیشتر",
+        required=False,
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'placeholder': 'توضیحات بیشتر'
+        })
+    )
+
     class Meta:
-        fields = ['job', 'resume', 'cover_letter', 'status']
-        fields = ['job', 'resume']
-        widgets = {
-            'job': forms.Select(attrs={'class': 'form-control'}),
-            'resume': forms.ClearableFileInput(
-                attrs={'class': 'form-control'}
-            ),
-        }
+        model = JobRequest
+        fields = ['resume', 'cover_letter']
+
+
+class UserUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(
+        label="نام",
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام'
+        })
+    )
+
+    last_name = forms.CharField(
+        label="نام خانوادگی",
+        max_length=30,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'نام خانوادگی'
+        })
+    )
+
+    email = forms.EmailField(
+        label="ایمیل",
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'ایمیل'
+        })
+    )
+
+    class Meta:
+        model = Worker
+        fields = ['first_name', 'last_name', 'email']

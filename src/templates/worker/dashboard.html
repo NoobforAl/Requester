@@ -1,0 +1,99 @@
+{% extends "assets/body.html" %} {% block content %}
+<header class="p-4 bg-dark text-white">
+    <div
+        class="container d-flex flex-wrap justify-content-between align-items-center"
+    >
+        <ul class="nav me-auto">
+            <li class="nav-item">
+                <a
+                    href="{% url 'worker_dashboard' %}"
+                    class="nav-link link-light px-3 active"
+                    aria-current="page"
+                    >خانه</a
+                >
+            </li>
+            <li class="nav-item">
+                <a
+                    href="{% url 'worker_jobs' %}"
+                    class="nav-link link-light px-3"
+                    >شغل ها</a
+                >
+            </li>
+            <li class="nav-item">
+                <a
+                    href="{% url 'worker_settings' %}"
+                    class="nav-link link-light px-3"
+                    >تنظیمات</a
+                >
+            </li>
+        </ul>
+        <ul class="nav">
+            <li class="nav-item">
+                <a
+                    href="{% url 'worker_logout' %}"
+                    class="nav-link link-light px-3"
+                    >خروج</a
+                >
+            </li>
+        </ul>
+    </div>
+</header>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card bg-primary text-white shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">تعداد رزومه‌های ارسال شده</h5>
+                    <p class="card-text fs-4">{{ numOfUserSendResume }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-center mb-4">
+        <a
+            href="{% url 'worker_jobs' %}"
+            class="btn btn-primary btn-lg text-white"
+            >ارسال رزومه بیشتر</a
+        >
+    </div>
+
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title">چگونه رزومه را بهبود دهیم</h2>
+                    <p class="card-text">
+                        اگر شما مانند من از همه جا رد شده‌اید، این لینک را
+                        ببینید:
+                    </p>
+                    <a
+                        href="https://www.coursera.org/articles/ways-to-enhance-your-resume"
+                        class="btn btn-outline-light"
+                        >بهبود رزومه</a
+                    >
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark text-white h-100 shadow-sm">
+                <div class="card-body">
+                    <h2 class="card-title">
+                        استفاده از هوش مصنوعی برای بهبود رزومه
+                    </h2>
+                    <p class="card-text">
+                        از این ابزارهای هوش مصنوعی برای بهبود رزومه استفاده
+                        کنید!
+                    </p>
+                    <a
+                        href="https://www.kickresume.com/en/ai-resume-rewrite/"
+                        class="btn btn-outline-light"
+                        >لینک هوش مصنوعی</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
