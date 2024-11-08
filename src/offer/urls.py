@@ -12,5 +12,15 @@ urlpatterns = [
     path("settings/", views.Settings.as_view(), name="offer_settings"),
 
     path("jobs/", views.Jobs.as_view(), name="offer_jobs"),
-    path("jobs/<int:pk>/", views.Utility.as_view(), name="offer_get_resume"),
+    path("jobs/<int:pk>/", views.Jobs.as_view(), name="offer_job"),
+
+    # path download resume
+    path("resume/<int:pk>/", views.Resume.as_view(), name="download_resume"),
+
+    # path for change status of request of resume
+    path(
+        "resume/<int:pk>/status/",
+        views.ResumeStatus.as_view(),
+        name="resume_status"
+    ),
 ]

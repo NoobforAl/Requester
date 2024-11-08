@@ -1,49 +1,118 @@
-{% extends "assets/body.html" %} 
-{% block content %}
+{% extends "assets/body.html" %} {% block content %}
 <header class="p-4 bg-dark text-white">
-    <div class="container d-flex flex-wrap justify-content-between align-items-center">
+    <div
+        class="container d-flex flex-wrap justify-content-between align-items-center"
+    >
         <ul class="nav me-auto">
             <li class="nav-item">
-                <a href="{% url 'offer_dashboard' %}" class="nav-link link-light px-3 active" aria-current="page">خانه</a>
+                <a
+                    href="{% url 'offer_dashboard' %}"
+                    class="nav-link link-light px-3 active"
+                    aria-current="page"
+                    >خانه</a
+                >
             </li>
             <li class="nav-item">
-                <a href="{% url 'offer_jobs' %}" class="nav-link link-light px-3">شغل ها</a>
+                <a
+                    href="{% url 'offer_jobs' %}"
+                    class="nav-link link-light px-3"
+                    >شغل ها</a
+                >
             </li>
             <li class="nav-item">
-                <a href="{% url 'offer_settings' %}" class="nav-link link-light px-3">تنظیمات</a>
+                <a
+                    href="{% url 'offer_settings' %}"
+                    class="nav-link link-light px-3"
+                    >تنظیمات</a
+                >
             </li>
         </ul>
         <ul class="nav">
             <li class="nav-item">
-                <a href="{% url 'offer_logout' %}" class="nav-link link-light px-3">خروج</a>
+                <a
+                    href="{% url 'offer_logout' %}"
+                    class="nav-link link-light px-3"
+                    >خروج</a
+                >
             </li>
         </ul>
     </div>
 </header>
 
 <div class="container py-4">
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h2 class="text-center mt-2 mb-2">لیست شغل‌ها</h2>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">نام شغل</th>
+                        <th scope="col">جزئیات</th>
+                        <th scope="col">برچسب‌ها</th>
+                        <th scope="col">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for job in jobs %}
+                    <tr>
+                        <td>{{ job.job_name }}</td>
+                        <td>{{ job.detail }}</td>
+                        <td>
+                            {% for tag in job.tags.all %}
+                            <span class="badge bg-primary">{{ tag.name }}</span>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a
+                                href="{% url 'offer_jobs' %}{{ job.pk }}/"
+                                class="btn btn-info btn-sm"
+                                >مشاهده رزومه ها</a
+                            >
+                            <form
+                                action="{% url 'offer_jobs' %}{{ job.pk }}/"
+                                method="post"
+                                style="display: inline"
+                            >
+                                {% csrf_token %}
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    onclick="return confirm('آیا مطمئن هستید که می‌خواهید این شغل را حذف کنید؟');"
+                                >
+                                    حذف
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <h2 class="text-center mb-4">ایجاد شغل جدید</h2>
-    <form action="{% url 'offer_jobs' %}" method="post" class="bg-light p-4 rounded shadow">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        
+    <form
+        action="{% url 'offer_jobs' %}"
+        method="post"
+        class="bg-light p-4 rounded shadow"
+    >
+        {% csrf_token %} {{ form.non_field_errors }}
+
         <div class="form-outline mb-3">
             <label for="job_name">اسم شغل</label>
-            {{ form.job_name }}
-            {% if form.job_name.errors %}
-                <div class="alert alert-danger mt-2">
-                    {{ form.job_name.errors }}
-                </div>
+            {{ form.job_name }} {% if form.job_name.errors %}
+            <div class="alert alert-danger mt-2">
+                {{ form.job_name.errors }}
+            </div>
             {% endif %}
         </div>
 
         <div class="form-outline mb-3">
             <label for="detail">توضیحات</label>
-            {{ form.detail }}
-            {% if form.detail.errors %}
-                <div class="alert alert-danger mt-2">
-                    {{ form.detail.errors }}
-                </div>
+            {{ form.detail }} {% if form.detail.errors %}
+            <div class="alert alert-danger mt-2">{{ form.detail.errors }}</div>
             {% endif %}
         </div>
 
@@ -51,55 +120,42 @@
             <label for="tags">برچسب‌ها</label>
             <select multiple class="form-control" name="tags" id="tags">
                 {% for tag in form.tags.field.queryset %}
-                <option value="{{ tag.id }}"{% if tag in form.tags.value %} selected{% endif %}>
+                <option
+                    value="{{ tag.id }}"
+                    {%
+                    if
+                    tag
+                    in
+                    form.tags.value
+                    %}
+                    selected{%
+                    endif
+                    %}
+                >
                     {{ tag.name }}
                 </option>
                 {% endfor %}
             </select>
-            <small class="form-text text-muted">برای انتخاب چندین برچسب، از کلید Ctrl یا Shift استفاده کنید.</small>
+            <small class="form-text text-muted"
+                >برای انتخاب چندین برچسب، از کلید Ctrl یا Shift استفاده
+                کنید.</small
+            >
             {% if form.tag.errors %}
-                <div class="alert alert-danger mt-2">
-                    {{ form.tag.errors }}
-                </div>
+            <div class="alert alert-danger mt-2">{{ form.tag.errors }}</div>
             {% endif %}
         </div>
 
-        <button type="submit" class="btn btn-primary btn-block mb-4">ایجاد شغل</button>
+        <button type="submit" class="btn btn-primary btn-block mb-4">
+            ایجاد شغل
+        </button>
     </form>
-
-    <h2 class="text-center mt-5 mb-4">لیست شغل‌ها</h2>
-    <table class="table table-striped table-dark rounded-3">
-        <thead>
-            <tr>
-                <th scope="col">نام شغل</th>
-                <th scope="col">جزئیات</th>
-                <th scope="col">برچسب‌ها</th>
-                <th scope="col">عملیات</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for job in jobs %}
-            <tr>
-                <td>{{ job.job_name }}</td>
-                <td>{{ job.detail }}</td>
-                <td>
-                    {% for tag in job.tags.all %}
-                        <span class="badge bg-primary">{{ tag.name }}</span>
-                    {% endfor %}
-                </td>
-                
-                <td>
-                    <a href="/offer/jobs/{{ job.pk }}/" class="btn btn-info">مشاهده رزومه</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
 
     {% if messages %}
     <div class="mt-4">
         {% for message in messages %}
-        <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}">
+        <div
+            class="alert {% if message.tags == 'error' %}alert-danger {% elif message.tags == 'info' %}alert-info {% else %}alert-success{% endif %}"
+        >
             {{ message }}
         </div>
         {% endfor %}

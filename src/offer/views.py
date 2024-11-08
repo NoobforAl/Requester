@@ -9,7 +9,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 # django imports
 from django.views import View
 
-from django.http import HttpResponse
+from django.http import FileResponse
 from django.http.request import HttpRequest
 
 from django.shortcuts import render, redirect
@@ -166,7 +166,7 @@ class Settings(LoginRequiredMixin, View):
 class Jobs(LoginRequiredMixin, View):
     login_url = '/offer/login/'
 
-    def get(self, req: HttpRequest):
+    def get(self, req: HttpRequest, pk: int = None):
         if not hasattr(req.user, 'offer'):
             logout(req)
             messages.error(
@@ -175,6 +175,21 @@ class Jobs(LoginRequiredMixin, View):
                 " با اکانت کاربری خود وارد شوید",
             )
             return redirect("/offer/login/")
+
+        # get one job
+        if pk:
+            try:
+                job = Job.objects.get(id=pk)
+            except Job.DoesNotExist:
+                print("JobRequest.DoesNotExist")
+                messages.error(req, "آگهی شغلی یافت نشد!")
+                return redirect("/offer/jobs/")
+
+            listUserJobRequested = JobRequest.objects.filter(job_id=job.id)
+            return render(req, "offer/job.html", {
+                "job": job,
+                "listUserJobRequested": listUserJobRequested,
+            })
 
         offer_id = Offer.objects.get(user=req.user)
         jobs = Job.objects.filter(offer_id=offer_id).all()
@@ -184,7 +199,7 @@ class Jobs(LoginRequiredMixin, View):
             "jobs": jobs,
         })
 
-    def post(self, req: HttpRequest):
+    def post(self, req: HttpRequest, pk: int = None):
         if not hasattr(req.user, 'offer'):
             logout(req)
             messages.error(
@@ -193,6 +208,18 @@ class Jobs(LoginRequiredMixin, View):
                 " با اکانت کاربری خود وارد شوید",
             )
             return redirect("/offer/login/")
+
+        # delete job
+        if pk:
+            try:
+                job = Job.objects.get(id=pk)
+            except Job.DoesNotExist:
+                messages.error(req, "آگهی شغلی یافت نشد!")
+                return redirect("/offer/jobs/")
+
+            job.delete()
+            messages.success(req, "آگهی شغلی با موفقیت حذف شد!")
+            return redirect("/offer/jobs/")
 
         offer_id = Offer.objects.get(user=req.user)
         form = JobCreateForm(req.POST)
@@ -212,23 +239,10 @@ class Jobs(LoginRequiredMixin, View):
         })
 
 
-class Utility(LoginRequiredMixin, View):
+class Resume(LoginRequiredMixin, View):
     login_url = '/offer/login/'
 
-    @staticmethod
-    def get_file_size_mb(file_path):
-        file_size_bytes = os.path.getsize(file_path)
-        file_size_mb = file_size_bytes / (1024 * 1024)
-        return file_size_mb
-
-    @staticmethod
-    def generate_random_string(length):
-        characters = string.ascii_letters + string.digits
-        random_string = ''.join(random.choice(characters)
-                                for _ in range(length))
-        return random_string
-
-    def get(self, req: HttpRequest, pk: int = None):
+    def get(self, req: HttpRequest, pk: int):
         if not hasattr(req.user, 'offer'):
             logout(req)
             messages.error(
@@ -239,27 +253,45 @@ class Utility(LoginRequiredMixin, View):
             return redirect("/offer/login/")
 
         try:
-            offer_id = Offer.objects.get(user=req.user)
-            job_id = Job.objects.get(pk=pk, offer_id=offer_id)
-            allResume = JobRequest.objects.filter(job_id=job_id).all()
-        except Offer.DoesNotExist:
-            messages.error(req, "شغل مورد نظر یافت نشد!")
+            job = JobRequest.objects.get(id=pk)
+        except JobRequest.DoesNotExist:
+            messages.error(req, "آگهی شغلی یافت نشد!")
             return redirect("/offer/jobs/")
 
-        if not allResume:
-            messages.error(req, "رزومه‌ای برای این شغل ثبت نشده است!")
+        if not os.path.exists(job.resume.path):
+            messages.error(req, "رزومه یافت نشد!")
+            return redirect(f"/offer/jobs/{job.job.id}/")
+
+        try:
+            return FileResponse(
+                open(job.resume.path, 'rb'),
+                content_type='application/pdf'
+            )
+        except Exception:
+            messages.error(req, "خطا در دانلود رزومه!")
+            return redirect(f"/offer/jobs/{job.job.id}/")
+
+
+class ResumeStatus(LoginRequiredMixin, View):
+    login_url = '/offer/login/'
+
+    def post(self, req: HttpRequest, pk: int):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
+        try:
+            job = JobRequest.objects.get(id=pk)
+        except JobRequest.DoesNotExist:
+            messages.error(req, "آگهی شغلی یافت نشد!")
             return redirect("/offer/jobs/")
 
-        pathAllResume = [r.path_resume for r in allResume]
-        tempFileName = "/tmp/" + self.generate_random_string(16) + ".zip"
-        with ZipFile(tempFileName, 'w', ZIP_DEFLATED) as zip_file:
-            for file_path in pathAllResume:
-                zip_file.write(file_path, os.path.basename(file_path))
-
-        with open(tempFileName, 'rb') as f:
-            response = HttpResponse(f.read())
-            response['Content-Type'] = 'application/zip'
-            response['Content-Disposition'] = \
-                'attachment; filename=user_files.zip'
-            os.remove(tempFileName)
-            return response
+        job.status = req.POST.get("status")
+        job.save()
+        messages.success(req, "وضعیت رزومه با موفقیت تغییر یافت!")
+        return redirect(f"/offer/jobs/{job.job.id}/")

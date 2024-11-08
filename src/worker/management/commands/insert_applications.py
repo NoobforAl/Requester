@@ -1,3 +1,4 @@
+import os
 import random
 
 from django.core.management.base import BaseCommand
@@ -18,6 +19,10 @@ class Command(BaseCommand):
                 'No jobs found in the database.'))
             return
 
+        resumePath = 'resumes/resume.pdf'
+        if not os.path.exists(resumePath):
+            open(resumePath, 'w').close()
+
         for worker in workers:
             # Random number of requests per worker
             num_requests = random.randint(1, 5)
@@ -27,7 +32,7 @@ class Command(BaseCommand):
                     worker=worker,
                     job=job,
                     defaults={
-                        'resume': 'path/to/resume.pdf',
+                        'resume': resumePath,
                         'cover_letter': 'This is a cover letter.',
                         'status': 'pending',
                     }
