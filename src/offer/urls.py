@@ -12,5 +12,5 @@ urlpatterns = [
     path("settings/", views.Settings.as_view(), name="offer_settings"),
 
     path("jobs/", views.Jobs.as_view(), name="offer_jobs"),
-    path("job/<int:pk>/", views.Utility.as_view(), name="offer_get_resume"),
+    path("jobs/<int:pk>/", views.Utility.as_view(), name="offer_get_resume"),
 ]

@@ -162,3 +162,9 @@ cython_debug/
 #.idea/
 
 *.log*
+
+# remove static django files
+src/requester/static/
+
+# pdf files
+src/resumes/*.pdf

@@ -20,7 +20,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 # app imports
 from .models import Offer, Job
-from .form import UserRegistrationForm, UserLoginForm, OfferUpdateForm, JobCreateForm
+from .form import (
+    UserRegistrationForm,
+    UserLoginForm,
+    OfferUpdateForm,
+    JobCreateForm,
+)
 
 # app imports from worker
 from worker.models import JobRequest
@@ -95,6 +100,15 @@ class Dashboard(LoginRequiredMixin, View):
     login_url = '/offer/login/'
 
     def get(self, req: HttpRequest):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
         offer = Offer.objects.get(user=req.user)
 
         # get number of created jobs
@@ -114,6 +128,15 @@ class Settings(LoginRequiredMixin, View):
     login_url = '/offer/login/'
 
     def get(self, req: HttpRequest):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
         user = Offer.objects.get(user=req.user)
         form = OfferUpdateForm(instance=user)
         return render(req, "offer/settings.html", {
@@ -121,9 +144,16 @@ class Settings(LoginRequiredMixin, View):
         })
 
     def post(self, req: HttpRequest):
-        user = Offer.objects.get(user=req.user)
-        form = OfferUpdateForm(req.POST, instance=user)
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
 
+        form = OfferUpdateForm(req.POST, instance=req.user)
         if form.is_valid():
             form.save()
             messages.success(req, "اطلاعات با موفقیت به‌روز شد!")
@@ -137,23 +167,49 @@ class Jobs(LoginRequiredMixin, View):
     login_url = '/offer/login/'
 
     def get(self, req: HttpRequest):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
         offer_id = Offer.objects.get(user=req.user)
         jobs = Job.objects.filter(offer_id=offer_id).all()
         form = JobCreateForm(instance=offer_id)
         return render(req, "offer/jobs.html", {
             "form": form,
+            "jobs": jobs,
         })
 
     def post(self, req: HttpRequest):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
         offer_id = Offer.objects.get(user=req.user)
-        Job.objects.create(
-            offer_id=offer_id,
-            job_name=req.POST["job_name"],
-            detail=req.POST["detail"],
-            tag=req.POST["tag"],
-        )
-        messages.success(req, "آگهی شغلی با موفقیت ثبت شد!")
-        return redirect("/offer/jobs/")
+        form = JobCreateForm(req.POST)
+        if form.is_valid():
+            job = form.save(commit=False)
+            job.offer_id = offer_id.id
+            job.save()
+            form.save_m2m()
+            messages.success(req, "آگهی شغلی با موفقیت ثبت شد!")
+            return redirect("/offer/jobs/")
+
+        messages.error(req, "لطفاً اطلاعات را بررسی کنید.")
+        jobs = Job.objects.filter(offer_id=offer_id).all()
+        return render(req, "offer/jobs.html", {
+            "jobs": jobs,
+            "form": form
+        })
 
 
 class Utility(LoginRequiredMixin, View):
@@ -173,16 +229,25 @@ class Utility(LoginRequiredMixin, View):
         return random_string
 
     def get(self, req: HttpRequest, pk: int = None):
+        if not hasattr(req.user, 'offer'):
+            logout(req)
+            messages.error(
+                req,
+                "شما دسترسی به این بخش ندارید! لطفا"
+                " با اکانت کاربری خود وارد شوید",
+            )
+            return redirect("/offer/login/")
+
         try:
             offer_id = Offer.objects.get(user=req.user)
             job_id = Job.objects.get(pk=pk, offer_id=offer_id)
             allResume = JobRequest.objects.filter(job_id=job_id).all()
         except Offer.DoesNotExist:
-            messages.error(req, "Cant get any data!")
+            messages.error(req, "شغل مورد نظر یافت نشد!")
             return redirect("/offer/jobs/")
 
         if not allResume:
-            messages.error(req, "Not found any resume!")
+            messages.error(req, "رزومه‌ای برای این شغل ثبت نشده است!")
             return redirect("/offer/jobs/")
 
         pathAllResume = [r.path_resume for r in allResume]

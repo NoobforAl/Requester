@@ -9,6 +9,6 @@ _ = handler404
 urlpatterns = [
     path("", mainPage),
     path("admin/", admin.site.urls),
-    # path("worker/", include("worker.urls")),
+    path("worker/", include("worker.urls")),
     path("offer/", include("offer.urls")),
 ]

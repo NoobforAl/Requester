@@ -4,7 +4,7 @@
 >
     <div class="col-md-8 col-lg-6 p-5 border rounded shadow-lg bg-white">
         <h1 class="fw-bold text-center mb-4">ثبت نام</h1>
-        <form action="/offer/register/" method="post">
+        <form action="{% url 'offer_register' %}" method="post">
             {% csrf_token %}
 
             <div class="form-outline mb-4 position-relative">
@@ -139,7 +139,10 @@
                 ثبت نام
             </button>
 
-            <a href="/offer/login/" class="btn btn-secondary btn-lg w-100">
+            <a
+                href="{% url 'offer_login' %}"
+                class="btn btn-secondary btn-lg w-100"
+            >
                 ورود
             </a>
         </form>
