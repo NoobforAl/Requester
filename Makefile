@@ -21,10 +21,15 @@ run_docker_compose:
 	uv pip freeze  > requirements.txt 
 	docker-compose up --build
 
-deploy:
-	rm -f ./requirement.txt ./src/db.sqlite3
-	uv pip freeze  > requirements.txt 
-	cd ./src && gunicorn -w 10 requester.wsgi:application
+deploy: create_migrate insert_mock_data
+	@echo "Deploying the application"
+	@sleep 10
+	
+	@echo "Creating super user"
+	cd ./src && $(PYTHON) manage.py shell -c "from django.contrib.auth.models import User; User.objects.filter(username='admin').delete(); User.objects.create_superuser('admin', 'admin@example.com', 'admin')"
+	
+	@echo "Starting gunicorn"
+	cd ./src && gunicorn -w 10 --bind 0.0.0.0:8000 requester.wsgi:application
 
 create_migrate:
 	cd ./src && $(PYTHON) manage.py migrate

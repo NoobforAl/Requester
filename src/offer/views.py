@@ -1,10 +1,6 @@
 
 # python imports
 import os
-import string
-import random
-
-from zipfile import ZipFile, ZIP_DEFLATED
 
 # django imports
 from django.views import View
@@ -137,8 +133,7 @@ class Settings(LoginRequiredMixin, View):
             )
             return redirect("/offer/login/")
 
-        user = Offer.objects.get(user=req.user)
-        form = OfferUpdateForm(instance=user)
+        form = OfferUpdateForm(instance=req.user)
         return render(req, "offer/settings.html", {
             "form": form,
         })
@@ -153,7 +148,7 @@ class Settings(LoginRequiredMixin, View):
             )
             return redirect("/offer/login/")
 
-        form = OfferUpdateForm(req.POST, instance=req.user)
+        form = OfferUpdateForm(req.POST)
         if form.is_valid():
             form.save()
             messages.success(req, "اطلاعات با موفقیت به‌روز شد!")

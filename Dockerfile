@@ -5,13 +5,22 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
+RUN apt-get update && \
+    apt-get install -y \
+    pkg-config libmariadb-dev-compat \
+    libmariadb-dev build-essential \
+    graphviz graphviz-dev make gcc && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . /app/
 
-RUN python manage.py collectstatic --noinput
+RUN cd src/ && \
+    python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "myproject.wsgi:application"]
+CMD ["make", "PYTHON=python", "deploy"]
