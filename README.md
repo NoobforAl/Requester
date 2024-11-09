@@ -1,2 +1,80 @@
 # Requester
-My college project Requester
+
+Requester is a job recruitment platform designed as a college project. The platform allows workers to search and apply for jobs, while companies can post job offers and manage applications. The project is built using Django and leverages Docker for containerization.
+
+## Class Diagrams
+
+The class diagram for the project outlines the main entities and their relationships:
+
+- **User**: Represents a user of the platform, which can be either a worker or a company offering jobs.
+- **Worker**: Contains personal information about the worker, such as name, email, phone number, address, and date of birth.
+- **JobRequest**: Represents a job application submitted by a worker, including the resume, cover letter, status, and timestamps.
+- **Offer**: Represents a job offer posted by a company, including company details and job information.
+- **Job**: Represents a job listing, including job name, details, and timestamps.
+- **Tag**: Represents tags associated with jobs for categorization.
+
+The relationships between these entities are as follows:
+
+- A User can have one Worker profile and one Offer profile.
+- A Worker can submit multiple JobRequests.
+- A Job can receive multiple JobRequests.
+- An Offer can post multiple Jobs.
+- A Job can be tagged with multiple Tags.
+
+![Class Diagram](diagram/class_diagram.png)
+
+## Use Case Diagrams
+
+The use case diagram illustrates the interactions between different actors (Worker, Offer, Admin) and the system:
+
+- **Worker Use Cases**:
+    - Login
+    - Logout
+    - Register
+    - View Jobs
+    - Apply for Job
+    - Update Profile
+
+- **Offer Use Cases**:
+    - Login
+    - Logout
+    - Register
+    - Create Job
+    - View Job Applications
+    - Update Job Status
+    - Update Profile
+
+- **Admin Use Cases**:
+    - Manage Users
+    - Manage Jobs
+    - Manage Offers
+
+![Use Case Diagram](diagram/user_case_diagram.png)
+
+## Required Tools
+
+To run and develop this project, you will need the following tools:
+
+- **Docker**: Used for containerizing the application and its dependencies.
+- **Docker Compose**: Used to define and run multi-container Docker applications.
+- **Python 3.10**: The programming language used for the project.
+- **uv**: Used for package manager for python.
+- **Django**: The web framework used to build the application.
+- **MySQL**: The database used to store application data.
+- **Redis**: Used for caching and message brokering.
+
+## Makefile Commands
+
+### Usage
+
+- `make run` - Run the Django development server
+- `make deploy` - Deploy the application
+- `make create_migrate` - Apply database migrations
+- `make create_makemigrations` - Create new database migrations
+- `make create_super_user` - Create a new Django superuser
+- `make database_diagram` - Generate a database diagram
+- `make insert_mock_data` - Insert mock data into the database
+
+### Additional Commands
+
+- `make run_docker_compose` - Run the application using Docker Compose

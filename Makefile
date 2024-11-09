@@ -15,9 +15,15 @@ help:
 run: create_migrate
 	cd ./src && $(PYTHON) manage.py runserver
 
+run_docker_compose:
+	@echo "Running docker compose"
+	rm -f ./requirement.txt ./src/db.sqlite3
+	uv pip freeze  > requirements.txt 
+	docker-compose up --build
+
 deploy:
 	rm -f ./requirement.txt ./src/db.sqlite3
-	pipenv requirements > requirement.txt
+	uv pip freeze  > requirements.txt 
 	cd ./src && gunicorn -w 10 requester.wsgi:application
 
 create_migrate:
@@ -49,3 +55,4 @@ insert_mock_data: create_migrate
 
 	@echo "Inserting mock data for applications"
 	cd ./src && sh ./scripts/insert_applications.sh
+

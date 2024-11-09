@@ -1,0 +1,56 @@
+@startuml class_diagram
+
+class User {
+  +username: CharField
+  +email: EmailField
+  +password: CharField
+}
+
+class Worker {
+  +first_name: CharField
+  +last_name: CharField
+  +email: EmailField
+  +phone_number: CharField
+  +address: TextField
+  +date_of_birth: DateField
+  +created_at: DateTimeField
+  +updated_at: DateTimeField
+}
+
+class JobRequest {
+  +resume: FileField
+  +cover_letter: TextField
+  +status: CharField
+  +applied_at: DateTimeField
+  +updated_at: DateTimeField
+}
+
+class Offer {
+  +company_name: CharField
+  +company_email: EmailField
+  +detail: TextField
+  +created_at: DateTimeField
+  +updated_at: DateTimeField
+}
+
+class Job {
+  +job_name: CharField
+  +detail: TextField
+  +created_at: DateTimeField
+  +updated_at: DateTimeField
+}
+
+class Tag {
+  +name: CharField
+  +created_at: DateTimeField
+  +updated_at: DateTimeField
+}
+
+User "1" -- "1" Worker : "has"
+User "1" -- "1" Offer : "has"
+Worker "1" -- "0..*" JobRequest : "submits"
+Job "1" -- "0..*" JobRequest : "receives"
+Offer "1" -- "0..*" Job : "posts"
+Job "0..*" -- "0..*" Tag : "tagged with"
+
+@enduml

@@ -1,4 +1,25 @@
 services:
+    web:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: django_app
+        restart: unless-stopped
+        volumes:
+            - .:/app
+        ports:
+            - "8000:8000"
+        env_file:
+            - .env
+        depends_on:
+            - mysql
+            - redis
+        healthcheck:
+            test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
+            interval: 1m30s
+            timeout: 10s
+            retries: 3
+
     mysql:
         image: mysql:8.0.37-debian
         container_name: mysql_server
@@ -10,6 +31,15 @@ services:
             MYSQL_ROOT_PASSWORD: rootpassword
         ports:
             - "3306:3306"
+        healthcheck:
+            test:
+                [
+                    "CMD-SHELL",
+                    "mysqladmin ping -h localhost -u root --password=rootpassword || exit 1",
+                ]
+            interval: 1m
+            timeout: 10s
+            retries: 3
 
     redis:
         image: redis:7.2.4
@@ -18,3 +48,8 @@ services:
         command: ["redis-server", "--requirepass", "yourpassword"]
         ports:
             - "6379:6379"
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 30s
+            timeout: 10s
+            retries: 3

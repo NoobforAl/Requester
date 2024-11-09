@@ -1,0 +1,32 @@
+@startuml user_case_diagram
+
+actor "Worker" as worker
+actor "Offer" as offer
+actor "Admin" as admin
+
+rectangle "Worker Use Cases" {
+  worker -- (Login)
+  worker -- (Logout)
+  worker -- (Register)
+  worker -- (View Jobs)
+  worker -- (Apply for Job)
+  worker -- (Update Profile)
+}
+
+rectangle "Offer Use Cases" {
+  offer -- (Login)
+  offer -- (Logout)
+  offer -- (Register)
+  offer -- (Create Job)
+  offer -- (View Job Applications)
+  offer -- (Update Job Status)
+  offer -- (Update Profile)
+}
+
+rectangle "Admin Use Cases" {
+  admin -- (Manage Users)
+  admin -- (Manage Jobs)
+  admin -- (Manage Offers)
+}
+
+@enduml
