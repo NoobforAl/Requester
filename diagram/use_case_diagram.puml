@@ -1,4 +1,4 @@
-@startuml user_case_diagram
+@startuml use_case_diagram
 
 actor "Worker" as worker
 actor "Offer" as offer
