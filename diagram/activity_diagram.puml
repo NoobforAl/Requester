@@ -1,0 +1,23 @@
+@startuml activity_diagram
+
+|Worker|
+start
+:Login;
+:View Job Listings;
+:Apply for Job (Send Resume and Cover Letter);
+:Update Profile;
+
+|Employer|
+:Login;
+:Create New Job Listing;
+:View Job Applications;
+:Update Job Listing Status;
+
+|Admin|
+:Manage Users;
+:Manage Job Listings;
+:Manage Employers;
+
+stop
+
+@enduml

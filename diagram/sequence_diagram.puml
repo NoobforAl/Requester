@@ -1,0 +1,32 @@
+@startuml sequence_diagram
+
+actor "Worker" as Worker
+actor "Employer" as Offer
+actor "Admin" as Admin
+participant "System" as System
+
+Worker -> System : Login
+System -> Worker : Authenticate
+Worker -> System : View job postings
+System -> Worker : Display job postings
+
+Worker -> System : Submit job application (resume and cover letter)
+System -> Offer : Store job application
+
+Offer -> System : Create new job posting
+System -> Offer : Store job posting
+System -> Worker : Send job posting to worker
+
+Offer -> System : View job applications
+System -> Offer : Display job applications
+
+Admin -> System : Manage users
+System -> Admin : View and edit users
+
+Admin -> System : Manage job postings
+System -> Admin : Approve or delete postings
+
+Admin -> System : Manage employers
+System -> Admin : View and edit employers
+
+@enduml

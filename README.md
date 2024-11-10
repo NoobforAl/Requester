@@ -28,28 +28,69 @@ The relationships between these entities are as follows:
 The use case diagram illustrates the interactions between different actors (Worker, Offer, Admin) and the system:
 
 - **Worker Use Cases**:
-    - Login
-    - Logout
-    - Register
-    - View Jobs
-    - Apply for Job
-    - Update Profile
+  - Login
+  - Logout
+  - Register
+  - View Jobs
+  - Apply for Job
+  - Update Profile
 
 - **Offer Use Cases**:
-    - Login
-    - Logout
-    - Register
-    - Create Job
-    - View Job Applications
-    - Update Job Status
-    - Update Profile
+  - Login
+  - Logout
+  - Register
+  - Create Job
+  - View Job Applications
+  - Update Job Status
+  - Update Profile
 
 - **Admin Use Cases**:
-    - Manage Users
-    - Manage Jobs
-    - Manage Offers
+  - Manage Users
+  - Manage Jobs
+  - Manage Offers
 
 ![Use Case Diagram](diagram/user_case_diagram.png)
+
+## Sequence Diagram
+
+The sequence diagram below illustrates the interactions between different actors (Worker, Employer, Admin) and the system:
+
+- **Worker**:
+  - Logs into the system.
+  - Views job postings.
+  - Submits job applications (resume and cover letter).
+
+- **Employer**:
+  - Creates new job postings.
+  - Views job applications.
+
+- **Admin**:
+  - Manages users.
+  - Manages job postings.
+  - Manages employers.
+
+![Sequence Diagram](diagram/sequence_diagram.png)
+
+## Activity Diagram
+
+The activity diagram below shows the workflow of the job application process:
+
+- **Worker**:
+  - Registers on the platform.
+  - Searches for job postings.
+  - Applies for a job.
+
+- **Employer**:
+  - Posts a new job.
+  - Reviews job applications.
+  - Updates job status.
+
+- **Admin**:
+  - Oversees platform activities.
+  - Manages user accounts.
+  - Manages job postings.
+
+![Activity Diagram](diagram/activity_diagram.png)
 
 ## Required Tools
 
