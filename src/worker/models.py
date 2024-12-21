@@ -38,6 +38,7 @@ class JobRequest(models.Model):
         ],
         default='pending'
     )
+    ai_summary = models.TextField(blank=True, null=True, default="")
     applied_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

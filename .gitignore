@@ -168,3 +168,9 @@ src/requester/static/
 
 # pdf files
 src/resumes/*.pdf
+
+# database val
+es_data
+mysql_data
+redis_data
+ollama_data

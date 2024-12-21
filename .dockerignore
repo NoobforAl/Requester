@@ -163,8 +163,6 @@ cython_debug/
 
 *.log*
 
-# remove static django files
-src/requester/static/
 
 # pdf files
 src/resumes/*.pdf
@@ -183,3 +181,9 @@ LICENSE
 .git
 .idea
 .python-version
+
+# database val
+es_data
+mysql_data
+redis_data
+ollama_data

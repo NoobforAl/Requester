@@ -1,129 +1,186 @@
-{% extends "assets/body.html" %} {% block content %}
-<header class="p-4 bg-dark text-white">
-    <div
-        class="container d-flex flex-wrap justify-content-between align-items-center"
-    >
-        <ul class="nav me-auto">
-            <li class="nav-item">
-                <a
-                    href="{% url 'offer_dashboard' %}"
-                    class="nav-link link-light px-3 active"
-                    aria-current="page"
-                    >خانه</a
-                >
-            </li>
-            <li class="nav-item">
-                <a
-                    href="{% url 'offer_jobs' %}"
-                    class="nav-link link-light px-3"
-                    >شغل ها</a
-                >
-            </li>
-            <li class="nav-item">
-                <a
-                    href="{% url 'offer_settings' %}"
-                    class="nav-link link-light px-3"
-                    >تنظیمات</a
-                >
-            </li>
-        </ul>
-        <ul class="nav">
-            <li class="nav-item">
-                <a
-                    href="{% url 'offer_logout' %}"
-                    class="nav-link link-light px-3"
-                    >خروج</a
-                >
-            </li>
-        </ul>
-    </div>
-</header>
-
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-header">
-            <h2>اطلاعات شغل</h2>
-        </div>
-        <div class="card-body">
-            <p><strong>نام شغل:</strong> {{ job.job_name }}</p>
-            <p><strong>توضیحات:</strong> {{ job.detail }}</p>
-            <p>
-                <strong>تگ ها:</strong>
-                {% for tag in job.tags.all %}
-                <span class="badge bg-primary">{{ tag.name }}</span>
-                {% endfor %}
-            </p>
-        </div>
-    </div>
-
-    <div class="card mt-4">
-        <div class="card-header">
-            <h3>درخواست های شغلی</h3>
-        </div>
-        <div class="card-body">
-            <table class="table table-striped table-hover">
-                <thead class="table-dark">
-                    <tr>
-                        <th>نام</th>
-                        <th>ایمیل</th>
-                        <th>وضعیت</th>
-                        <th>رزومه</th>
-                        <th>تاریخ درخواست</th>
-                        <th>تغییر وضعیت</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for request in listUserJobRequested %}
-                    <tr>
-                        <td>
-                            {{request.worker.first_name }}
-                            {{request.worker.last_name }}
-                        </td>
-                        <td>{{ request.worker.email }}</td>
-                        <td>{{ request.get_status_display }}</td>
-                        <td>
-                            <a
-                                href="{% url 'download_resume' request.pk %}"
-                                class="btn btn-primary btn-sm"
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                            >دانلود رزومه</a>
-                        </td>
-                        <td>{{ request.applied_at }}</td>
-                        <td>
-                            <form method="post" action="{% url 'resume_status' request.pk %}">
-                                {% csrf_token %}
-                                <select name="status" class="form-select form-select-sm">
-                                    <option value="pending" {% if request.status == 'pending' %}selected{% endif %}>در انتظار</option>
-                                    <option value="accepted" {% if request.status == 'accepted' %}selected{% endif %}>پذیرفته شده</option>
-                                    <option value="rejected" {% if request.status == 'rejected' %}selected{% endif %}>رد شده</option>
-                                </select>
-                                <button type="submit" class="btn btn-sm btn-success mt-2">تغییر وضعیت</button>
-                            </form>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="6" class="text-center">
-                            هیچ درخواستی یافت نشد.
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% if messages %}
-            <div class="mt-4">
-                {% for message in messages %}
-                <div
-                    class="alert {% if message.tags == 'error' %}alert-danger {% elif message.tags == 'info' %}alert-info {% else %}alert-success{% endif %}"
-                >
-                    {{ message }}
+{% extends "assets/body.html" %}
+{% block content %}
+    {% load filters %}
+    {% include "offer/header.html" %}
+    <div class="container mt-4">
+        <div class="row">
+            <!-- اطلاعات شغل -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-primary text-white">
+                        <h2 class="text-center">اطلاعات شغل</h2>
+                    </div>
+                    <div class="card-body">
+                        <p>
+                            <strong>نام شغل:</strong> {{ job.job_name }}
+                        </p>
+                        <p>
+                            <strong>توضیحات:</strong> {{ job.detail }}
+                        </p>
+                        <p>
+                            <strong>تگ‌ها:</strong>
+                            {% for tag in job.tags.all %}<span class="badge bg-secondary me-1">{{ tag.name }}</span>{% endfor %}
+                        </p>
+                        <div class="text-center">
+                            <a href="{% url 'offer_job' job.pk %}?report=true">
+                                <button type="submit" class="btn btn-warning">گرفتن گزارش</button>
+                            </a>
+                        </div>
+                    </div>
                 </div>
-                {% endfor %}
             </div>
-        {% endif %}
+            <!-- فرم ویرایش اطلاعات شغل -->
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-header bg-info text-white">
+                        <h3 class="text-center">ویرایش اطلاعات شغل</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post" action="{% url 'offer_job' job.pk %}?edit=true">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="job_name" class="form-label">نام شغل</label>
+                                <input type="text"
+                                       id="job_name"
+                                       name="job_name"
+                                       class="form-control"
+                                       value="{{ job.job_name }}"
+                                       required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="detail" class="form-label">توضیحات</label>
+                                <textarea id="detail" name="detail" class="form-control" rows="3" required>{{ job.detail }}</textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="tags" class="form-label">برچسب‌ها</label>
+                                <select multiple id="tags" name="tags" class="form-select">
+                                    {% for tag in form.tags.field.queryset %}
+                                        <option value="{{ tag.id }}" {% if tag in job.tags.all %}selected{% endif %}>{{ tag.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <small class="form-text text-muted">برای انتخاب چندین برچسب از کلید Ctrl یا Shift استفاده کنید.</small>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                            </div>
+                        </form>
+                        {% if messages %}
+                            <div class="mt-4">
+                                {% for message in messages %}
+                                    <div class="alert {% if message.tags == 'error' %}alert-danger {% elif message.tags == 'info' %}alert-info {% else %}alert-success{% endif %}">
+                                        {{ message }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- لیست درخواست‌های شغلی -->
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h3 class="text-center">درخواست‌های شغلی</h3>
+            </div>
+            <div class="card-body">
+                <!-- فرم جستجو -->
+                <form method="get" class="mb-3">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <input type="text"
+                                   name="search"
+                                   class="form-control"
+                                   placeholder="جستجو بر اساس نام، ایمیل یا وضعیت"
+                                   value="{{ search_query }}">
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary w-100">جستجو</button>
+                        </div>
+                    </div>
+                </form>
+                <!-- جدول درخواست‌ها -->
+                <table class="table table-striped table-hover">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>نام</th>
+                            <th>ایمیل</th>
+                            <th>وضعیت</th>
+                            <th>رزومه</th>
+                            <th>خلاصه AI</th>
+                            <!-- اضافه کردن ستون خلاصه AI -->
+                            <th>تاریخ درخواست</th>
+                            <th>تغییر وضعیت</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for request in listUserJobRequested %}
+                            <tr>
+                                <td>{{ request.worker.first_name }} {{ request.worker.last_name }}</td>
+                                <td>{{ request.worker.email }}</td>
+                                <td>{{ request.get_status_display }}</td>
+                                <td>
+                                    <a href="{% url 'download_resume' request.pk %}"
+                                       class="btn btn-sm btn-primary">دانلود</a>
+                                </td>
+                                <td>{{ request.ai_summary }}</td>
+                                <!-- نمایش خلاصه AI -->
+                                <td>{{ request.applied_at|to_jalali }}</td>
+                                <td>
+                                    <form method="post" action="{% url 'resume_status' request.pk %}">
+                                        {% csrf_token %}
+                                        <select name="status" class="form-select form-select-sm">
+                                            <option value="pending"
+                                                    {% if request.status == 'pending' %}selected{% endif %}>
+                                                در انتظار
+                                            </option>
+                                            <option value="accepted"
+                                                    {% if request.status == 'accepted' %}selected{% endif %}>
+                                                پذیرفته شده
+                                            </option>
+                                            <option value="rejected"
+                                                    {% if request.status == 'rejected' %}selected{% endif %}>
+                                                رد شده
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-success mt-2">تغییر وضعیت</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" class="text-center">هیچ درخواستی یافت نشد.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <!-- صفحه‌بندی -->
+                <nav class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if listUserJobRequested.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ listUserJobRequested.previous_page_number }}&search={{ search_query }}">
+                                    قبلی
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% for page_num in listUserJobRequested.paginator.page_range %}
+                            <li class="page-item {% if page_num == listUserJobRequested.number %}active{% endif %}">
+                                <a class="page-link"
+                                   href="?page={{ page_num }}&search={{ search_query }}">{{ page_num }}</a>
+                            </li>
+                        {% endfor %}
+                        {% if listUserJobRequested.has_next %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                   href="?page={{ listUserJobRequested.next_page_number }}&search={{ search_query }}">
+                                    بعدی
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
-</div>
-
 {% endblock content %}

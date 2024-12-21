@@ -12,77 +12,82 @@ class Command(BaseCommand):
         offers_to_insert = [
             {
                 'username': 'alice',
-                'company_name': 'Google',
+                'company_name': 'گوگل',
                 'company_email': 'alice@google.com',
-                'detail': 'Developing innovative solutions at Google.',
-                'password': 'password123',
-            },
-            {
-                'username': 'bob',
-                'company_name': 'Google',
-                'company_email': 'bob@google.com',
-                'detail': 'Leading projects in cloud computing.',
-                'password': 'password123',
-            },
-            {
-                'username': 'charlie',
-                'company_name': 'Google',
-                'company_email': 'charlie@google.com',
-                'detail': 'Enhancing user experience in Google Search.',
-                'password': 'password123',
-            },
-            {
-                'username': 'dave',
-                'company_name': 'Google',
-                'company_email': 'dave@google.com',
-                'detail': 'Working on artificial'
-                ' intelligence and machine learning.',
-                'password': 'password123',
-            },
-            {
-                'username': 'eve',
-                'company_name': 'Google',
-                'company_email': 'eve@google.com',
-                'detail': 'Focusing on cybersecurity measures.',
+                'detail': (
+                    'توسعه راه‌حل‌های نوآورانه در گوگل، '
+                    'تخصص در ابزارهای مبتنی بر '
+                    'هوش مصنوعی و خدمات ابری '
+                    'برای افزایش بهره‌وری در بخش‌های مختلف.'
+                ),
                 'password': 'password123',
             },
             {
                 'username': 'frank',
-                'company_name': 'Microsoft',
+                'company_name': 'مایکروسافت',
                 'company_email': 'frank@microsoft.com',
-                'detail': 'Innovating solutions for enterprise software.',
+                'detail': (
+                    'نوآوری در راه‌حل‌ها برای نرم‌افزارهای سازمانی، '
+                    'توسعه ابزارهای پیشرفته برای کسب‌وکارها '
+                    'برای ساده‌سازی عملیات‌ها، '
+                    'با تمرکز بر خدمات ابری و امنیت سازمانی.'
+                ),
                 'password': 'password123',
             },
             {
                 'username': 'grace',
-                'company_name': 'Amazon',
+                'company_name': 'آمازون',
                 'company_email': 'grace@amazon.com',
-                'detail': 'Optimizing logistics for better delivery systems.',
+                'detail': (
+                    'بهینه‌سازی لجستیک برای سیستم‌های تحویل بهتر، '
+                    'پیاده‌سازی هوش مصنوعی و یادگیری ماشین برای '
+                    'ایجاد زنجیره‌های تأمین کارآمدتر و '
+                    'راه‌حل‌های تحویل سریع‌تر.'
+                ),
                 'password': 'password123',
             },
             {
                 'username': 'heidi',
-                'company_name': 'Apple',
+                'company_name': 'اپل',
                 'company_email': 'heidi@apple.com',
-                'detail': 'Designing intuitive user interfaces for iOS apps.',
+                'detail': (
+                    'طراحی رابط‌های '
+                    'کاربری شهودی برای اپلیکیشن‌های iOS،'
+                    ' افزایش تعامل کاربر از طریق اصول طراحی ساده '
+                    'و یکپارچگی بدون درز با اکوسیستم اپل.'
+                ),
                 'password': 'password123',
             },
             {
                 'username': 'ivan',
-                'company_name': 'Facebook',
+                'company_name': 'فیس‌بوک',
                 'company_email': 'ivan@facebook.com',
-                'detail': 'Building social media engagement tools.',
+                'detail': (
+                    'ساخت ابزارهای تعامل در شبکه‌های اجتماعی برای '
+                    'بهبود تعامل کاربران، توسعه الگوریتم‌ها '
+                    'برای محتوای شخصی‌سازی‌شده و ویژگی‌های مدیریت جوامع.'
+                ),
                 'password': 'password123',
             },
             {
                 'username': 'judy',
-                'company_name': 'Netflix',
+                'company_name': 'نت‌فلیکس',
                 'company_email': 'judy@netflix.com',
-                'detail': 'Creating recommendations systems'
-                ' for movies and shows.',
+                'detail': (
+                    'ایجاد سیستم‌های توصیه‌گر برای فیلم‌ها و '
+                    'برنامه‌های تلویزیونی، بهبود قابلیت نت‌فلیکس '
+                    'برای پیشنهاد محتوای شخصی‌سازی‌شده '
+                    'بر اساس ترجیحات و عادات تماشای کاربران.'
+                ),
                 'password': 'password123',
             },
         ]
+
+        if Offer.objects.count() > 0:
+            self.stdout.write(
+                self.style.WARNING('Offers already exist in the database.')
+            )
+            return
 
         for offer_data in offers_to_insert:
             user, created = User.objects.get_or_create(

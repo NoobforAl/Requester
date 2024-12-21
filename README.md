@@ -49,7 +49,7 @@ The use case diagram illustrates the interactions between different actors (Work
   - Manage Jobs
   - Manage Offers
 
-![Use Case Diagram](diagram/user_case_diagram.png)
+![Use Case Diagram](diagram/use_case_diagram.png)
 
 ## Sequence Diagram
 
@@ -99,23 +99,16 @@ To run and develop this project, you will need the following tools:
 - **Docker**: Used for containerizing the application and its dependencies.
 - **Docker Compose**: Used to define and run multi-container Docker applications.
 - **Python 3.10**: The programming language used for the project.
-- **uv**: Used for package manager for python.
+- **pipenv**: Used for package manager for python.
 - **Django**: The web framework used to build the application.
 - **MySQL**: The database used to store application data.
 - **Redis**: Used for caching and message brokering.
+- **Elasticsearch**: The Search engin service.
+- **MmailServer**: The TestMail service.
+- **Ollama**: The LLM service.
 
 ## Makefile Commands
 
 ### Usage
 
 - `make run` - Run the Django development server
-- `make deploy` - Deploy the application
-- `make create_migrate` - Apply database migrations
-- `make create_makemigrations` - Create new database migrations
-- `make create_super_user` - Create a new Django superuser
-- `make database_diagram` - Generate a database diagram
-- `make insert_mock_data` - Insert mock data into the database
-
-### Additional Commands
-
-- `make run_docker_compose` - Run the application using Docker Compose

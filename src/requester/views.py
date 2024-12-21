@@ -12,10 +12,10 @@ def handler404(req: HttpRequest, exception: Http404) -> HttpResponse:
 def mainPage(req: HttpRequest) -> HttpResponse:
     if req.user.is_authenticated:
 
-        if getattr(req.user, "is_requester", False):
+        if getattr(req.user, "worker", False):
             return redirect("/worker/")
 
-        if getattr(req.user, "is_worker", False):
+        if getattr(req.user, "offer", False):
             return redirect("/offer/")
 
     return render(req, "assets/home.html")

@@ -9,65 +9,152 @@ class Command(BaseCommand):
         jobs_to_insert = [
             {
                 'job_name': 'Software Engineer',
-                'detail': 'Develop and maintain software applications.',
-                'tags': ['development', 'software', 'engineer'],
+                'detail': (
+                    'توسعه و نگهداری برنامه‌های نرم‌افزاری. '
+                    'طراحی و پیاده‌سازی سیستم‌های '
+                    'نرم‌افزاری مقیاس‌پذیر و مطمئن، '
+                    'ارزیابی نیازهای کاربران و بهینه‌سازی عملکرد برنامه‌ها.'
+                ),
+                'tags': [
+                    'مهندس نرم‌افزار',
+                    'توسعه‌دهنده نرم‌افزار',
+                    'برنامه‌نویسی',
+                    'طراحی نرم‌افزار',
+                ],
                 'offer': 'alice'
             },
             {
                 'job_name': 'Data Scientist',
-                'detail': 'Analyze and interpret complex data sets.',
-                'tags': ['data', 'science', 'analytics'],
+                'detail': (
+                    'تحلیل و تفسیر مجموعه داده‌های '
+                    'پیچیده برای استخراج اطلاعات و روندها. '
+                    'استفاده از تکنیک‌های یادگیری ماشین و'
+                    ' مدل‌سازی پیش‌بینی برای حل مسائل تجاری و علمی.'
+                ),
+                'tags': [
+                    'دانشمند داده',
+                    'تحلیل داده',
+                    'یادگیری ماشین',
+                    'مدل‌سازی',
+                ],
                 'offer': 'bob',
             },
             {
                 'job_name': 'Project Manager',
-                'detail': 'Manage projects and ensure timely delivery.',
-                'tags': ['management', 'leadership', 'projects'],
+                'detail': (
+                    'مدیریت پروژه‌ها و اطمینان از تحویل به '
+                    'موقع و مطابق با استانداردهای کیفیت. '
+                    'رهبری تیم‌های چندوظیفه‌ای و هماهنگی '
+                    'با ذینفعان برای پیشبرد اهداف پروژه.'
+                ),
+                'tags': ['مدیر پروژه', 'مدیریت', 'رهبری', 'برنامه‌ریزی پروژه'],
                 'offer': 'charlie',
             },
             {
                 'job_name': 'DevOps Engineer',
-                'detail': 'Work on CI/CD and cloud infrastructure.',
-                'tags': ['devops', 'cloud', 'infrastructure'],
+                'detail': (
+                    'کار بر روی CI/CD، اتوماسیون فرآیندهای توسعه و '
+                    'استقرار نرم‌افزار، '
+                    'و همچنین مدیریت و بهینه‌سازی زیرساخت‌های ابری و سرور.'
+                ),
+                'tags': ['مهندس DevOps', 'زیرساخت ابری', 'CI/CD', 'اتوماسیون'],
                 'offer': 'dave',
             },
             {
                 'job_name': 'UI/UX Designer',
-                'detail': 'Design user-friendly interfaces.',
-                'tags': ['design', 'ui', 'ux'],
+                'detail': (
+                    'طراحی رابط‌های کاربری کاربرپسند '
+                    'و بهینه‌سازی تجربه کاربری. '
+                    'استفاده از اصول طراحی برای ایجاد '
+                    'تجربه‌ای روان و جذاب برای کاربران.'
+                ),
+                'tags': [
+                    'طراحی UI/UX',
+                    'طراح تجربه کاربری',
+                    'طراح رابط کاربری',
+                    'طراحی تعاملی',
+                ],
                 'offer': 'eve',
             },
             {
                 'job_name': 'Frontend Developer',
-                'detail': 'Build responsive web applications.',
-                'tags': ['frontend', 'javascript', 'react'],
+                'detail': (
+                    'ساخت برنامه‌های وب واکنش‌گرا با استفاده از '
+                    'تکنولوژی‌های مختلف مثل جاوااسکریپت و ری‌اکت. '
+                    'تمرکز بر تجربه کاربری و رابط‌های کاربری سریع و واکنش‌گرا.'
+                ),
+                'tags': [
+                    'توسعه‌دهنده فرانت‌اند',
+                    'جاوااسکریپت', 'ری‌اکت',
+                    'HTML/CSS',
+                ],
                 'offer': 'frank',
             },
             {
                 'job_name': 'Backend Developer',
-                'detail': 'Create and maintain server-side applications.',
-                'tags': ['backend', 'python', 'django'],
+                'detail': (
+                    'ایجاد و نگهداری برنامه‌های سمت سرور با '
+                    'استفاده از فریم‌ورک‌های مختلف مانند جنگو. '
+                    'مدیریت پایگاه‌داده‌ها، '
+                    'بهینه‌سازی عملکرد و ایجاد APIهای مقیاس‌پذیر.'
+                ),
+                'tags': ['توسعه‌دهنده بک‌اند', 'پایتون', 'جنگو', 'API'],
                 'offer': 'grace',
             },
             {
                 'job_name': 'Mobile Developer',
-                'detail': 'Develop applications for mobile platforms.',
-                'tags': ['mobile', 'android', 'ios'],
+                'detail': (
+                    'توسعه برنامه‌ها برای پلتفرم‌های موبایل با '
+                    'استفاده از فناوری‌های مختلف مانند اندروید و iOS. '
+                    'بهینه‌سازی عملکرد و تجربه کاربری در دستگاه‌های موبایل.'
+                ),
+                'tags': [
+                    'توسعه‌دهنده موبایل',
+                    'اندروید',
+                    'iOS',
+                    'توسعه اپلیکیشن موبایل',
+                ],
                 'offer': 'heidi',
             },
             {
                 'job_name': 'System Administrator',
-                'detail': 'Manage and maintain IT infrastructure.',
-                'tags': ['sysadmin', 'infrastructure', 'networking'],
+                'detail': (
+                    'مدیریت و نگهداری زیرساخت‌های IT شامل شبکه‌ها، سرورها و '
+                    'پایگاه‌های داده. '
+                    'پشتیبانی از سیستم‌ها و '
+                    'تضمین عملکرد صحیح و بهینه سیستم‌ها.'
+                ),
+                'tags': [
+                    'مدیر سیستم',
+                    'مدیریت سیستم',
+                    'زیرساخت IT',
+                    'پشتیبانی شبکه',
+                ],
                 'offer': 'ivan',
             },
             {
                 'job_name': 'Cybersecurity Analyst',
-                'detail': 'Protect systems from security breaches.',
-                'tags': ['security', 'cybersecurity', 'analysis'],
+                'detail': (
+                    'حفاظت از سیستم‌ها در برابر '
+                    'نفوذهای امنیتی و تهدیدات سایبری. '
+                    'تحلیل آسیب‌پذیری‌ها و پیاده‌سازی تدابیر '
+                    'امنیتی برای حفظ امنیت اطلاعات.'
+                ),
+                'tags': [
+                    'تحلیل امنیت سایبری',
+                    'امنیت IT',
+                    'حفاظت از اطلاعات',
+                    'تحلیل تهدیدات',
+                ],
                 'offer': 'judy',
             },
         ]
+
+        if Job.objects.count() > 0:
+            self.stdout.write(
+                self.style.ERROR('Jobs already exist in the database.')
+            )
+            return
 
         for job_data in jobs_to_insert:
             offer = Offer.objects.filter(

@@ -23,6 +23,12 @@ class Command(BaseCommand):
         if not os.path.exists(resumePath):
             open(resumePath, 'w').close()
 
+        if JobRequest.objects.count() > 0:
+            self.stdout.write(
+                self.style.ERROR('Job requests already exist in the database.')
+            )
+            return
+
         for worker in workers:
             # Random number of requests per worker
             num_requests = random.randint(1, 5)
@@ -33,7 +39,10 @@ class Command(BaseCommand):
                     job=job,
                     defaults={
                         'resume': resumePath,
-                        'cover_letter': 'This is a cover letter.',
+                        'cover_letter': (
+                            'من برای این کار '
+                            'مناسب هستم زیرا تجربه و مهارت‌های لازم را دارم.'
+                        ),
                         'status': 'pending',
                     }
                 )

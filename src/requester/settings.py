@@ -8,7 +8,14 @@ PROJECT_ROOT = os.path.normpath(os.path.dirname(__file__))
 SECRET_KEY = os.environ.get("SECRET_KEY")
 ALLOWED_HOSTS = [os.environ.get("ALLOWED_HOSTS")]
 
-DEBUG = os.environ.get("DEBUG", "").lower() == "true"
+DEBUG = os.environ.get("DJANGO_DEBUG", "true").lower() == "true"
+
+# email server
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "true").lower() == "true"
+EMAIL_HOST = os.environ.get("EMAIL_HOST", "")
+EMAIL_PORT = os.environ.get("EMAIL_PORT", "")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "")
 
 DATABASES = {
     "default": {
@@ -18,6 +25,16 @@ DATABASES = {
         'PASSWORD': os.environ.get("MYSQL_PASSWORD"),
         'HOST': os.environ.get("MYSQL_HOST"),
         'PORT': os.environ.get("MYSQL_PORT"),
+    }
+}
+
+ELASTICSEARCH_DSL = {
+    'default': {
+        'hosts': os.getenv("ELASTICSEARCH_URL", ""),
+        'http_auth': (
+            os.getenv("ELASTICSEARCH_USERNAME", ""),
+            os.getenv("ELASTICSEARCH_PASSWORD", "")
+        )
     }
 }
 
@@ -60,8 +77,10 @@ LOGGING = {
 INSTALLED_APPS = [
     "offer",
     "worker",
+    "requester_handler",
 
     'django_extensions',
+    'django_elasticsearch_dsl',
 
     "django.contrib.admin",
     "django.contrib.auth",
@@ -138,7 +157,7 @@ USE_I18N = True
 
 USE_TZ = True
 
+STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
-STATIC_URL = "/static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

@@ -13,9 +13,9 @@ class Command(BaseCommand):
         workers_to_insert = [
             {
                 'username': 'worker1',
-                'first_name': 'John',
-                'last_name': 'Doe',
-                'email': 'john.doe@example.com',
+                'first_name': 'علی',
+                'last_name': 'رضایی',
+                'email': 'ali.rezaei@example.com',
                 'phone_number': '1234567890',
                 'address': '123 Main St, Anytown, USA',
                 'date_of_birth': '1990-01-01',
@@ -23,9 +23,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker2',
-                'first_name': 'Jane',
-                'last_name': 'Smith',
-                'email': 'jane.smith@example.com',
+                'first_name': 'مریم',
+                'last_name': 'احمدی',
+                'email': 'maryam.ahmadi@example.com',
                 'phone_number': '0987654321',
                 'address': '456 Elm St, Othertown, USA',
                 'date_of_birth': '1992-02-02',
@@ -33,9 +33,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker3',
-                'first_name': 'Alice',
-                'last_name': 'Johnson',
-                'email': 'alice.johnson@example.com',
+                'first_name': 'حسین',
+                'last_name': 'کریمی',
+                'email': 'hossein.karimi@example.com',
                 'phone_number': '1112223333',
                 'address': '789 Maple St, Anytown, USA',
                 'date_of_birth': '1993-03-03',
@@ -43,9 +43,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker4',
-                'first_name': 'Bob',
-                'last_name': 'Brown',
-                'email': 'bob.brown@example.com',
+                'first_name': 'زهرا',
+                'last_name': 'محمدی',
+                'email': 'zahra.mohammadi@example.com',
                 'phone_number': '4445556666',
                 'address': '101 Pine St, Othertown, USA',
                 'date_of_birth': '1994-04-04',
@@ -53,9 +53,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker5',
-                'first_name': 'Charlie',
-                'last_name': 'Davis',
-                'email': 'charlie.davis@example.com',
+                'first_name': 'رضا',
+                'last_name': 'حسینی',
+                'email': 'reza.hosseini@example.com',
                 'phone_number': '7778889999',
                 'address': '202 Oak St, Anytown, USA',
                 'date_of_birth': '1995-05-05',
@@ -63,9 +63,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker6',
-                'first_name': 'Diana',
-                'last_name': 'Evans',
-                'email': 'diana.evans@example.com',
+                'first_name': 'فاطمه',
+                'last_name': 'نوری',
+                'email': 'fatemeh.noori@example.com',
                 'phone_number': '0001112222',
                 'address': '303 Birch St, Othertown, USA',
                 'date_of_birth': '1996-06-06',
@@ -73,9 +73,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker7',
-                'first_name': 'Eve',
-                'last_name': 'Foster',
-                'email': 'eve.foster@example.com',
+                'first_name': 'محمد',
+                'last_name': 'جعفری',
+                'email': 'mohammad.jafari@example.com',
                 'phone_number': '3334445555',
                 'address': '404 Cedar St, Anytown, USA',
                 'date_of_birth': '1997-07-07',
@@ -83,9 +83,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker8',
-                'first_name': 'Frank',
-                'last_name': 'Green',
-                'email': 'frank.green@example.com',
+                'first_name': 'سارا',
+                'last_name': 'کاظمی',
+                'email': 'sara.kazemi@example.com',
                 'phone_number': '6667778888',
                 'address': '505 Spruce St, Othertown, USA',
                 'date_of_birth': '1998-08-08',
@@ -93,9 +93,9 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker9',
-                'first_name': 'Grace',
-                'last_name': 'Harris',
-                'email': 'grace.harris@example.com',
+                'first_name': 'علی',
+                'last_name': 'مرادی',
+                'email': 'ali.moradi@example.com',
                 'phone_number': '9990001111',
                 'address': '606 Willow St, Anytown, USA',
                 'date_of_birth': '1999-09-09',
@@ -103,15 +103,21 @@ class Command(BaseCommand):
             },
             {
                 'username': 'worker10',
-                'first_name': 'Henry',
-                'last_name': 'Irvine',
-                'email': 'henry.irvine@example.com',
-                'phone_number': '2223334444',
+                'first_name': 'نرگس',
+                'last_name': 'حیدری',
+                'email': 'narges.heydari@example.com',
+                'phone_number': '22233ی34444',
                 'address': '707 Aspen St, Othertown, USA',
                 'date_of_birth': '2000-10-10',
                 'password': 'password123',
             }
         ]
+
+        if Worker.objects.count() > 0:
+            self.stdout.write(
+                self.style.ERROR('Workers already exist in the database.')
+            )
+            return
 
         for worker_data in workers_to_insert:
             user, created = User.objects.get_or_create(

@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
     web:
         build:
@@ -5,20 +7,139 @@ services:
             dockerfile: Dockerfile
         container_name: django_app
         restart: unless-stopped
+        command: ["make", "PYTHON=python", "deploy"]
         volumes:
             - .:/app
         ports:
             - "8000:8000"
-        env_file:
-            - .env
+        environment:
+            ALLOWED_HOSTS: "*"
+            SECRET_KEY: "joajdfoajsdoi314073249hvo12391473y#$krf982u3"
+            DJANGO_DEBUG: True
+            MYSQL_HOST: "mysql"
+            MYSQL_PORT: 3306
+            MYSQL_USER: "myuser"
+            MYSQL_PASSWORD: "mypassword"
+            MYSQL_DB: "mydatabase"
+            REDIS_URL: "redis://:yourpassword@redis:6379/1"
+            EMAIL_HOST: "mailserver"
+            EMAIL_PORT: 1025
+            EMAIL_HOST_USER: ""
+            EMAIL_HOST_PASSWORD: ""
+            EMAIL_USE_TLS: False
+            ELASTICSEARCH_URL: "http://elasticsearch:9200"
+            ELASTICSEARCH_USERNAME: ""
+            ELASTICSEARCH_PASSWORD: ""
+            ELASTICSEARCH_PORT: 9200
+            CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
+            CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
+            CELERY_ACCEPT_CONTENT: '["json"]'
+            CELERY_TASK_SERIALIZER: "json"
+            CELERY_RESULT_SERIALIZER: "json"
+            CELERY_TIMEZONE: "UTC"
+            LLAMA_SERVER_URL: "http://ollama:11434"
+            LLAMA_MODEL: "llama3.2"
         depends_on:
             mysql:
                 condition: service_healthy
             redis:
                 condition: service_healthy
+            elasticsearch:
+                condition: service_healthy
+            mailserver:
+                condition: service_healthy
+    celery:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: celery_worker
+        restart: unless-stopped
+        command: ["make", "PYTHON=python", "setup_celery"]
+        volumes:
+            - .:/app
+        environment:
+            ALLOWED_HOSTS: "*"
+            SECRET_KEY: "joajdfoajsdoi314073249hvo12391473y#$krf982u3"
+            DJANGO_DEBUG: True
+            MYSQL_HOST: "mysql"
+            MYSQL_PORT: 3306
+            MYSQL_USER: "myuser"
+            MYSQL_PASSWORD: "mypassword"
+            MYSQL_DB: "mydatabase"
+            REDIS_URL: "redis://:yourpassword@redis:6379/1"
+            EMAIL_HOST: "mailserver"
+            EMAIL_PORT: 1025
+            EMAIL_HOST_USER: ""
+            EMAIL_HOST_PASSWORD: ""
+            EMAIL_USE_TLS: False
+            ELASTICSEARCH_URL: "http://elasticsearch:9200"
+            ELASTICSEARCH_USERNAME: ""
+            ELASTICSEARCH_PASSWORD: ""
+            ELASTICSEARCH_PORT: 9200
+            CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
+            CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
+            CELERY_ACCEPT_CONTENT: '["json"]'
+            CELERY_TASK_SERIALIZER: "json"
+            CELERY_RESULT_SERIALIZER: "json"
+            CELERY_TIMEZONE: "UTC"
+            LLAMA_SERVER_URL: "http://ollama:11434"
+            LLAMA_MODEL: "llama3.2"
+        depends_on:
+            mysql:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            elasticsearch:
+                condition: service_healthy
+            mailserver:
+                condition: service_healthy
+            ollama:
+                condition: service_started
+
+    ollama:
+        image: ollama/ollama:0.5.3
+        container_name: ollama_gpu
+        restart: unless-stopped
+        runtime: nvidia
+        entrypoint: ["/bin/sh", "-c"]
+        command: ["ollama serve & sleep 3s; ollama pull llama3.2; sleep 48h;"]
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - capabilities: ["gpu"]
+        ports:
+            - "11434:11434"
+        volumes:
+            - ./ollama_data:/root/.ollama
+
+    elasticsearch:
+        image: elasticsearch:8.15.5
+        container_name: elasticsearch
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
+        ports:
+            - "9200:9200"
+            - "9300:9300"
+        volumes:
+            - ./es_data:/usr/share/elasticsearch/data
         healthcheck:
-            test: ["CMD-SHELL", "curl -f http://localhost:8000 || exit 1"]
-            interval: 1m30s
+            test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
+            interval: 1m
+            timeout: 10s
+            retries: 3
+
+    mailserver:
+        image: mailhog/mailhog:v1.0.1
+        container_name: mailserver
+        ports:
+            - "1025:1025"
+            - "8025:8025"
+        healthcheck:
+            test: ["CMD-SHELL", "wget http://0.0.0.0:8025 || exit 1"]
+            interval: 1m
             timeout: 10s
             retries: 3
 
@@ -33,6 +154,8 @@ services:
             MYSQL_ROOT_PASSWORD: rootpassword
         ports:
             - "3306:3306"
+        volumes:
+            - ./mysql_data:/var/lib/mysql
         healthcheck:
             test:
                 [
@@ -50,6 +173,8 @@ services:
         command: ["redis-server", "--requirepass", "yourpassword"]
         ports:
             - "6379:6379"
+        volumes:
+            - ./redis_data:/data
         healthcheck:
             test: ["CMD", "redis-cli", "ping"]
             interval: 30s

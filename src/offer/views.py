@@ -1,9 +1,18 @@
 
 # python imports
 import os
+from datetime import timedelta
+
+# other import pkgs
+import jdatetime
 
 # django imports
 from django.views import View
+
+from django.db.models import Q
+from django.db.models import Count
+
+from django.core.paginator import Paginator
 
 from django.http import FileResponse
 from django.http.request import HttpRequest
@@ -25,6 +34,9 @@ from .form import (
 
 # app imports from worker
 from worker.models import JobRequest
+
+# app import form celery
+from requester_handler.tasks import get_report
 
 
 class Login(View):
@@ -107,17 +119,55 @@ class Dashboard(LoginRequiredMixin, View):
 
         offer = Offer.objects.get(user=req.user)
 
-        # get number of created jobs
         num_of_created_jobs = Job.objects.filter(offer_id=offer.id).count()
-
-        # get number of job receive
         num_of_resume_receive = JobRequest.objects.filter(
             job_id__offer_id=offer.id).count()
 
-        return render(req, "offer/dashboard.html", {
+        today = jdatetime.date.today()
+        current_month_start = today.replace(day=1)
+        last_month_start = (current_month_start -
+                            timedelta(days=1)).replace(day=1)
+        last_month_end = current_month_start - timedelta(days=1)
+
+        current_month_start_greg = current_month_start.togregorian()
+        last_month_start_greg = last_month_start.togregorian()
+        last_month_end_greg = last_month_end.togregorian()
+
+        jobs_current_month = Job.objects.filter(
+            offer_id=offer.id,
+            created_at__gte=current_month_start_greg
+        ).count()
+
+        jobs_last_month = Job.objects.filter(
+            offer_id=offer.id,
+            created_at__range=(last_month_start_greg, last_month_end_greg)
+        ).count()
+
+        requests_per_day = JobRequest.objects.filter(
+            job_id__offer_id=offer.id,
+            applied_at__gte=current_month_start_greg
+        ).extra({
+            'day': "DATE(applied_at)"
+        }).values('day').annotate(count=Count('id')).order_by('day')
+
+        requests_per_day_jalali = [
+            {
+                'day': jdatetime.date.
+                fromgregorian(date=item['day']).strftime('%Y-%m-%d'),
+                'count': item['count']
+            }
+            for item in requests_per_day
+        ]
+
+        context = {
             "num_of_created_jobs": num_of_created_jobs,
             "num_of_resume_receive": num_of_resume_receive,
-        })
+            "jobs_current_month": jobs_current_month,
+            "jobs_last_month": jobs_last_month,
+            "requests_per_day": requests_per_day_jalali,
+        }
+
+        return render(req, "offer/dashboard.html", context)
 
 
 class Settings(LoginRequiredMixin, View):
@@ -133,7 +183,7 @@ class Settings(LoginRequiredMixin, View):
             )
             return redirect("/offer/login/")
 
-        form = OfferUpdateForm(instance=req.user)
+        form = OfferUpdateForm(instance=req.user.offer)
         return render(req, "offer/settings.html", {
             "form": form,
         })
@@ -171,7 +221,9 @@ class Jobs(LoginRequiredMixin, View):
             )
             return redirect("/offer/login/")
 
-        # get one job
+        offer_id = Offer.objects.get(user=req.user)
+        form = JobCreateForm(instance=offer_id)
+
         if pk:
             try:
                 job = Job.objects.get(id=pk)
@@ -180,18 +232,45 @@ class Jobs(LoginRequiredMixin, View):
                 messages.error(req, "آگهی شغلی یافت نشد!")
                 return redirect("/offer/jobs/")
 
-            listUserJobRequested = JobRequest.objects.filter(job_id=job.id)
+            if req.GET.get("report", "").lower() == "true":
+                get_report.delay(pk)
+                messages.warning(
+                    req,
+                    "درخواست گزارش دریافت شد و بعد "
+                    "از 1 الا 3 سه روز کار برای شما ارسال خواهد شد!"
+                )
+                return redirect("/offer/jobs/")
+
+            search_query = req.GET.get("search", "")
+            requests = JobRequest.objects.filter(
+                job_id=job.id).order_by("applied_at")
+
+            if search_query:
+                requests = requests.filter(
+                    Q(worker__first_name__icontains=search_query) |
+                    Q(worker__last_name__icontains=search_query) |
+                    Q(worker__email__icontains=search_query)
+                )
+
+            paginator = Paginator(requests, 10)
+            page_number = req.GET.get("page")
+            page_obj = paginator.get_page(page_number)
+
             return render(req, "offer/job.html", {
+                "form": form,
                 "job": job,
-                "listUserJobRequested": listUserJobRequested,
+                "listUserJobRequested": page_obj,
+                "search_query": search_query,
             })
 
-        offer_id = Offer.objects.get(user=req.user)
-        jobs = Job.objects.filter(offer_id=offer_id).all()
-        form = JobCreateForm(instance=offer_id)
+        requests = Job.objects.filter(offer_id=offer_id).order_by("created_at")
+        paginator = Paginator(requests, 10)
+        page_number = req.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
         return render(req, "offer/jobs.html", {
             "form": form,
-            "jobs": jobs,
+            "jobs": page_obj,
         })
 
     def post(self, req: HttpRequest, pk: int = None):
@@ -204,7 +283,8 @@ class Jobs(LoginRequiredMixin, View):
             )
             return redirect("/offer/login/")
 
-        # delete job
+        offer_id = Offer.objects.get(user=req.user)
+
         if pk:
             try:
                 job = Job.objects.get(id=pk)
@@ -212,11 +292,23 @@ class Jobs(LoginRequiredMixin, View):
                 messages.error(req, "آگهی شغلی یافت نشد!")
                 return redirect("/offer/jobs/")
 
+            form = JobCreateForm(req.POST, instance=job)
+            if req.GET.get("edit", "").lower() == "true":
+                if form.is_valid():
+                    form.save()
+                    messages.success(
+                        req, "اطلاعات شغل با موفقیت به‌روزرسانی شد!"
+                    )
+                    return redirect(f"/offer/jobs/{pk}/")
+
+                messages.error(req, "لطفاً اطلاعات را بررسی کنید.")
+                jobs = Job.objects.filter(offer_id=offer_id).all()
+                return redirect(f"/offer/jobs/{pk}/")
+
             job.delete()
             messages.success(req, "آگهی شغلی با موفقیت حذف شد!")
             return redirect("/offer/jobs/")
 
-        offer_id = Offer.objects.get(user=req.user)
         form = JobCreateForm(req.POST)
         if form.is_valid():
             job = form.save(commit=False)

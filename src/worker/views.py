@@ -5,6 +5,9 @@ import hashlib
 
 # Django imports
 from django.db import IntegrityError
+from django.db.models import Count, Q
+
+from django.core.paginator import Paginator
 
 from django.views import View
 from django.http.request import HttpRequest
@@ -23,6 +26,9 @@ from .form import UserRegistrationForm, ResumeUploadForm
 
 # app imports form offer
 from offer.models import Job
+
+# app celery
+from requester_handler.tasks import handel_resume
 
 
 class Login(View):
@@ -102,10 +108,30 @@ class Dashboard(LoginRequiredMixin, View):
             return redirect("/worker/login/")
 
         worker = Worker.objects.get(user=req.user)
-        numOfUserSendResume = JobRequest.objects.filter(worker=worker).count()
-        return render(req, "worker/dashboard.html", {
-            "numOfUserSendResume": numOfUserSendResume
-        })
+        num_of_user_send_resume = JobRequest.objects.filter(
+            worker=worker).count()
+
+        status_counts = JobRequest.objects.filter(
+            worker=worker).values('status').annotate(count=Count('id'))
+
+        accepted = status_counts.filter(status='accepted').aggregate(
+            Count('count'))
+
+        accepted = status_counts.filter(status='accepted').aggregate(
+            Count('count')).get("count__count", None) or 0
+        rejected = status_counts.filter(status='rejected').aggregate(
+            Count('count')).get("count__count", None) or 0
+        in_progress = status_counts.filter(status='pending').aggregate(
+            Count('count')).get("count__count", None) or 0
+
+        context = {
+            "num_of_user_send_resume": num_of_user_send_resume,
+            "accepted": accepted,
+            "rejected": rejected,
+            "in_progress": in_progress,
+        }
+
+        return render(req, "worker/dashboard.html", context)
 
 
 class Jobs(LoginRequiredMixin, View):
@@ -136,11 +162,25 @@ class Jobs(LoginRequiredMixin, View):
                 "offer": job.offer,
             })
 
-        jobs = Job.objects.all()
-        userSendedResume = JobRequest.objects.filter(worker=req.user.worker)
+        search_query = req.GET.get('search', '').strip()
+        requests_jobs = Job.objects.filter(
+            Q(job_name__icontains=search_query) |
+            Q(detail__icontains=search_query)
+        ).order_by('-created_at')
+        paginator_job = Paginator(requests_jobs, 6)
+        page_number_job = req.GET.get("page_job")
+        page_obj_job = paginator_job.get_page(page_number_job)
+
+        req_user_sended_resume = JobRequest.objects.filter(
+            worker=req.user.worker).order_by('-applied_at')
+        paginator_user_sended_resume = Paginator(req_user_sended_resume, 5)
+        page_number_user_sended_resume = req.GET.get("page_user_sended")
+        page_obj_user_sended_resume = paginator_user_sended_resume.get_page(
+            page_number_user_sended_resume)
+
         return render(req, "worker/jobs.html", {
-            "jobs": jobs,
-            "userSendedResume": userSendedResume,
+            "jobs": page_obj_job,
+            "userSendedResume": page_obj_user_sended_resume,
         })
 
     def post(self, req: HttpRequest, pk: int = None):
@@ -162,16 +202,16 @@ class Jobs(LoginRequiredMixin, View):
         form = ResumeUploadForm(req.POST, req.FILES)
         if not form.is_valid():
             messages.error(req, form.errors)
-            return redirect(f"/worker/jobs/{pk}")
+            return redirect(f"/worker/jobs/{pk}/")
 
         uploaded_file = form.cleaned_data.get('resume')
         if uploaded_file.size > 5 * 1024 * 1024:  # 5 MB limit
             messages.error(req, "حجم فایل بیش از حد مجاز است!")
-            return redirect(f"/worker/jobs/{pk}")
+            return redirect(f"/worker/jobs/{pk}/")
 
         if not uploaded_file.name.endswith('.pdf'):
             messages.error(req, "فقط فایل‌های PDF مجاز هستند!")
-            return redirect(f"/worker/jobs/{pk}")
+            return redirect(f"/worker/jobs/{pk}/")
 
         file_hash = f"{pk}__" + hashlib.md5(uploaded_file.read()).hexdigest()
         uploaded_file.seek(0)
@@ -185,7 +225,7 @@ class Jobs(LoginRequiredMixin, View):
                 destination.write(chunk)
 
         try:
-            JobRequest.objects.create(
+            job_req = JobRequest.objects.create(
                 worker=req.user.worker,
                 job=job,
                 resume=save_path,
@@ -193,10 +233,11 @@ class Jobs(LoginRequiredMixin, View):
         except IntegrityError:
             messages.error(
                 req, "شما قبلاً درخواست این شغل را ارسال کرده‌اید!")
-            return redirect(f"/worker/jobs/{pk}")
+            return redirect(f"/worker/jobs/{pk}/")
 
+        handel_resume.delay(job_req.id)
         messages.success(req, "رزومه با موفقیت ارسال شد!")
-        return redirect(f"/worker/jobs/{pk}")
+        return redirect(f"/worker/jobs/{pk}/")
 
 
 class Settings(LoginRequiredMixin, View):
@@ -212,7 +253,7 @@ class Settings(LoginRequiredMixin, View):
             )
             return redirect("/worker/login/")
 
-        form = UserUpdateForm(instance=req.user)
+        form = UserUpdateForm(instance=req.user.worker)
         return render(req, "worker/settings.html", {"form": form})
 
     def post(self, req: HttpRequest):
@@ -225,7 +266,7 @@ class Settings(LoginRequiredMixin, View):
             )
             return redirect("/worker/login/")
 
-        form = UserUpdateForm(req.POST, instance=req.user)
+        form = UserUpdateForm(req.POST, instance=req.user.worker)
         if form.is_valid():
             form.save()
             messages.success(req, "اطلاعات با موفقیت ذخیره شد!")

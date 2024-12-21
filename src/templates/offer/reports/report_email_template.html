@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="fa">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>گزارش شغل</title>
+        <style>
+            body {
+                font-family: "Tahoma", sans-serif;
+                direction: rtl; /* راست‌چین کردن متن */
+                text-align: right; /* تنظیم تراز متن به راست */
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin: 20px 0;
+                padding: 10px;
+            }
+            th, td {
+                padding: 8px;
+                text-align: right; /* تراز کردن متن درون سلول‌ها به راست */
+                border-bottom: 1px solid #ddd;
+            }
+            th {
+                background-color: #f2f2f2;
+            }
+            a {
+                color: #007bff;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>گزارش شغل برای {{ job.job_name }}</h1>
+        <p>
+            <strong>نام شرکت:</strong> {{ offer.company_name }}
+        </p>
+        <p>
+            <strong>ایمیل شرکت:</strong> {{ offer.company_email }}
+        </p>
+        <p>
+            <strong>جزئیات شغل:</strong> {{ job.detail }}
+        </p>
+        <h3>درخواست‌های شغلی:</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>کارگر</th>
+                    <th>وضعیت</th>
+                    <th>لینک رزومه</th>
+                    <th>خلاصه AI</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for request in requests %}
+                    <tr>
+                        <td>{{ request.worker }}</td>
+                        <td>{{ request.status }}</td>
+                        <td>
+                            <a href="{{ request.resume.url }}">دانلود رزومه</a>
+                        </td>
+                        <td>{{ request.ai_summary }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

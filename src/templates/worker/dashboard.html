@@ -1,99 +1,77 @@
-{% extends "assets/body.html" %} {% block content %}
-<header class="p-4 bg-dark text-white">
-    <div
-        class="container d-flex flex-wrap justify-content-between align-items-center"
-    >
-        <ul class="nav me-auto">
-            <li class="nav-item">
-                <a
-                    href="{% url 'worker_dashboard' %}"
-                    class="nav-link link-light px-3 active"
-                    aria-current="page"
-                    >خانه</a
-                >
-            </li>
-            <li class="nav-item">
-                <a
-                    href="{% url 'worker_jobs' %}"
-                    class="nav-link link-light px-3"
-                    >شغل ها</a
-                >
-            </li>
-            <li class="nav-item">
-                <a
-                    href="{% url 'worker_settings' %}"
-                    class="nav-link link-light px-3"
-                    >تنظیمات</a
-                >
-            </li>
-        </ul>
-        <ul class="nav">
-            <li class="nav-item">
-                <a
-                    href="{% url 'worker_logout' %}"
-                    class="nav-link link-light px-3"
-                    >خروج</a
-                >
-            </li>
-        </ul>
-    </div>
-</header>
-
-<div class="container py-4">
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card bg-primary text-white shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">تعداد رزومه‌های ارسال شده</h5>
-                    <p class="card-text fs-4">{{ numOfUserSendResume }}</p>
+{% extends "assets/body.html" %}
+{% block content %}
+    {% include "worker/header.html" %}
+    <div class="container py-5">
+        <div class="row mb-4">
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card bg-light text-dark shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            وضعیت رزومه‌ها
+                            | تعداد ارسالی رزومه ها {{ num_of_user_send_resume }}
+                        </h5>
+                        <canvas id="statusChart" class="w-100"></canvas>
+                    </div>
+                </div>
+            </div>
+            <!-- مقالات با استایل تغییر یافته -->
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card bg-white text-dark h-100 shadow-sm border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">چگونه رزومه را بهبود دهیم</h5>
+                        <p class="card-text">اگر شما مانند من از همه جا رد شده‌اید، این لینک را ببینید:</p>
+                        <a href="https://www.coursera.org/articles/ways-to-enhance-your-resume"
+                           class="btn btn-primary">بهبود رزومه</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card bg-white text-dark h-100 shadow-sm border-primary">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">استفاده از هوش مصنوعی برای بهبود رزومه</h5>
+                        <p class="card-text">از این ابزارهای هوش مصنوعی برای بهبود رزومه استفاده کنید!</p>
+                        <a href="https://www.kickresume.com/en/ai-resume-rewrite/"
+                           class="btn btn-primary">لینک هوش مصنوعی</a>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+        const statusCtx = document.getElementById("statusChart").getContext("2d");
 
-    <div class="d-flex justify-content-center mb-4">
-        <a
-            href="{% url 'worker_jobs' %}"
-            class="btn btn-primary btn-lg text-white"
-            >ارسال رزومه بیشتر</a
-        >
-    </div>
+        const statusData = {
+            labels: ["قبول شده", "رد شده", "در انتظار"],
+            datasets: [
+                {
+                    label: "وضعیت رزومه‌ها",
+                    data: [{{ accepted }}, {{ rejected }}, {{ in_progress }}],
+                    backgroundColor: ["rgba(75, 192, 192, 0.6)", "rgba(255, 99, 132, 0.6)", "rgba(54, 162, 235, 0.6)"],
+                    borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)", "rgba(54, 162, 235, 1)"],
+                    borderWidth: 1,
+                },
+            ],
+        };
 
-    <div class="row">
-        <div class="col-md-6 mb-4">
-            <div class="card bg-dark text-white h-100 shadow-sm">
-                <div class="card-body">
-                    <h2 class="card-title">چگونه رزومه را بهبود دهیم</h2>
-                    <p class="card-text">
-                        اگر شما مانند من از همه جا رد شده‌اید، این لینک را
-                        ببینید:
-                    </p>
-                    <a
-                        href="https://www.coursera.org/articles/ways-to-enhance-your-resume"
-                        class="btn btn-outline-light"
-                        >بهبود رزومه</a
-                    >
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 mb-4">
-            <div class="card bg-dark text-white h-100 shadow-sm">
-                <div class="card-body">
-                    <h2 class="card-title">
-                        استفاده از هوش مصنوعی برای بهبود رزومه
-                    </h2>
-                    <p class="card-text">
-                        از این ابزارهای هوش مصنوعی برای بهبود رزومه استفاده
-                        کنید!
-                    </p>
-                    <a
-                        href="https://www.kickresume.com/en/ai-resume-rewrite/"
-                        class="btn btn-outline-light"
-                        >لینک هوش مصنوعی</a
-                    >
-                </div>
-            </div>
-        </div>
+        new Chart(statusCtx, {
+            type: "doughnut",
+            data: statusData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.label + ': ' + tooltipItem.raw + ' رزومه';
+                            }
+                        }
+                    }
+                },
+            },
+        });
+        </script>
     </div>
-</div>
 {% endblock content %}
