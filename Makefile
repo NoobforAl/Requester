@@ -25,11 +25,15 @@ export PYTHON
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f docker-compose.yaml -f docker-compose.dev.yaml
 COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitoring.yaml
+# Everything for local development: dev overrides + monitoring + traffic generator.
+# monitoring/dev-defaults.env gives dev-only METRICS_TOKEN / GRAFANA_ADMIN_PASSWORD;
+# .env (if present) is loaded after it and wins.
+COMPOSE_ALL := docker compose --env-file monitoring/dev-defaults.env $(if $(wildcard .env),--env-file .env) 	-f docker-compose.yaml -f docker-compose.dev.yaml -f docker-compose.monitoring.yaml --profile loadgen
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
         format lint typecheck test bench bench-check loadtest audit fix \
-        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down \
+        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down dev-all dev-all-down \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
 
 help: ## Show this help
@@ -116,8 +120,8 @@ clean-all: clean ## clean + remove the virtualenv and the SQLite dev database
 	rm -rf .venv $(SRC)/db.sqlite3
 
 # ------------------------------------------------------- docker / deploy
-docker-up: ## Build and start the dev stack (add the local LLM with COMPOSE_PROFILES=local-ai)
-	mkdir -p es_data mariadb_data redis_data ollama_data
+docker-up: ## Build and start the dev stack
+	mkdir -p es_data mariadb_data redis_data
 	$(COMPOSE_DEV) down
 	$(COMPOSE_DEV) up -d --build
 
@@ -126,7 +130,16 @@ docker-down: ## Stop the dev stack
 
 docker-clean: ## Stop the stack and delete its data folders (asks sudo)
 	$(COMPOSE_DEV) down
-	sudo rm -rf es_data mariadb_data redis_data ollama_data
+	sudo rm -rf es_data mariadb_data redis_data
+
+dev-all: ## Dev stack + Faker data + monitoring + live load (Grafana :3000 admin/admin, Jaeger :16686)
+	mkdir -p es_data mariadb_data redis_data
+	$(COMPOSE_ALL) up -d --build
+	@echo "App http://localhost:8000  Grafana http://localhost:3000  Prometheus http://localhost:9090  Jaeger http://localhost:16686"
+	@echo "Seeding runs on first start; the load generator starts once web is healthy. Stop with: make dev-all-down"
+
+dev-all-down: ## Stop the dev-all stack
+	$(COMPOSE_ALL) down
 
 monitoring-up: ## Start the stack with Prometheus, Grafana, Loki and exporters (needs METRICS_TOKEN, GRAFANA_ADMIN_PASSWORD)
 	mkdir -p es_data mariadb_data redis_data
