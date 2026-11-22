@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.9"
+          python-version: "3.12"
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q pkg-config libmariadb-dev
+          uv sync --frozen
+      - name: Lint
+        run: |
+          uv run ruff check .
+          uv run ruff format --check .
+      - name: Django checks
+        working-directory: src
+        env:
+          DJANGO_DEBUG: "true"
+        run: |
+          uv run python manage.py check
+          uv run python manage.py makemigrations --check --dry-run
+      - name: Tests (benchmarks run once, untimed)
+        run: uv run pytest
+
+  # Fails a pull request when a benchmark mean gets more than 20% slower than on the
+  # base commit. Both runs happen in this job, on the same runner, so the numbers
+  # are comparable; no machine-specific baseline is committed.
+  benchmarks:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+      BENCH: >-
+        src/tests/benchmarks --benchmark-enable --benchmark-only
+        --benchmark-min-rounds=20 --benchmark-disable-gc
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.9"
+          python-version: "3.12"
+      - name: System packages
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q pkg-config libmariadb-dev
+      - name: Baseline on the base commit
+        id: base
+        run: |
+          git checkout --quiet "${{ github.event.pull_request.base.sha }}"
+          if [ ! -d src/tests/benchmarks ] || ! grep -q pytest-benchmark pyproject.toml; then
+            echo "No benchmarks on the base commit: gate skipped."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          uv sync --frozen
+          # .benchmarks/ is git-ignored, so the saved baseline survives the checkout below.
+          uv run pytest $BENCH --benchmark-save=baseline
+      - name: Compare HEAD with the baseline
+        run: |
+          git checkout --quiet "${{ github.event.pull_request.head.sha }}"
+          uv sync --frozen
+          if [ "${{ steps.base.outputs.skip }}" = "true" ]; then
+            uv run pytest $BENCH
+          else
+            uv run pytest $BENCH --benchmark-compare=0001 --benchmark-compare-fail=median:20%
+          fi
