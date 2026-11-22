@@ -174,13 +174,10 @@ Dockerfile
 # remove media files
 src/media/
 README.md
-uv.lock
-pyproject.toml
 LICENSE
 .gitignore
 .git
 .idea
-.python-version
 
 # database val
 es_data

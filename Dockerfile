@@ -1,7 +1,7 @@
-FROM python:3.10-slim
+FROM python:3.12-slim
 
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
@@ -13,7 +13,15 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /app/
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
+
+# Keep the virtualenv outside /app, because docker-compose bind-mounts the
+# project directory over /app.
+ENV UV_PROJECT_ENVIRONMENT=/opt/venv
+ENV UV_LINK_MODE=copy
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY pyproject.toml uv.lock .python-version /app/
+RUN uv sync --frozen --no-dev
 
 EXPOSE 8000

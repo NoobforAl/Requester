@@ -19,8 +19,7 @@ run:
 	docker-compose down
 
 	@echo "Running docker compose"
-	rm -f ./requirement.txt ./src/db.sqlite3
-	pipenv requirements > requirements.txt 
+	rm -f ./src/db.sqlite3
 	docker-compose up -d --build	
 
 deploy: create_migrate create_makemigrations create_es_fields insert_mock_data create_super_user

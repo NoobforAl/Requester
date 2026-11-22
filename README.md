@@ -98,8 +98,8 @@ To run and develop this project, you will need the following tools:
 
 - **Docker**: Used for containerizing the application and its dependencies.
 - **Docker Compose**: Used to define and run multi-container Docker applications.
-- **Python 3.10**: The programming language used for the project.
-- **pipenv**: Used for package manager for python.
+- **Python 3.12**: The programming language used for the project.
+- **uv**: Used as the Python package and project manager (`uv sync` installs dependencies from `pyproject.toml` / `uv.lock`).
 - **Django**: The web framework used to build the application.
 - **MySQL**: The database used to store application data.
 - **Redis**: Used for caching and message brokering.
