@@ -21,6 +21,17 @@ dependencies = [
     "jdatetime>=5.0",
     "weasyprint>=66",
     "pdfplumber>=0.11",
+    "structlog==26.1.0",
+    "django-prometheus==2.4.0",
+    "sentry-sdk==2.75.0",
+    "opentelemetry-api==1.45.2",
+    "opentelemetry-sdk==1.45.2",
+    "opentelemetry-exporter-otlp-proto-http==1.45.2",
+    "opentelemetry-instrumentation-django==0.66b2",
+    "opentelemetry-instrumentation-mysqlclient==0.66b2",
+    "opentelemetry-instrumentation-redis==0.66b2",
+    "opentelemetry-instrumentation-httpx==0.66b2",
+    "opentelemetry-instrumentation-celery==0.66b2",
 ]
 
 [dependency-groups]
@@ -42,10 +53,16 @@ dev = [
     "vulture>=2.13",
     "pip-audit>=2.7",
     "polib>=1.2.0",
+    "pytest-benchmark==5.3.1",
+    "django-debug-toolbar==8.0.0",
+    "django-silk==5.6.0",
 ]
 # Needs the native Graphviz headers (graphviz-dev); install with `uv sync --group diagram`.
 diagram = [
     "pygraphviz>=1.14",
+]
+loadtest = [
+    "locust==2.47.0",
 ]
 
 [tool.uv]
@@ -116,7 +133,7 @@ DJANGO_SETTINGS_MODULE = "requester.settings_test"
 pythonpath = ["src"]
 testpaths = ["src"]
 python_files = ["tests.py", "test_*.py"]
-addopts = "-q"
+addopts = "-q --benchmark-disable"
 filterwarnings = [
     "ignore:No directory at.*staticfiles:UserWarning",
 ]
