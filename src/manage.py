@@ -9,6 +9,12 @@ def main():
     """Run administrative tasks."""
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "requester.settings")
 
+    # The dev server does not import wsgi.py's application: start tracing here.
+    if len(sys.argv) > 1 and sys.argv[1] == "runserver":
+        from observability.tracing import setup_tracing
+
+        setup_tracing()
+
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

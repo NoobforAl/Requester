@@ -357,3 +357,8 @@ if not DEBUG:
     SECURE_REFERRER_POLICY = "same-origin"
     if env_bool("BEHIND_PROXY"):
         SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+# Error reporting: off while SENTRY_DSN is empty (see observability/sentry.py).
+from observability.sentry import setup_sentry  # noqa: E402
+
+setup_sentry()

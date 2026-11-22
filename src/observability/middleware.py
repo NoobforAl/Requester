@@ -64,7 +64,10 @@ def _user_id(request: HttpRequest) -> int | None:
 def _route(request: HttpRequest) -> str:
     match = getattr(request, "resolver_match", None)
     route = getattr(match, "route", None) if match is not None else None
-    return route or UNMATCHED_ROUTE
+    if route is None:
+        return UNMATCHED_ROUTE
+    # The site root has the empty route ""; log it as "/" so it stays readable.
+    return route or "/"
 
 
 class RequestLogMiddleware:

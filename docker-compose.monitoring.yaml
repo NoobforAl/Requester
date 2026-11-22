@@ -7,7 +7,7 @@
 # 127.0.0.1 only; nothing here should be exposed publicly.
 #
 #   Grafana     http://localhost:3000    Prometheus  http://localhost:9090
-#   Loki        http://localhost:3100    (the Jaeger UI is added with tracing)
+#   Loki        http://localhost:3100    Jaeger      http://localhost:16686
 
 services:
     # --- the app: turn the instrumentation on ---------------------------------
@@ -16,12 +16,61 @@ services:
             PROMETHEUS_ENABLED: "true"
             METRICS_TOKEN: "${METRICS_TOKEN:?set METRICS_TOKEN in .env}"
             PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus-multiproc
+            OTEL_ENABLED: "true"
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+            OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
         tmpfs:
             - /tmp/prometheus-multiproc # fresh on every container start
+        # Lets the load generator wait until migrations and seeding are done.
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8000/ || exit 1"]
+            interval: 15s
+            timeout: 5s
+            retries: 5
+            start_period: 10m
+
+    # --- optional traffic for dev dashboards (profile "loadgen", see `make dev-all`) ---
+    # Logs in with the seed_demo_data accounts, which exist only on a dev stack
+    # (docker-compose.dev.yaml). Never point this at a real deployment.
+    loadgen:
+        profiles: ["loadgen"]
+        image: locustio/locust:2.47.0
+        container_name: requester_loadgen
+        restart: unless-stopped
+        command:
+            - "-f"
+            - "/mnt/loadtests/locustfile.py"
+            - "--host=http://web:8000"
+            - "--headless"
+            - "--users=${LOADGEN_USERS:-5}"
+            - "--spawn-rate=1"
+            - "--only-summary"
+        environment:
+            LOADTEST_ALLOW_HOST: "web"
+            LOADTEST_CANDIDATE_USERNAME: "worker1"
+            LOADTEST_CANDIDATE_PASSWORD: "password123" # public dev-only demo password
+            LOADTEST_EMPLOYER_USERNAME: "alice"
+            LOADTEST_EMPLOYER_PASSWORD: "password123"
+        volumes:
+            - ./loadtests:/mnt/loadtests:ro
+        depends_on:
+            web:
+                condition: service_healthy
+
+    tasks:
+        environment:
+            OTEL_ENABLED: "true"
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+            OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
+    scheduler:
+        environment:
+            OTEL_ENABLED: "true"
+            OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+            OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
 
     # --- metrics -------------------------------------------------------------
     prometheus:
-        image: prom/prometheus:v3.5.0
+        image: prom/prometheus:v3.16.0
         container_name: requester_prometheus
         restart: unless-stopped
         command:
@@ -40,7 +89,7 @@ services:
               target: /etc/prometheus/metrics_token
 
     grafana:
-        image: grafana/grafana:12.1.1
+        image: grafana/grafana:13.3.1
         container_name: requester_grafana
         restart: unless-stopped
         ports:
@@ -57,9 +106,10 @@ services:
         depends_on:
             - prometheus
             - loki
+            - jaeger
 
     mysqld-exporter:
-        image: prom/mysqld-exporter:v0.17.2
+        image: prom/mysqld-exporter:v0.21.0
         container_name: requester_mysqld_exporter
         restart: unless-stopped
         command: ["--mysqld.address=db:3306", "--mysqld.username=${DB_USER:-requester}"]
@@ -70,7 +120,7 @@ services:
                 condition: service_healthy
 
     redis-exporter:
-        image: oliver006/redis_exporter:v1.74.0
+        image: oliver006/redis_exporter:v1.98.0
         container_name: requester_redis_exporter
         restart: unless-stopped
         environment:
@@ -81,7 +131,7 @@ services:
                 condition: service_healthy
 
     celery-exporter:
-        image: danihodovic/celery-exporter:0.11.1
+        image: danihodovic/celery-exporter:0.12.2
         container_name: requester_celery_exporter
         restart: unless-stopped
         command:
@@ -93,7 +143,7 @@ services:
 
     # --- logs: docker stdout -> Vector -> Loki -> Grafana ----------------------
     loki:
-        image: grafana/loki:3.5.0
+        image: grafana/loki:3.7.10
         container_name: requester_loki
         restart: unless-stopped
         command: ["-config.file=/etc/loki/loki.yaml"]
@@ -104,7 +154,7 @@ services:
             - loki_data:/loki
 
     vector:
-        image: timberio/vector:0.46.1-alpine
+        image: timberio/vector:0.62.0-alpine
         container_name: requester_vector
         restart: unless-stopped
         command: ["--config", "/etc/vector/vector.yaml"]
@@ -114,6 +164,28 @@ services:
             - vector_data:/var/lib/vector
         depends_on:
             - loki
+
+    # --- traces: app -> OTel Collector -> Jaeger -> Grafana ---------------------
+    otel-collector:
+        image: otel/opentelemetry-collector:0.165.0
+        container_name: requester_otel_collector
+        restart: unless-stopped
+        command: ["--config=/etc/otelcol/config.yaml"]
+        volumes:
+            - ./monitoring/otel/collector.yaml:/etc/otelcol/config.yaml:ro
+        # 4317/4318 stay on the compose network (no host ports).
+        depends_on:
+            - jaeger
+
+    jaeger:
+        image: jaegertracing/jaeger:2.20.0 # newest that works with Grafana 13: 2.21+ drop the /api/services API its datasource uses
+        container_name: requester_jaeger
+        restart: unless-stopped
+        command: ["--config=/etc/jaeger/config.yaml"]
+        volumes:
+            - ./monitoring/otel/jaeger.yaml:/etc/jaeger/config.yaml:ro
+        ports:
+            - "127.0.0.1:16686:16686" # UI + query API; OTLP is internal only
 
 secrets:
     metrics_token:

@@ -1,0 +1,43 @@
+# OpenTelemetry Collector: the app (web/tasks/scheduler) sends OTLP here, the
+# collector batches and forwards to Jaeger. Ports stay on the compose network:
+#   4317 OTLP/gRPC, 4318 OTLP/HTTP (the app uses HTTP), 13133 health check.
+extensions:
+  health_check:
+    endpoint: 0.0.0.0:13133
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  # First in the pipeline: refuse data before the container runs out of memory.
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 400
+    spike_limit_mib: 100
+  batch:
+    send_batch_size: 1024
+    timeout: 5s
+
+exporters:
+  # "otlp_grpc" is the current name of the OTLP/gRPC exporter ("otlp" is a
+  # deprecated alias since collector 0.14x).
+  otlp_grpc/jaeger:
+    endpoint: jaeger:4317
+    tls:
+      insecure: true # plain gRPC inside the compose network
+
+service:
+  extensions: [health_check]
+  telemetry:
+    logs:
+      encoding: json
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlp_grpc/jaeger]

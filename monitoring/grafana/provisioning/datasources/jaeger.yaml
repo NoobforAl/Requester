@@ -1,0 +1,21 @@
+# Jaeger datasource (uid "jaeger"; the Loki datasource links trace_id here).
+# tracesToLogsV2 jumps from a span to its log lines in Loki (uid "loki").
+# "$$" escapes "$" in Grafana provisioning files.
+apiVersion: 1
+
+datasources:
+  - name: Jaeger
+    uid: jaeger
+    type: jaeger
+    access: proxy
+    url: http://jaeger:16686
+    editable: false
+    jsonData:
+      tracesToLogsV2:
+        datasourceUid: loki
+        spanStartTimeShift: "-5m"
+        spanEndTimeShift: "5m"
+        filterByTraceID: true
+        filterBySpanID: false
+        customQuery: true
+        query: '{service=~".+"} | json | trace_id="$${__trace.traceId}"'
