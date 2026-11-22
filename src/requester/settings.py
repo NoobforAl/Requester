@@ -5,6 +5,7 @@ With no database variables set the project falls back to SQLite, a local-memory
 cache and eager Celery tasks, so `make dev` works without any service running.
 """
 
+import importlib.util
 import os
 from pathlib import Path
 
@@ -239,6 +240,34 @@ if PROMETHEUS_ENABLED:
         )
     # The Redis cache stays on Django's RedisCache: the django-prometheus Redis
     # wrapper needs django-redis. Redis numbers come from redis-exporter.
+
+# Dev-only profilers: on only with DEBUG *and* the env flag *and* the package
+# installed (the production image is built without the dev group, so never there).
+DEBUG_TOOLBAR = (
+    DEBUG
+    and env_bool("DEBUG_TOOLBAR")
+    and importlib.util.find_spec("debug_toolbar") is not None
+)
+SILK_ENABLED = (
+    DEBUG and env_bool("SILK_ENABLED") and importlib.util.find_spec("silk") is not None
+)
+if DEBUG_TOOLBAR:
+    INSTALLED_APPS.append("debug_toolbar")
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.middleware.common.CommonMiddleware"),
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    )
+    INTERNAL_IPS = ["127.0.0.1", "::1"]
+if SILK_ENABLED:
+    # Silk stores profiles in its own tables: run `migrate` after turning it on.
+    INSTALLED_APPS.append("silk")
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware") + 1,
+        "silk.middleware.SilkyMiddleware",
+    )
+    SILKY_PYTHON_PROFILER = False
+    SILKY_AUTHENTICATION = True
+    SILKY_AUTHORISATION = True  # staff only
 
 ROOT_URLCONF = "requester.urls"
 

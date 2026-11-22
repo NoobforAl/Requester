@@ -13,6 +13,13 @@ for _name in (
     "LLAMA_SERVER_URL",
     "OPENROUTER_API_KEY",
     "AI_PROVIDER",
+    # Observability and dev tools stay off in tests whatever the shell has set.
+    "DEBUG_TOOLBAR",
+    "SILK_ENABLED",
+    "PROMETHEUS_ENABLED",
+    "PROMETHEUS_MULTIPROC_DIR",
+    "OTEL_ENABLED",
+    "SENTRY_DSN",
 ):
     os.environ.pop(_name, None)
 

@@ -32,3 +32,9 @@ urlpatterns = [
 if settings.PROMETHEUS_ENABLED:
     # Token-protected (404 otherwise); scraped by Prometheus on the internal network.
     urlpatterns.append(path("metrics", metrics_view, name="prometheus-metrics"))
+
+# Dev-only profilers (see settings: DEBUG plus an env flag).
+if getattr(settings, "DEBUG_TOOLBAR", False):
+    urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
+if getattr(settings, "SILK_ENABLED", False):
+    urlpatterns.append(path("silk/", include("silk.urls", namespace="silk")))
