@@ -182,3 +182,6 @@ ollama_data
 
 # pytest-benchmark results (baselines are produced in CI, not committed)
 .benchmarks/
+
+# Locust load test output
+loadtests/results/

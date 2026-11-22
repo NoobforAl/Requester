@@ -28,7 +28,7 @@ COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitorin
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed migrate migrations superuser shell check \
-        format lint typecheck test audit fix \
+        format lint typecheck test bench bench-check loadtest audit fix \
         clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
 
@@ -86,6 +86,15 @@ typecheck: ## Static type check (mypy + django-stubs)
 
 test: ## Run the test suite
 	$(RUN) pytest
+
+bench: ## Run the benchmarks for real and save the result under .benchmarks/
+	$(RUN) pytest src/tests/benchmarks --benchmark-enable --benchmark-only --benchmark-autosave
+
+bench-check: ## Compare with the last saved run; fail if any median is 20% slower
+	$(RUN) pytest src/tests/benchmarks --benchmark-enable --benchmark-only --benchmark-compare --benchmark-compare-fail=median:20%
+
+loadtest: ## Headless Locust smoke against the local dev server (needs LOADTEST_* env vars; never production)
+	uv run --group loadtest locust -f loadtests/locustfile.py --host http://$(HOST):$(PORT) --headless -u 10 -r 2 -t 1m --csv loadtests/results/local
 
 audit: ## Scan dependencies for known vulnerabilities (needs network)
 	$(RUN) pip-audit
