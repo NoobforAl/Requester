@@ -1,47 +1,16 @@
-{% extends "assets/body.html" %}
+{% extends "offer/base.html" %}
+{% block title %}تنظیمات شرکت | درخواستی{% endblock title %}
 {% block content %}
-    {% include "offer/header.html" %}
-    <div class="container mt-5">
-        <h2 class="mb-4 text-center text-primary fw-bold">تنظیمات</h2>
-        <form method="POST"
-              action="{% url 'offer_settings' %}"
-              class="bg-white p-5 rounded shadow-sm border">
-            {% csrf_token %} {{ form.non_field_errors }}
-            <div class="mb-4">
-                <label for="id_company_name" class="form-label fw-bold">نام شرکت</label>
-                {{ form.company_name }}
-                {% if form.company_name.errors %}
-                    <div class="alert alert-danger mt-2 p-2">{{ form.company_name.errors }}</div>
-                {% endif %}
-            </div>
-            <div class="mb-4">
-                <label for="id_company_email" class="form-label fw-bold">ایمیل شرکت</label>
-                {{ form.company_email }}
-                {% if form.company_email.errors %}
-                    <div class="alert alert-danger mt-2 p-2">{{ form.company_email.errors }}</div>
-                {% endif %}
-            </div>
-            <div class="mb-4">
-                <label for="id_detail" class="form-label fw-bold">جزئیات</label>
-                {{ form.detail }}
-                {% if form.detail.errors %}<div class="alert alert-danger mt-2 p-2">{{ form.detail.errors }}</div>{% endif %}
-            </div>
-            <div>
-                {% if messages %}
-                    {% for message in messages %}
-                        {% if message.tags == "error" %}
-                            <div class="alert alert-danger mt-3 p-2">{{ message }}</div>
-                        {% elif message.tags == "success" %}
-                            <div class="alert alert-success mt-3 p-2">{{ message }}</div>
-                        {% else %}
-                            <div class="alert alert-warning mt-3 p-2">{{ message }}</div>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-            </div>
-            <div class="text-center mt-4">
-                <button type="submit" class="btn btn-primary px-5 py-2 shadow">به‌روزرسانی</button>
-            </div>
-        </form>
+    <div class="page-head">
+        <h1>تنظیمات شرکت</h1>
+        <p>اطلاعاتی که کارجویان کنار آگهی‌های شما می‌بینند.</p>
     </div>
+    <form class="panel auth--wide" method="post" action="{% url 'offer_settings' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% include "assets/field.html" with field=form.company_name %}
+        {% include "assets/field.html" with field=form.company_email %}
+        {% include "assets/field.html" with field=form.detail %}
+        <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+    </form>
 {% endblock content %}

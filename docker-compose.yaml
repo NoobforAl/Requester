@@ -1,4 +1,32 @@
-version: "3.8"
+x-app-env: &app-env
+    ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1}"
+    SECRET_KEY: "${SECRET_KEY:-}" # required: Django refuses to start without it when DEBUG is off
+    DJANGO_DEBUG: "${DJANGO_DEBUG:-false}"
+    DB_HOST: "mariadb"
+    DB_PORT: 3306
+    DB_USER: "myuser"
+    DB_PASSWORD: "mypassword"
+    DB_NAME: "mydatabase"
+    REDIS_URL: "redis://:yourpassword@redis:6379/1"
+    EMAIL_HOST: "mailserver"
+    EMAIL_PORT: 1025
+    EMAIL_HOST_USER: ""
+    EMAIL_HOST_PASSWORD: ""
+    EMAIL_USE_TLS: False
+    ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    ELASTICSEARCH_USERNAME: ""
+    ELASTICSEARCH_PASSWORD: ""
+    ELASTICSEARCH_PORT: 9200
+    CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
+    CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
+    CELERY_ACCEPT_CONTENT: '["json"]'
+    CELERY_TASK_SERIALIZER: "json"
+    CELERY_RESULT_SERIALIZER: "json"
+    CELERY_TIMEZONE: "UTC"
+    LLAMA_SERVER_URL: "http://ollama:11434"
+    LLAMA_MODEL: "llama3.2"
+    DJANGO_SUPERUSER_USERNAME: "${DJANGO_SUPERUSER_USERNAME:-admin}"
+    DJANGO_SUPERUSER_PASSWORD: "${DJANGO_SUPERUSER_PASSWORD:-}"
 
 services:
     web:
@@ -7,40 +35,14 @@ services:
             dockerfile: Dockerfile
         container_name: django_app
         restart: unless-stopped
-        command: ["make", "PYTHON=python", "deploy"]
+        command: ["make", "RUN=", "deploy"]
         volumes:
             - .:/app
         ports:
             - "8000:8000"
-        environment:
-            ALLOWED_HOSTS: "*"
-            SECRET_KEY: "joajdfoajsdoi314073249hvo12391473y#$krf982u3"
-            DJANGO_DEBUG: True
-            MYSQL_HOST: "mysql"
-            MYSQL_PORT: 3306
-            MYSQL_USER: "myuser"
-            MYSQL_PASSWORD: "mypassword"
-            MYSQL_DB: "mydatabase"
-            REDIS_URL: "redis://:yourpassword@redis:6379/1"
-            EMAIL_HOST: "mailserver"
-            EMAIL_PORT: 1025
-            EMAIL_HOST_USER: ""
-            EMAIL_HOST_PASSWORD: ""
-            EMAIL_USE_TLS: False
-            ELASTICSEARCH_URL: "http://elasticsearch:9200"
-            ELASTICSEARCH_USERNAME: ""
-            ELASTICSEARCH_PASSWORD: ""
-            ELASTICSEARCH_PORT: 9200
-            CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
-            CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
-            CELERY_ACCEPT_CONTENT: '["json"]'
-            CELERY_TASK_SERIALIZER: "json"
-            CELERY_RESULT_SERIALIZER: "json"
-            CELERY_TIMEZONE: "UTC"
-            LLAMA_SERVER_URL: "http://ollama:11434"
-            LLAMA_MODEL: "llama3.2"
+        environment: *app-env
         depends_on:
-            mysql:
+            mariadb:
                 condition: service_healthy
             redis:
                 condition: service_healthy
@@ -54,38 +56,12 @@ services:
             dockerfile: Dockerfile
         container_name: celery_worker
         restart: unless-stopped
-        command: ["make", "PYTHON=python", "setup_celery"]
+        command: ["make", "RUN=", "setup_celery"]
         volumes:
             - .:/app
-        environment:
-            ALLOWED_HOSTS: "*"
-            SECRET_KEY: "joajdfoajsdoi314073249hvo12391473y#$krf982u3"
-            DJANGO_DEBUG: True
-            MYSQL_HOST: "mysql"
-            MYSQL_PORT: 3306
-            MYSQL_USER: "myuser"
-            MYSQL_PASSWORD: "mypassword"
-            MYSQL_DB: "mydatabase"
-            REDIS_URL: "redis://:yourpassword@redis:6379/1"
-            EMAIL_HOST: "mailserver"
-            EMAIL_PORT: 1025
-            EMAIL_HOST_USER: ""
-            EMAIL_HOST_PASSWORD: ""
-            EMAIL_USE_TLS: False
-            ELASTICSEARCH_URL: "http://elasticsearch:9200"
-            ELASTICSEARCH_USERNAME: ""
-            ELASTICSEARCH_PASSWORD: ""
-            ELASTICSEARCH_PORT: 9200
-            CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
-            CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
-            CELERY_ACCEPT_CONTENT: '["json"]'
-            CELERY_TASK_SERIALIZER: "json"
-            CELERY_RESULT_SERIALIZER: "json"
-            CELERY_TIMEZONE: "UTC"
-            LLAMA_SERVER_URL: "http://ollama:11434"
-            LLAMA_MODEL: "llama3.2"
+        environment: *app-env
         depends_on:
-            mysql:
+            mariadb:
                 condition: service_healthy
             redis:
                 condition: service_healthy
@@ -143,28 +119,24 @@ services:
             timeout: 10s
             retries: 3
 
-    mysql:
-        image: mysql:8.0.37-debian
-        container_name: mysql_server
+    mariadb:
+        image: mariadb:11.4
+        container_name: mariadb_server
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: mydatabase
-            MYSQL_USER: myuser
-            MYSQL_PASSWORD: mypassword
-            MYSQL_ROOT_PASSWORD: rootpassword
+            MARIADB_DATABASE: mydatabase
+            MARIADB_USER: myuser
+            MARIADB_PASSWORD: mypassword
+            MARIADB_ROOT_PASSWORD: rootpassword
         ports:
             - "3306:3306"
         volumes:
-            - ./mysql_data:/var/lib/mysql
+            - ./mariadb_data:/var/lib/mysql
         healthcheck:
-            test:
-                [
-                    "CMD-SHELL",
-                    "mysqladmin ping -h localhost -u root --password=rootpassword || exit 1",
-                ]
-            interval: 1m
+            test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+            interval: 30s
             timeout: 10s
-            retries: 3
+            retries: 5
 
     redis:
         image: redis:7.2.4

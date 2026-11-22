@@ -1,15 +1,12 @@
-{% extends "assets/body.html" %} {% block content %}
-<div
-    class="container d-flex flex-column justify-content-center align-items-center min-vh-100 text-center"
->
-    <div class="error-page">
-        <h1 class="display-1 fw-bold text-danger">404</h1>
-        <h4 class="text-secondary mb-4">صفحه مورد نظر پیدا نشد!</h4>
-        <p class="text-muted mb-4">
-            متاسفانه صفحه‌ای که به دنبال آن هستید در دسترس نمی‌باشد. لطفا از
-            لینک زیر استفاده کنید تا به صفحه اصلی بازگردید.
+{% extends "assets/body.html" %}
+{% block title %}صفحه پیدا نشد | درخواستی{% endblock title %}
+{% block content %}
+    <div class="lost">
+        <p class="lost__code" aria-hidden="true">404</p>
+        <h1>این صفحه پیدا نشد</h1>
+        <p class="muted">
+            نشانی را بررسی کنید، یا از صفحه اصلی دوباره شروع کنید. ممکن است آگهی یا صفحه‌ای که دنبالش بودید حذف شده باشد.
         </p>
-        <a href="/" class="btn btn-primary btn-lg px-5">بازگشت به صفحه اصلی</a>
+        <a class="btn btn-primary" href="/">رفتن به صفحه اصلی</a>
     </div>
-</div>
 {% endblock content %}

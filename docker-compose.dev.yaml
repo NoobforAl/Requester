@@ -1,0 +1,16 @@
+# Development overrides: `make docker-up` uses this together with docker-compose.yaml.
+# DEBUG on, Django dev server, mock data and a known admin login (admin / admin).
+# Never use this file for a real deployment.
+x-dev-env: &dev-env
+    DJANGO_DEBUG: "true"
+    SECRET_KEY: "dev-only-change-me"
+    ALLOWED_HOSTS: "*"
+    DJANGO_SUPERUSER_USERNAME: "admin"
+    DJANGO_SUPERUSER_PASSWORD: "admin"
+
+services:
+    web:
+        command: ["make", "RUN=", "deploy-dev"]
+        environment: *dev-env
+    celery:
+        environment: *dev-env

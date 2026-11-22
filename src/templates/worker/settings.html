@@ -1,41 +1,16 @@
-{% extends "assets/body.html" %}
+{% extends "worker/base.html" %}
+{% block title %}تنظیمات حساب | درخواستی{% endblock title %}
 {% block content %}
-    {% include "worker/header.html" %}
-    <div class="container mt-4">
-        <h2 class="mb-4 text-center">تنظیمات</h2>
-        <form method="POST"
-              action="{% url 'worker_settings' %}"
-              class="bg-white p-4 rounded shadow">
-            {% csrf_token %} {{ form.non_field_errors }}
-            <div class="mb-3">
-                <label for="{{ form.first_name.id_for_label }}" class="form-label">{{ form.first_name.label }}</label>
-                {{ form.first_name }}
-                {% if form.first_name.errors %}<div class="text-danger">{{ form.first_name.errors }}</div>{% endif %}
-            </div>
-            <div class="mb-3">
-                <label for="{{ form.last_name.id_for_label }}" class="form-label">{{ form.last_name.label }}</label>
-                {{ form.last_name }}
-                {% if form.last_name.errors %}<div class="text-danger">{{ form.last_name.errors }}</div>{% endif %}
-            </div>
-            <div class="mb-3">
-                <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
-                {{ form.email }}
-                {% if form.email.errors %}<div class="text-danger">{{ form.email.errors }}</div>{% endif %}
-            </div>
-            {% if messages %}
-                {% for message in messages %}
-                    {% if message.tags == "error" %}
-                        <div class="alert alert-danger mt-2">{{ message }}</div>
-                    {% elif message.tags == "success" %}
-                        <div class="alert alert-success mt-2">{{ message }}</div>
-                    {% else %}
-                        <div class="alert alert-warn mt-2">{{ message }}</div>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-            <div class="text-center mt-3">
-                <button type="submit" class="btn btn-primary">به‌روزرسانی</button>
-            </div>
-        </form>
+    <div class="page-head">
+        <h1>تنظیمات حساب</h1>
+        <p>نام و ایمیلی که کارفرمایان همراه رزومه شما می‌بینند.</p>
     </div>
+    <form class="panel auth--wide" method="post" action="{% url 'worker_settings' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% include "assets/field.html" with field=form.first_name %}
+        {% include "assets/field.html" with field=form.last_name %}
+        {% include "assets/field.html" with field=form.email %}
+        <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+    </form>
 {% endblock content %}

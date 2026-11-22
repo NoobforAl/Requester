@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python manage.py insert_jobs
+${PYTHON:-python} manage.py insert_jobs

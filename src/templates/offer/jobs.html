@@ -1,115 +1,73 @@
-{% extends "assets/body.html" %}
+{% extends "offer/base.html" %}
+{% load filters %}
+{% block title %}شغل‌های من | درخواستی{% endblock title %}
 {% block content %}
-    {% include "offer/header.html" %}
-    <div class="container py-4">
-        <!-- Jobs List Section -->
-        <div class="card shadow-sm mb-5">
-            <div class="card-header bg-primary text-white text-center">
-                <h2 class="mb-0">لیست شغل‌ها</h2>
-            </div>
-            <div class="card-body p-0">
-                <table class="table table-hover table-striped mb-0">
-                    <thead class="table-dark">
-                        <tr>
-                            <th scope="col">نام شغل</th>
-                            <th scope="col">جزئیات</th>
-                            <th scope="col">برچسب‌ها</th>
-                            <th scope="col">عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for job in jobs %}
-                            <tr>
-                                <td class="align-middle">{{ job.job_name }}</td>
-                                <td class="align-middle">{{ job.detail }}</td>
-                                <td class="align-middle">
-                                    {% for tag in job.tags.all %}<span class="badge bg-info text-dark">{{ tag.name }}</span>{% endfor %}
-                                </td>
-                                <td class="align-middle">
-                                    <div class="d-flex gap-2">
-                                        <a href="{% url 'offer_jobs' %}{{ job.pk }}/"
-                                           class="btn btn-sm btn-outline-info">مشاهده رزومه‌ها</a>
-                                        <form action="{% url 'offer_jobs' %}{{ job.pk }}/"
-                                              method="post"
-                                              style="display: inline">
-                                            {% csrf_token %}
-                                            <button type="submit"
-                                                    class="btn btn-sm btn-outline-danger"
-                                                    onclick="return confirm('آیا مطمئن هستید که می‌خواهید این شغل را حذف کنید؟');">
-                                                حذف
-                                            </button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                <!-- Pagination -->
-                <nav class="mt-4">
-                    <ul class="pagination justify-content-center">
-                        {% if jobs.has_previous %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ jobs.previous_page_number }}">قبلی</a>
-                            </li>
-                        {% endif %}
-                        {% for page_num in jobs.paginator.page_range %}
-                            <li class="page-item {% if page_num == jobs.number %}active{% endif %}">
-                                <a class="page-link" href="?page={{ page_num }}">{{ page_num }}</a>
-                            </li>
-                        {% endfor %}
-                        {% if jobs.has_next %}
-                            <li class="page-item">
-                                <a class="page-link" href="?page={{ jobs.next_page_number }}">بعدی</a>
-                            </li>
-                        {% endif %}
-                    </ul>
-                </nav>
-            </div>
-        </div>
-        <div class="card shadow-sm">
-            <div class="card-header bg-success text-white text-center">
-                <h2 class="mb-0">ایجاد شغل جدید</h2>
-            </div>
-            <div class="card-body">
-                <form action="{% url 'offer_jobs' %}"
-                      method="post"
-                      class="bg-light p-4 rounded">
-                    {% csrf_token %} {{ form.non_field_errors }}
-                    <div class="form-group mb-3">
-                        <label for="job_name" class="form-label fw-bold">اسم شغل</label>
-                        {{ form.job_name }}
-                        {% if form.job_name.errors %}<div class="alert alert-danger mt-2">{{ form.job_name.errors }}</div>{% endif %}
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="detail" class="form-label fw-bold">توضیحات</label>
-                        {{ form.detail }}
-                        {% if form.detail.errors %}<div class="alert alert-danger mt-2">{{ form.detail.errors }}</div>{% endif %}
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="tags" class="form-label fw-bold">برچسب‌ها</label>
-                        <select multiple class="form-select" name="tags" id="tags">
-                            {% for tag in form.tags.field.queryset %}
-                                <option value="{{ tag.id }}"
-                                        {% if tag in form.tags.value %}selected{% endif %}>{{ tag.name }}</option>
-                            {% endfor %}
-                        </select>
-                        <small class="form-text text-muted">برای انتخاب چندین برچسب، از کلید Ctrl یا Shift استفاده کنید.</small>
-                        {% if form.tag.errors %}<div class="alert alert-danger mt-2">{{ form.tag.errors }}</div>{% endif %}
-                    </div>
-                    <button type="submit" class="btn btn-success w-100">ایجاد شغل</button>
-                </form>
-            </div>
-        </div>
-        <!-- Messages Section -->
-        {% if messages %}
-            <div class="mt-4">
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'error' %}alert-danger {% elif message.tags == 'info' %}alert-info {% else %}alert-success{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
+    <div class="page-head">
+        <h1>شغل‌های ثبت‌شده</h1>
+        <a class="btn btn-primary" href="#new-job">ثبت شغل جدید</a>
     </div>
+    {% if jobs %}
+        <ul class="job-list">
+            {% for job in jobs %}
+                <li class="job">
+                    <div>
+                        <h2 class="job__title">
+                            <a href="{% url 'offer_job' job.pk %}">{{ job.job_name }}</a>
+                        </h2>
+                        <p class="job__meta">ثبت‌شده در {{ job.created_at|to_jalali }}</p>
+                        <p class="job__summary">{{ job.detail|truncatechars:160 }}</p>
+                        {% if job.tags.all %}
+                            <div class="tags">
+                                {% for tag in job.tags.all %}<span class="tag">{{ tag.name }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="job__actions">
+                        <a class="btn btn-sm" href="{% url 'offer_job' job.pk %}">دیدن درخواست‌ها</a>
+                        <form action="{% url 'offer_job_delete' job.pk %}"
+                              method="post"
+                              data-confirm="این شغل و همه درخواست‌های آن حذف می‌شود. ادامه می‌دهید؟">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">حذف شغل</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        {% include "assets/pagination.html" with page=jobs param="page" %}
+    {% else %}
+        <p class="empty">هنوز شغلی ثبت نکرده‌اید. فرم زیر را پر کنید تا اولین آگهی شما منتشر شود.</p>
+    {% endif %}
+    <section class="section" id="new-job" aria-labelledby="new-job-title">
+        <h2 class="section__title" id="new-job-title">ثبت شغل جدید</h2>
+        <form class="panel auth--wide"
+              action="{% url 'offer_jobs' %}"
+              method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% include "assets/field.html" with field=form.job_name %}
+            {% include "assets/field.html" with field=form.detail %}
+            <fieldset>
+                <legend>برچسب‌ها</legend>
+                <div class="checks">
+                    {% for tag in form.tags.field.queryset %}
+                        <label>
+                            <input type="checkbox"
+                                   class="form-check-input"
+                                   name="tags"
+                                   value="{{ tag.id }}"
+                                   {% if tag.id|stringformat:"s" in form.tags.value %}checked{% endif %}>
+                            {{ tag.name }}
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.tags.errors %}
+                    <ul class="field-errors" role="alert">
+                        {% for error in form.tags.errors %}<li>{{ error }}</li>{% endfor %}
+                    </ul>
+                {% endif %}
+            </fieldset>
+            <button type="submit" class="btn btn-primary">ثبت شغل</button>
+        </form>
+    </section>
 {% endblock content %}

@@ -1,0 +1,18 @@
+{% comment %}
+  Page links that keep other query parameters.
+  Usage: {% include "assets/pagination.html" with page=jobs param="page" extra="&search=abc" %}
+  "param" is the page query parameter, "extra" is a ready-made "&key=value" string for the rest.
+{% endcomment %}
+{% if page.paginator.num_pages > 1 %}
+    <nav class="pagination" aria-label="صفحه‌بندی">
+        {% if page.has_previous %}<a href="?{{ param }}={{ page.previous_page_number }}{{ extra }}" rel="prev">قبلی</a>{% endif %}
+        {% for page_num in page.paginator.page_range %}
+            {% if page_num == page.number %}
+                <span aria-current="page">{{ page_num }}</span>
+            {% else %}
+                <a href="?{{ param }}={{ page_num }}{{ extra }}">{{ page_num }}</a>
+            {% endif %}
+        {% endfor %}
+        {% if page.has_next %}<a href="?{{ param }}={{ page.next_page_number }}{{ extra }}" rel="next">بعدی</a>{% endif %}
+    </nav>
+{% endif %}

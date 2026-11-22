@@ -9,11 +9,13 @@ RUN apt-get update && \
     apt-get install -y \
     pkg-config libmariadb-dev-compat \
     libmariadb-dev build-essential \
-    graphviz graphviz-dev make gcc curl wget && \
+    libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 \
+    make gcc curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --from=ghcr.io/astral-sh/uv:0.12.9 /uv /uvx /bin/
+# uv from PyPI (pinned), so the build needs no access to ghcr.io.
+RUN pip install --no-cache-dir uv==0.12.9
 
 # Keep the virtualenv outside /app, because docker-compose bind-mounts the
 # project directory over /app.

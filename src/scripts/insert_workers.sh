@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python manage.py insert_workers
+${PYTHON:-python} manage.py insert_workers

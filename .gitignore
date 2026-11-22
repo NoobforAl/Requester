@@ -165,12 +165,14 @@ cython_debug/
 
 # remove static django files
 src/requester/static/
+src/staticfiles/
 
 # pdf files
 src/resumes/*.pdf
 
 # database val
 es_data
+mariadb_data
 mysql_data
 redis_data
 ollama_data

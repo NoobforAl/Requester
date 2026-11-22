@@ -101,7 +101,7 @@ To run and develop this project, you will need the following tools:
 - **Python 3.12**: The programming language used for the project.
 - **uv**: Used as the Python package and project manager (`uv sync` installs dependencies from `pyproject.toml` / `uv.lock`).
 - **Django**: The web framework used to build the application.
-- **MySQL**: The database used to store application data.
+- **MariaDB**: The database used to store application data.
 - **Redis**: Used for caching and message brokering.
 - **Elasticsearch**: The Search engin service.
 - **MmailServer**: The TestMail service.
@@ -111,4 +111,24 @@ To run and develop this project, you will need the following tools:
 
 ### Usage
 
-- `make run` - Run the Django development server
+- `make dev` - run the dev server on SQLite (no Docker needed)
+- `make fix` - format everything, run all linters, type check and tests
+- `make clean` - remove caches and build artifacts
+- `make docker-up` - start the dev stack in Docker (MariaDB, Redis, Elasticsearch, Ollama); uses `docker-compose.yaml` + `docker-compose.dev.yaml`
+- `make test-mariadb` - run the tests against a real MariaDB started from compose
+- `make help` - list every command
+
+## Docker: development and production
+
+`docker-compose.dev.yaml` is a development override (`make docker-up` uses it): `DJANGO_DEBUG` on, the Django dev server, mock data, and an admin login `admin` / `admin`. Never use it for a real deployment.
+
+`docker compose up -d --build` with only `docker-compose.yaml` is production-like:
+
+- `DJANGO_DEBUG` is off, so Django refuses to start unless `SECRET_KEY` is set (export it or put it in a `.env` file).
+- `ALLOWED_HOSTS` defaults to `localhost,127.0.0.1`; set it to your domain.
+- It runs gunicorn after `collectstatic`, and no demo data or demo accounts are created. The seed commands (`insert_offers`, `insert_workers`) refuse to run with `DJANGO_DEBUG` off.
+- An admin user is created only if `DJANGO_SUPERUSER_PASSWORD` is set (optionally `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`). An existing admin's password is never reset.
+- Session and CSRF cookies are `Secure` when debug is off: serve the site over HTTPS (set `BEHIND_PROXY=true` behind a TLS proxy), or set `SECURE_COOKIES=false` for a plain-HTTP test.
+
+Database settings are `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` (MariaDB). Without `DB_NAME`, the app uses SQLite.
+

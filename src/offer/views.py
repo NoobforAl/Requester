@@ -1,384 +1,297 @@
+import logging
+from datetime import date, datetime, time, timedelta
 
-# python imports
-import os
-from datetime import timedelta
-
-# other import pkgs
 import jdatetime
-
-# django imports
+from django.contrib import messages
+from django.core.paginator import Page, Paginator
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
+from django.http import FileResponse, HttpResponse
+from django.http.response import HttpResponseBase
+from django.shortcuts import redirect, render
+from django.utils import timezone
 from django.views import View
 
-from django.db.models import Q
-from django.db.models import Count
-
-from django.core.paginator import Paginator
-
-from django.http import FileResponse
-from django.http.request import HttpRequest
-
-from django.shortcuts import render, redirect
-
-from django.contrib import messages
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.mixins import LoginRequiredMixin
-
-# app imports
-from .models import Offer, Job
-from .form import (
-    UserRegistrationForm,
-    UserLoginForm,
-    OfferUpdateForm,
-    JobCreateForm,
+from requester.portal import (
+    AuthenticatedRequest,
+    PortalAccessMixin,
+    PortalLoginView,
+    PortalLogoutView,
+    PortalRegisterView,
 )
-
-# app imports from worker
+from requester_handler.tasks import get_report
 from worker.models import JobRequest
 
-# app import form celery
-from requester_handler.tasks import get_report
+from .form import (
+    JobCreateForm,
+    OfferUpdateForm,
+    UserLoginForm,
+    UserRegistrationForm,
+)
+from .models import Job
+
+logger = logging.getLogger(__name__)
+
+JOB_NOT_FOUND = "این آگهی شغلی پیدا نشد. ممکن است حذف شده باشد."
+FORM_INVALID = "اطلاعات ذخیره نشد. خطاهای فرم را اصلاح کنید."
 
 
-class Login(View):
-    def get(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/offer/")
-
-        form = UserLoginForm()
-        return render(req, "offer/login.html", {"form": form})
-
-    def post(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/offer/")
-
-        form = UserLoginForm(request=req, data=req.POST)
-        if not form.is_valid():
-            messages.error(req, form.non_field_errors())
-            return redirect("/offer/login/")
-
-        username = form.cleaned_data.get("username")
-        password = form.cleaned_data.get("password")
-        user = authenticate(req, username=username, password=password)
-
-        if user is None:
-            messages.error(req, "نام کاربری یا رمز عبور اشتباه است!")
-            return redirect("/offer/login/")
-
-        if hasattr(user, 'offer'):
-            login(req, user)
-            return redirect("/offer/")
-
-        messages.error(
-            req,
-            "شما دسترسی به این بخش ندارید! لطفا با اکانت کاربری خود وارد شوید")
-        return redirect("/offer/login/")
+def start_of_day(day: date) -> datetime:
+    """Midnight at the start of ``day`` in the current time zone."""
+    return timezone.make_aware(datetime.combine(day, time.min))
 
 
-class Logout(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
+class OfferAccessMixin(PortalAccessMixin):
+    """Employer-only views. Every query below is scoped to ``req.user.offer``."""
 
-    def get(self, req: HttpRequest):
-        logout(req)
-        return redirect("/offer/login/")
+    portal = "offer"
 
 
-class Register(View):
-    def get(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/offer/")
-
-        form = UserRegistrationForm()
-        return render(req, "offer/register.html", {"form": form})
-
-    def post(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/offer/")
-
-        form = UserRegistrationForm(req.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(req, "ثبت نام با موفقیت انجام شد!")
-            return redirect("/offer/login/")
-
-        messages.error(req, form.errors)
-        return render(req, "offer/register.html", {"form": form})
+class Login(PortalLoginView):
+    portal = "offer"
+    template_name = "offer/login.html"
+    form_class = UserLoginForm
 
 
-class Dashboard(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
+class Logout(PortalLogoutView):
+    portal = "offer"
 
-    def get(self, req: HttpRequest):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
-            )
-            return redirect("/offer/login/")
 
-        offer = Offer.objects.get(user=req.user)
+class Register(PortalRegisterView):
+    portal = "offer"
+    template_name = "offer/register.html"
+    form_class = UserRegistrationForm
 
-        num_of_created_jobs = Job.objects.filter(offer_id=offer.id).count()
-        num_of_resume_receive = JobRequest.objects.filter(
-            job_id__offer_id=offer.id).count()
 
-        today = jdatetime.date.today()
+class Dashboard(OfferAccessMixin, View):
+    def get(self, req: AuthenticatedRequest) -> HttpResponse:
+        offer = req.user.offer
+        jobs = Job.objects.filter(offer=offer)
+        job_requests = JobRequest.objects.filter(job__offer=offer)
+
+        today = jdatetime.date.fromgregorian(date=timezone.localdate())
         current_month_start = today.replace(day=1)
-        last_month_start = (current_month_start -
-                            timedelta(days=1)).replace(day=1)
-        last_month_end = current_month_start - timedelta(days=1)
+        last_month_start = (current_month_start - timedelta(days=1)).replace(day=1)
 
-        current_month_start_greg = current_month_start.togregorian()
-        last_month_start_greg = last_month_start.togregorian()
-        last_month_end_greg = last_month_end.togregorian()
+        current_start = start_of_day(current_month_start.togregorian())
+        last_start = start_of_day(last_month_start.togregorian())
 
-        jobs_current_month = Job.objects.filter(
-            offer_id=offer.id,
-            created_at__gte=current_month_start_greg
-        ).count()
+        requests_per_day = (
+            job_requests.filter(applied_at__gte=current_start)
+            .annotate(day=TruncDate("applied_at"))
+            .values("day")
+            .annotate(count=Count("id"))
+            .order_by("day")
+        )
 
-        jobs_last_month = Job.objects.filter(
-            offer_id=offer.id,
-            created_at__range=(last_month_start_greg, last_month_end_greg)
-        ).count()
-
-        requests_per_day = JobRequest.objects.filter(
-            job_id__offer_id=offer.id,
-            applied_at__gte=current_month_start_greg
-        ).extra({
-            'day': "DATE(applied_at)"
-        }).values('day').annotate(count=Count('id')).order_by('day')
-
-        requests_per_day_jalali = [
+        per_day = [
             {
-                'day': jdatetime.date.
-                fromgregorian(date=item['day']).strftime('%Y-%m-%d'),
-                'count': item['count']
+                "day": jdatetime.date.fromgregorian(date=item["day"]).strftime(
+                    "%Y-%m-%d"
+                ),
+                "count": item["count"],
             }
             for item in requests_per_day
         ]
 
-        context = {
-            "num_of_created_jobs": num_of_created_jobs,
-            "num_of_resume_receive": num_of_resume_receive,
-            "jobs_current_month": jobs_current_month,
-            "jobs_last_month": jobs_last_month,
-            "requests_per_day": requests_per_day_jalali,
-        }
+        return render(
+            req,
+            "offer/dashboard.html",
+            {
+                "num_of_created_jobs": jobs.count(),
+                "num_of_resume_receive": job_requests.count(),
+                "jobs_current_month": jobs.filter(
+                    created_at__gte=current_start
+                ).count(),
+                "jobs_last_month": jobs.filter(
+                    created_at__gte=last_start, created_at__lt=current_start
+                ).count(),
+                "requests_per_day": per_day,
+                "requests_per_day_max": max(
+                    (item["count"] for item in per_day), default=1
+                ),
+            },
+        )
 
-        return render(req, "offer/dashboard.html", context)
 
-
-class Settings(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
-
-    def get(self, req: HttpRequest):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
-            )
-            return redirect("/offer/login/")
-
+class Settings(OfferAccessMixin, View):
+    def get(self, req: AuthenticatedRequest) -> HttpResponse:
         form = OfferUpdateForm(instance=req.user.offer)
-        return render(req, "offer/settings.html", {
-            "form": form,
-        })
+        return render(req, "offer/settings.html", {"form": form})
 
-    def post(self, req: HttpRequest):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
-            )
-            return redirect("/offer/login/")
-
-        form = OfferUpdateForm(req.POST)
+    def post(self, req: AuthenticatedRequest) -> HttpResponse:
+        form = OfferUpdateForm(req.POST, instance=req.user.offer)
         if form.is_valid():
             form.save()
-            messages.success(req, "اطلاعات با موفقیت به‌روز شد!")
+            messages.success(req, "اطلاعات شرکت ذخیره شد.")
             return redirect("/offer/settings/")
 
-        messages.error(req, "لطفاً اطلاعات را بررسی کنید.")
+        messages.error(req, FORM_INVALID)
         return render(req, "offer/settings.html", {"form": form})
 
 
-class Jobs(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
+class Jobs(OfferAccessMixin, View):
+    """List the employer's jobs and create a new one."""
 
-    def get(self, req: HttpRequest, pk: int = None):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
-            )
-            return redirect("/offer/login/")
+    def get(self, req: AuthenticatedRequest) -> HttpResponse:
+        return render(
+            req,
+            "offer/jobs.html",
+            {"form": JobCreateForm(), "jobs": self._page(req, req.GET.get("page"))},
+        )
 
-        offer_id = Offer.objects.get(user=req.user)
-        form = JobCreateForm(instance=offer_id)
-
-        if pk:
-            try:
-                job = Job.objects.get(id=pk)
-            except Job.DoesNotExist:
-                print("JobRequest.DoesNotExist")
-                messages.error(req, "آگهی شغلی یافت نشد!")
-                return redirect("/offer/jobs/")
-
-            if req.GET.get("report", "").lower() == "true":
-                get_report.delay(pk)
-                messages.warning(
-                    req,
-                    "درخواست گزارش دریافت شد و بعد "
-                    "از 1 الا 3 سه روز کار برای شما ارسال خواهد شد!"
-                )
-                return redirect("/offer/jobs/")
-
-            search_query = req.GET.get("search", "")
-            requests = JobRequest.objects.filter(
-                job_id=job.id).order_by("applied_at")
-
-            if search_query:
-                requests = requests.filter(
-                    Q(worker__first_name__icontains=search_query) |
-                    Q(worker__last_name__icontains=search_query) |
-                    Q(worker__email__icontains=search_query)
-                )
-
-            paginator = Paginator(requests, 10)
-            page_number = req.GET.get("page")
-            page_obj = paginator.get_page(page_number)
-
-            return render(req, "offer/job.html", {
-                "form": form,
-                "job": job,
-                "listUserJobRequested": page_obj,
-                "search_query": search_query,
-            })
-
-        requests = Job.objects.filter(offer_id=offer_id).order_by("created_at")
-        paginator = Paginator(requests, 10)
-        page_number = req.GET.get("page")
-        page_obj = paginator.get_page(page_number)
-
-        return render(req, "offer/jobs.html", {
-            "form": form,
-            "jobs": page_obj,
-        })
-
-    def post(self, req: HttpRequest, pk: int = None):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
-            )
-            return redirect("/offer/login/")
-
-        offer_id = Offer.objects.get(user=req.user)
-
-        if pk:
-            try:
-                job = Job.objects.get(id=pk)
-            except Job.DoesNotExist:
-                messages.error(req, "آگهی شغلی یافت نشد!")
-                return redirect("/offer/jobs/")
-
-            form = JobCreateForm(req.POST, instance=job)
-            if req.GET.get("edit", "").lower() == "true":
-                if form.is_valid():
-                    form.save()
-                    messages.success(
-                        req, "اطلاعات شغل با موفقیت به‌روزرسانی شد!"
-                    )
-                    return redirect(f"/offer/jobs/{pk}/")
-
-                messages.error(req, "لطفاً اطلاعات را بررسی کنید.")
-                jobs = Job.objects.filter(offer_id=offer_id).all()
-                return redirect(f"/offer/jobs/{pk}/")
-
-            job.delete()
-            messages.success(req, "آگهی شغلی با موفقیت حذف شد!")
-            return redirect("/offer/jobs/")
-
-        form = JobCreateForm(req.POST)
+    def post(self, req: AuthenticatedRequest) -> HttpResponse:
+        offer = req.user.offer
+        form = JobCreateForm(req.POST, offer=offer)
         if form.is_valid():
             job = form.save(commit=False)
-            job.offer_id = offer_id.id
+            job.offer = offer
             job.save()
             form.save_m2m()
-            messages.success(req, "آگهی شغلی با موفقیت ثبت شد!")
-            return redirect("/offer/jobs/")
+            messages.success(req, "آگهی شغلی ثبت شد.")
+            return redirect("offer_jobs")
 
-        messages.error(req, "لطفاً اطلاعات را بررسی کنید.")
-        jobs = Job.objects.filter(offer_id=offer_id).all()
-        return render(req, "offer/jobs.html", {
-            "jobs": jobs,
-            "form": form
-        })
+        messages.error(req, FORM_INVALID)
+        return render(
+            req, "offer/jobs.html", {"jobs": self._page(req, 1), "form": form}
+        )
+
+    @staticmethod
+    def _page(req: AuthenticatedRequest, number: int | str | None) -> Page:
+        jobs = Job.objects.filter(offer=req.user.offer).prefetch_related("tags")
+        return Paginator(jobs.order_by("created_at"), 10).get_page(number)
 
 
-class Resume(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
+class OwnedJobMixin(OfferAccessMixin):
+    """Looks up a job, but only one that belongs to the signed-in employer."""
 
-    def get(self, req: HttpRequest, pk: int):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
+    @staticmethod
+    def get_job(req: AuthenticatedRequest, pk: int) -> Job | None:
+        return Job.objects.filter(pk=pk, offer=req.user.offer).first()
+
+
+class JobDetail(OwnedJobMixin, View):
+    def get(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
+        job = self.get_job(req, pk)
+        if job is None:
+            messages.error(req, JOB_NOT_FOUND)
+            return redirect("offer_jobs")
+
+        search_query = req.GET.get("search", "").strip()
+        applications = (
+            JobRequest.objects.filter(job=job)
+            .select_related("worker")
+            .order_by("applied_at")
+        )
+        if search_query:
+            applications = applications.filter(
+                Q(worker__first_name__icontains=search_query)
+                | Q(worker__last_name__icontains=search_query)
+                | Q(worker__email__icontains=search_query)
             )
-            return redirect("/offer/login/")
 
-        try:
-            job = JobRequest.objects.get(id=pk)
-        except JobRequest.DoesNotExist:
-            messages.error(req, "آگهی شغلی یافت نشد!")
+        applications_page = Paginator(applications, 10).get_page(req.GET.get("page"))
+        return render(
+            req,
+            "offer/job.html",
+            {
+                "form": JobCreateForm(instance=job),
+                "job": job,
+                "listUserJobRequested": applications_page,
+                "search_query": search_query,
+            },
+        )
+
+
+class JobEdit(OwnedJobMixin, View):
+    """POST only: the edit form lives on the job page."""
+
+    def post(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
+        job = self.get_job(req, pk)
+        if job is None:
+            messages.error(req, JOB_NOT_FOUND)
+            return redirect("offer_jobs")
+
+        form = JobCreateForm(req.POST, instance=job, offer=req.user.offer)
+        if form.is_valid():
+            form.save()
+            messages.success(req, "آگهی شغلی به‌روز شد.")
+        else:
+            messages.error(req, FORM_INVALID)
+        return redirect("offer_job", pk=job.pk)
+
+
+class JobDelete(OwnedJobMixin, View):
+    def post(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
+        job = self.get_job(req, pk)
+        if job is None:
+            messages.error(req, JOB_NOT_FOUND)
+        else:
+            job.delete()
+            messages.success(req, "آگهی شغلی حذف شد.")
+        return redirect("offer_jobs")
+
+
+class JobReport(OwnedJobMixin, View):
+    def post(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
+        job = self.get_job(req, pk)
+        if job is None:
+            messages.error(req, JOB_NOT_FOUND)
+            return redirect("offer_jobs")
+
+        get_report.delay(job.pk)
+        messages.warning(
+            req,
+            "درخواست گزارش ثبت شد. گزارش تا حداکثر سه روز کاری "
+            "به ایمیل شرکت شما ارسال می‌شود.",
+        )
+        return redirect("offer_jobs")
+
+
+class OwnedApplicationMixin(OfferAccessMixin):
+    """Looks up an application, but only one for a job of the signed-in employer."""
+
+    def get_application(self, req: AuthenticatedRequest, pk: int) -> JobRequest | None:
+        return (
+            JobRequest.objects.select_related("job")
+            .filter(pk=pk, job__offer=req.user.offer)
+            .first()
+        )
+
+
+class Resume(OwnedApplicationMixin, View):
+    def get(self, req: AuthenticatedRequest, pk: int) -> HttpResponseBase:
+        application = self.get_application(req, pk)
+        if application is None:
+            messages.error(req, "این درخواست پیدا نشد.")
             return redirect("/offer/jobs/")
 
-        if not os.path.exists(job.resume.path):
-            messages.error(req, "رزومه یافت نشد!")
-            return redirect(f"/offer/jobs/{job.job.id}/")
-
+        job_url = f"/offer/jobs/{application.job_id}/"
         try:
             return FileResponse(
-                open(job.resume.path, 'rb'),
-                content_type='application/pdf'
+                application.resume.open("rb"),
+                content_type="application/pdf",
+                filename=f"resume_{application.pk}.pdf",
             )
-        except Exception:
-            messages.error(req, "خطا در دانلود رزومه!")
-            return redirect(f"/offer/jobs/{job.job.id}/")
-
-
-class ResumeStatus(LoginRequiredMixin, View):
-    login_url = '/offer/login/'
-
-    def post(self, req: HttpRequest, pk: int):
-        if not hasattr(req.user, 'offer'):
-            logout(req)
+        except (FileNotFoundError, ValueError):
             messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! لطفا"
-                " با اکانت کاربری خود وارد شوید",
+                req, "فایل رزومه پیدا نشد. از کارجو بخواهید دوباره ارسال کند."
             )
-            return redirect("/offer/login/")
+            return redirect(job_url)
 
-        try:
-            job = JobRequest.objects.get(id=pk)
-        except JobRequest.DoesNotExist:
-            messages.error(req, "آگهی شغلی یافت نشد!")
+
+class ResumeStatus(OwnedApplicationMixin, View):
+    def post(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
+        application = self.get_application(req, pk)
+        if application is None:
+            messages.error(req, "این درخواست پیدا نشد.")
             return redirect("/offer/jobs/")
 
-        job.status = req.POST.get("status")
-        job.save()
-        messages.success(req, "وضعیت رزومه با موفقیت تغییر یافت!")
-        return redirect(f"/offer/jobs/{job.job.id}/")
+        status = req.POST.get("status", "")
+        if status not in JobRequest.Status.values:
+            messages.error(req, "وضعیت انتخاب‌شده معتبر نیست.")
+        else:
+            application.status = status
+            application.save(update_fields=["status", "updated_at"])
+            messages.success(req, "وضعیت درخواست تغییر کرد.")
+        return redirect(f"/offer/jobs/{application.job_id}/")

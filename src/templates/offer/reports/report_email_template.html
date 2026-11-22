@@ -1,68 +1,68 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>گزارش شغل</title>
+        <meta charset="utf-8">
+        <title>گزارش شغل {{ job.job_name }}</title>
         <style>
+            @font-face {
+                font-family: Vazirmatn;
+                src: url("fonts/Vazirmatn-variable.woff2") format("woff2");
+                font-weight: 100 900;
+            }
+            @page { size: A4; margin: 18mm 15mm; }
             body {
-                font-family: "Tahoma", sans-serif;
-                direction: rtl; /* راست‌چین کردن متن */
-                text-align: right; /* تنظیم تراز متن به راست */
+                font-family: Vazirmatn, Tahoma, "DejaVu Sans", sans-serif;
+                direction: rtl;
+                text-align: right;
+                color: #14202e;
+                font-size: 11pt;
+                line-height: 1.8;
             }
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin: 20px 0;
-                padding: 10px;
-            }
-            th, td {
-                padding: 8px;
-                text-align: right; /* تراز کردن متن درون سلول‌ها به راست */
-                border-bottom: 1px solid #ddd;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-            a {
-                color: #007bff;
-                text-decoration: none;
-            }
-            a:hover {
-                text-decoration: underline;
-            }
+            h1 { font-size: 18pt; margin: 0 0 6mm; }
+            h2 { font-size: 13pt; margin: 8mm 0 3mm; border-bottom: 2px solid #14202e; padding-bottom: 1mm; }
+            dl { margin: 0; }
+            dt { float: right; clear: right; width: 28mm; color: #5a6877; }
+            dd { margin: 0 30mm 1mm 0; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 2mm 2mm; text-align: right; vertical-align: top; border-bottom: 1px solid #cfd8de; }
+            th { border-bottom: 2px solid #14202e; }
+            tr { page-break-inside: avoid; }
+            a { color: #34419b; }
         </style>
     </head>
     <body>
-        <h1>گزارش شغل برای {{ job.job_name }}</h1>
-        <p>
-            <strong>نام شرکت:</strong> {{ offer.company_name }}
-        </p>
-        <p>
-            <strong>ایمیل شرکت:</strong> {{ offer.company_email }}
-        </p>
-        <p>
-            <strong>جزئیات شغل:</strong> {{ job.detail }}
-        </p>
-        <h3>درخواست‌های شغلی:</h3>
+        <h1>گزارش شغل: {{ job.job_name }}</h1>
+        <dl>
+            <dt>شرکت</dt>
+            <dd>{{ offer.company_name }}</dd>
+            <dt>ایمیل شرکت</dt>
+            <dd>{{ offer.company_email }}</dd>
+            <dt>شرح شغل</dt>
+            <dd>{{ job.detail }}</dd>
+        </dl>
+        <h2>درخواست‌ها</h2>
         <table>
             <thead>
                 <tr>
-                    <th>کارگر</th>
+                    <th>کارجو</th>
                     <th>وضعیت</th>
-                    <th>لینک رزومه</th>
-                    <th>خلاصه AI</th>
+                    <th>رزومه</th>
+                    <th>خلاصه هوش مصنوعی</th>
                 </tr>
             </thead>
             <tbody>
                 {% for request in requests %}
                     <tr>
                         <td>{{ request.worker }}</td>
-                        <td>{{ request.status }}</td>
+                        <td>{{ request.get_status_display }}</td>
                         <td>
                             <a href="{{ request.resume.url }}">دانلود رزومه</a>
                         </td>
                         <td>{{ request.ai_summary }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">هنوز درخواستی ثبت نشده است.</td>
                     </tr>
                 {% endfor %}
             </tbody>

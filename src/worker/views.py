@@ -1,276 +1,180 @@
-
-# python imports
-import os
-import hashlib
-
-# Django imports
-from django.db import IntegrityError
-from django.db.models import Count, Q
-
-from django.core.paginator import Paginator
-
-from django.views import View
-from django.http.request import HttpRequest
+import logging
 
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.core.paginator import Paginator
+from django.db import IntegrityError, transaction
+from django.db.models import Count, Q
+from django.http import HttpResponse
+from django.shortcuts import redirect, render
+from django.views import View
 
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import authenticate, login, logout
-
-
-# app imports
-from .models import Worker, JobRequest
-from .form import UserLoginForm, UserUpdateForm
-from .form import UserRegistrationForm, ResumeUploadForm
-
-# app imports form offer
 from offer.models import Job
-
-# app celery
+from requester.portal import (
+    AuthenticatedRequest,
+    PortalAccessMixin,
+    PortalLoginView,
+    PortalLogoutView,
+    PortalRegisterView,
+)
 from requester_handler.tasks import handel_resume
 
+from .form import (
+    ResumeUploadForm,
+    UserLoginForm,
+    UserRegistrationForm,
+    UserUpdateForm,
+)
+from .models import JobRequest
 
-class Login(View):
-    def get(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/worker/")
+logger = logging.getLogger(__name__)
 
-        form = UserLoginForm()
-        return render(req, "worker/login.html", {"form": form})
 
-    def post(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/worker/")
+class WorkerAccessMixin(PortalAccessMixin):
+    portal = "worker"
 
-        form = UserLoginForm(request=req, data=req.POST)
-        if not form.is_valid():
-            messages.error(req, form.non_field_errors())
-            return redirect("/worker/login/")
 
-        username = form.cleaned_data.get("username")
-        password = form.cleaned_data.get("password")
-        user = authenticate(req, username=username, password=password)
+class Login(PortalLoginView):
+    portal = "worker"
+    template_name = "worker/login.html"
+    form_class = UserLoginForm
 
-        if user is None:
-            messages.error(req, "نام کاربری یا رمز عبور اشتباه است!")
-            return redirect("/worker/login/")
 
-        if hasattr(user, 'worker'):
-            login(req, user)
-            return redirect("/worker/")
+class Logout(PortalLogoutView):
+    portal = "worker"
 
-        messages.error(
+
+class Register(PortalRegisterView):
+    portal = "worker"
+    template_name = "worker/register.html"
+    form_class = UserRegistrationForm
+
+
+class Dashboard(WorkerAccessMixin, View):
+    def get(self, req: AuthenticatedRequest) -> HttpResponse:
+        counts = JobRequest.objects.filter(worker=req.user.worker).aggregate(
+            total=Count("id"),
+            accepted=Count("id", filter=Q(status=JobRequest.Status.ACCEPTED)),
+            rejected=Count("id", filter=Q(status=JobRequest.Status.REJECTED)),
+            pending=Count("id", filter=Q(status=JobRequest.Status.PENDING)),
+        )
+
+        return render(
             req,
-            "شما دسترسی به این بخش ندارید! لطفا با اکانت کاربری خود وارد شوید")
-        return redirect("/worker/login/")
+            "worker/dashboard.html",
+            {
+                "num_of_user_send_resume": counts["total"],
+                "accepted": counts["accepted"],
+                "rejected": counts["rejected"],
+                "in_progress": counts["pending"],
+            },
+        )
 
 
-class Logout(View):
-    def get(self, req: HttpRequest):
-        logout(req)
-        return redirect("/worker/login/")
-
-
-class Register(View):
-    def get(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/worker/")
-
-        form = UserRegistrationForm()
-        return render(req, "worker/register.html", {"form": form})
-
-    def post(self, req: HttpRequest):
-        if req.user.is_authenticated:
-            return redirect("/worker/")
-
-        form = UserRegistrationForm(req.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(req, "ثبت نام با موفقیت انجام شد!")
-            return redirect("/worker/login/")
-
-        messages.error(req, form.errors)
-        return render(req, "worker/register.html", {"form": form})
-
-
-class Dashboard(LoginRequiredMixin, View):
-    login_url = '/worker/login/'
-
-    def get(self, req: HttpRequest):
-        if not hasattr(req.user, "worker"):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! "
-                "لطفا با اکانت کاربری خود وارد شوید"
-            )
-            return redirect("/worker/login/")
-
-        worker = Worker.objects.get(user=req.user)
-        num_of_user_send_resume = JobRequest.objects.filter(
-            worker=worker).count()
-
-        status_counts = JobRequest.objects.filter(
-            worker=worker).values('status').annotate(count=Count('id'))
-
-        accepted = status_counts.filter(status='accepted').aggregate(
-            Count('count'))
-
-        accepted = status_counts.filter(status='accepted').aggregate(
-            Count('count')).get("count__count", None) or 0
-        rejected = status_counts.filter(status='rejected').aggregate(
-            Count('count')).get("count__count", None) or 0
-        in_progress = status_counts.filter(status='pending').aggregate(
-            Count('count')).get("count__count", None) or 0
-
-        context = {
-            "num_of_user_send_resume": num_of_user_send_resume,
-            "accepted": accepted,
-            "rejected": rejected,
-            "in_progress": in_progress,
-        }
-
-        return render(req, "worker/dashboard.html", context)
-
-
-class Jobs(LoginRequiredMixin, View):
-    login_url = '/worker/login/'
-
-    def get(self, req: HttpRequest, pk: int = None):
-        if not hasattr(req.user, "worker"):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! "
-                "لطفا با اکانت کاربری خود وارد شوید"
-            )
-            return redirect("/worker/login/")
-
+class Jobs(WorkerAccessMixin, View):
+    def get(self, req: AuthenticatedRequest, pk: int | None = None) -> HttpResponse:
         if pk:
-            job: Job
             try:
-                job = Job.objects.get(pk=pk)
+                job = Job.objects.select_related("offer").get(pk=pk)
             except Job.DoesNotExist:
-                messages.error(req, "شغل مورد نظر یافت نشد!")
+                messages.error(req, "این آگهی شغلی پیدا نشد. ممکن است حذف شده باشد.")
                 return redirect("/worker/jobs/")
 
-            form = ResumeUploadForm()
-            return render(req, "worker/job.html", {
-                "form": form,
-                "job": job,
-                "offer": job.offer,
-            })
-
-        search_query = req.GET.get('search', '').strip()
-        requests_jobs = Job.objects.filter(
-            Q(job_name__icontains=search_query) |
-            Q(detail__icontains=search_query)
-        ).order_by('-created_at')
-        paginator_job = Paginator(requests_jobs, 6)
-        page_number_job = req.GET.get("page_job")
-        page_obj_job = paginator_job.get_page(page_number_job)
-
-        req_user_sended_resume = JobRequest.objects.filter(
-            worker=req.user.worker).order_by('-applied_at')
-        paginator_user_sended_resume = Paginator(req_user_sended_resume, 5)
-        page_number_user_sended_resume = req.GET.get("page_user_sended")
-        page_obj_user_sended_resume = paginator_user_sended_resume.get_page(
-            page_number_user_sended_resume)
-
-        return render(req, "worker/jobs.html", {
-            "jobs": page_obj_job,
-            "userSendedResume": page_obj_user_sended_resume,
-        })
-
-    def post(self, req: HttpRequest, pk: int = None):
-        if not hasattr(req.user, "worker"):
-            logout(req)
-            messages.error(
+            return render(
                 req,
-                "شما دسترسی به این بخش ندارید! "
-                "لطفا با اکانت کاربری خود وارد شوید"
+                "worker/job.html",
+                {
+                    "form": ResumeUploadForm(),
+                    "job": job,
+                    "offer": job.offer,
+                },
             )
-            return redirect("/worker/login/")
 
-        try:
-            job = Job.objects.get(pk=pk)
-        except Job.DoesNotExist:
-            messages.error(req, "شغل مورد نظر یافت نشد!")
+        search_query = req.GET.get("search", "").strip()
+        jobs = (
+            Job.objects.filter(
+                Q(job_name__icontains=search_query) | Q(detail__icontains=search_query)
+            )
+            .select_related("offer")
+            .prefetch_related("tags")
+            .order_by("-created_at")
+        )
+        page_obj_job = Paginator(jobs, 6).get_page(req.GET.get("page_job"))
+
+        sent_requests = (
+            JobRequest.objects.filter(worker=req.user.worker)
+            .select_related("job", "job__offer")
+            .order_by("-applied_at")
+        )
+        page_obj_sent = Paginator(sent_requests, 5).get_page(
+            req.GET.get("page_user_sended")
+        )
+
+        return render(
+            req,
+            "worker/jobs.html",
+            {
+                "jobs": page_obj_job,
+                "userSendedResume": page_obj_sent,
+            },
+        )
+
+    def post(self, req: AuthenticatedRequest, pk: int | None = None) -> HttpResponse:
+        job = Job.objects.filter(pk=pk).first() if pk else None
+        if job is None:
+            messages.error(req, "این آگهی شغلی پیدا نشد. ممکن است حذف شده باشد.")
             return redirect("/worker/jobs/")
 
+        job_url = f"/worker/jobs/{pk}/"
         form = ResumeUploadForm(req.POST, req.FILES)
         if not form.is_valid():
-            messages.error(req, form.errors)
-            return redirect(f"/worker/jobs/{pk}/")
+            for errors in form.errors.values():
+                for error in errors:
+                    messages.error(req, str(error))
+            return redirect(job_url)
 
-        uploaded_file = form.cleaned_data.get('resume')
-        if uploaded_file.size > 5 * 1024 * 1024:  # 5 MB limit
-            messages.error(req, "حجم فایل بیش از حد مجاز است!")
-            return redirect(f"/worker/jobs/{pk}/")
+        worker = req.user.worker
+        if JobRequest.objects.filter(worker=worker, job=job).exists():
+            messages.error(req, "شما قبلاً برای این شغل درخواست داده‌اید.")
+            return redirect(job_url)
 
-        if not uploaded_file.name.endswith('.pdf'):
-            messages.error(req, "فقط فایل‌های PDF مجاز هستند!")
-            return redirect(f"/worker/jobs/{pk}/")
-
-        file_hash = f"{pk}__" + hashlib.md5(uploaded_file.read()).hexdigest()
-        uploaded_file.seek(0)
-
-        _, file_extension = os.path.splitext(uploaded_file.name)
-        hashed_file_name = f'{file_hash}{file_extension}'
-        save_path = os.path.join('resumes/', hashed_file_name)
-
-        with open(save_path, 'wb') as destination:
-            for chunk in uploaded_file.chunks():
-                destination.write(chunk)
+        job_request = JobRequest(
+            worker=worker,
+            job=job,
+            resume=form.cleaned_data["resume"],
+            cover_letter=form.cleaned_data["cover_letter"],
+        )
+        try:
+            with transaction.atomic():
+                job_request.save()
+        except IntegrityError:
+            # FileField writes the PDF before the INSERT, so a failed insert
+            # (a concurrent duplicate) leaves the file behind: remove it.
+            if job_request.resume.name:
+                job_request.resume.storage.delete(job_request.resume.name)
+            messages.error(req, "شما قبلاً برای این شغل درخواست داده‌اید.")
+            return redirect(job_url)
 
         try:
-            job_req = JobRequest.objects.create(
-                worker=req.user.worker,
-                job=job,
-                resume=save_path,
-            )
-        except IntegrityError:
-            messages.error(
-                req, "شما قبلاً درخواست این شغل را ارسال کرده‌اید!")
-            return redirect(f"/worker/jobs/{pk}/")
+            handel_resume.delay(job_request.id)
+        except Exception:
+            # The application is saved; only the AI summary is delayed.
+            logger.exception("Could not queue resume summary for %s", job_request.id)
 
-        handel_resume.delay(job_req.id)
-        messages.success(req, "رزومه با موفقیت ارسال شد!")
-        return redirect(f"/worker/jobs/{pk}/")
+        messages.success(req, "رزومه شما ارسال شد.")
+        return redirect(job_url)
 
 
-class Settings(LoginRequiredMixin, View):
-    login_url = '/worker/login/'
-
-    def get(self, req: HttpRequest):
-        if not hasattr(req.user, "worker"):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! "
-                "لطفا با اکانت کاربری خود وارد شوید"
-            )
-            return redirect("/worker/login/")
-
+class Settings(WorkerAccessMixin, View):
+    def get(self, req: AuthenticatedRequest) -> HttpResponse:
         form = UserUpdateForm(instance=req.user.worker)
         return render(req, "worker/settings.html", {"form": form})
 
-    def post(self, req: HttpRequest):
-        if not hasattr(req.user, "worker"):
-            logout(req)
-            messages.error(
-                req,
-                "شما دسترسی به این بخش ندارید! "
-                "لطفا با اکانت کاربری خود وارد شوید"
-            )
-            return redirect("/worker/login/")
-
+    def post(self, req: AuthenticatedRequest) -> HttpResponse:
         form = UserUpdateForm(req.POST, instance=req.user.worker)
         if form.is_valid():
             form.save()
-            messages.success(req, "اطلاعات با موفقیت ذخیره شد!")
+            messages.success(req, "اطلاعات شما ذخیره شد.")
             return redirect("/worker/settings/")
 
-        messages.error(req, form.errors)
-        return redirect("/worker/settings/")
+        messages.error(req, "اطلاعات ذخیره نشد. خطاهای فرم را اصلاح کنید.")
+        return render(req, "worker/settings.html", {"form": form})

@@ -1,9 +1,10 @@
 from django.core.management.base import BaseCommand
+
 from offer.models import Tag
 
 
 class Command(BaseCommand):
-    help = 'Insert predefined tags into the database'
+    help = "Insert predefined tags into the database"
 
     def handle(self, *args, **kwargs):
         tags = [
@@ -58,21 +59,19 @@ class Command(BaseCommand):
             "تحلیل امنیت سایبری",
             "امنیت IT",
             "حفاظت از اطلاعات",
-            "تحلیل تهدیدات"
+            "تحلیل تهدیدات",
         ]
 
         if Tag.objects.count() > 0:
-            self.stdout.write(
-                self.style.WARNING('Tags already exist in the database.')
-            )
+            self.stdout.write(self.style.WARNING("Tags already exist in the database."))
             return
 
         for tag_name in tags:
-            tag, created = Tag.objects.get_or_create(name=tag_name)
+            _tag, created = Tag.objects.get_or_create(name=tag_name)
 
             if created:
-                self.stdout.write(self.style.SUCCESS(
-                    f'Successfully added tag: {tag_name}'))
+                self.stdout.write(
+                    self.style.SUCCESS(f"Successfully added tag: {tag_name}")
+                )
             else:
-                self.stdout.write(self.style.WARNING(
-                    f'Tag already exists: {tag_name}'))
+                self.stdout.write(self.style.WARNING(f"Tag already exists: {tag_name}"))
