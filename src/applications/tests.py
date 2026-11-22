@@ -94,35 +94,18 @@ class FakeResponse:
 
 @pytest.fixture
 def no_ai(settings):
-    settings.AI_PROVIDER = "auto"
     settings.OPENROUTER_API_KEY = ""
-    settings.LLAMA_SERVER_URL = ""
 
 
-@pytest.mark.parametrize(
-    ("provider", "key", "url", "expected"),
-    [
-        ("auto", "", "", ""),
-        ("auto", "sk-x", "", "openrouter"),
-        ("auto", "", "http://llm:11434", "ollama"),
-        ("auto", "sk-x", "http://llm:11434", "openrouter"),
-        ("openrouter", "", "http://llm:11434", ""),
-        ("ollama", "sk-x", "http://llm:11434", "ollama"),
-        ("ollama", "sk-x", "", ""),
-        ("none", "sk-x", "http://llm:11434", ""),
-    ],
-)
-def test_provider_choice(settings, provider, key, url, expected):
-    settings.AI_PROVIDER = provider
+@pytest.mark.parametrize(("key", "expected"), [("", ""), ("sk-x", "openrouter")])
+def test_ai_is_on_only_with_an_openrouter_key(settings, key, expected):
     settings.OPENROUTER_API_KEY = key
-    settings.LLAMA_SERVER_URL = url
     assert ai.active_provider() == expected
 
 
 def test_openrouter_request_has_key_model_language_and_truncated_text(
     settings, monkeypatch
 ):
-    settings.AI_PROVIDER = "openrouter"
     settings.OPENROUTER_API_KEY = "sk-test-123"
     settings.OPENROUTER_MODEL = "some/model"
     settings.AI_MAX_INPUT_CHARS = 10
@@ -148,31 +131,12 @@ def test_openrouter_request_has_key_model_language_and_truncated_text(
     assert user["content"] == "x" * 10
 
 
-def test_ollama_request_uses_the_local_server(settings, monkeypatch):
-    settings.AI_PROVIDER = "auto"
-    settings.OPENROUTER_API_KEY = ""
-    settings.LLAMA_SERVER_URL = "http://llm:11434/"
-    seen: dict = {}
-
-    def fake_post(url, **kwargs):
-        seen["url"] = url
-        seen.update(kwargs)
-        return FakeResponse(payload={"response": "local summary"})
-
-    monkeypatch.setattr(ai.httpx, "post", fake_post)
-
-    assert ai.summarize("cv text", language="fa") == ("local summary", "ollama")
-    assert seen["url"] == "http://llm:11434/api/generate"
-    assert "Persian" in seen["json"]["system"]
-
-
 @pytest.mark.parametrize(
     ("status", "error"),
     [(429, ai.RetryableAIError), (503, ai.RetryableAIError), (401, ai.AIError)],
 )
 def test_openrouter_errors_are_classified(settings, monkeypatch, status, error):
     settings.OPENROUTER_API_KEY = "sk-test-123"
-    settings.AI_PROVIDER = "openrouter"
     monkeypatch.setattr(ai.httpx, "post", lambda *a, **k: FakeResponse(status))
 
     with pytest.raises(error) as caught:

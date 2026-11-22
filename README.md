@@ -18,7 +18,7 @@ Requester is a job platform built with Django. **Candidates** find jobs, apply w
 - Review applications (search and status filter), download resumes, read an **AI summary** of each resume, and change the status with an optional note. Allowed changes follow fixed rules and every change is logged and e-mailed to the candidate.
 - Request a PDF report of all applications for a job by e-mail, in the employer's language.
 
-**AI resume summaries** use [OpenRouter](https://openrouter.ai) (set `OPENROUTER_API_KEY`) or a local Ollama server (`LLAMA_SERVER_URL`). See [AI providers](#ai-providers).
+**AI resume summaries** use [OpenRouter](https://openrouter.ai): on when `OPENROUTER_API_KEY` is set, skipped otherwise. See [AI summaries](#ai-summaries).
 
 ## Names
 
@@ -32,7 +32,7 @@ The project was renamed so that the code says what things are:
 | `JobRequest` | `Application` (app `applications`, with `ApplicationEvent` for the status history) |
 | app `requester_handler` | merged into `applications` (`tasks.py`, `ai.py`) |
 | `/offer/…`, `/worker/…` | `/employers/…`, `/candidates/…` (old URLs redirect permanently) |
-| compose services `web, celery, ollama, elasticsearch, mailserver, mariadb, redis` | `web, tasks, scheduler, llm, search, mailhog, db, cache` |
+| compose services `web, celery, ollama, elasticsearch, mailserver, mariadb, redis` | `web, tasks, scheduler, search, mailhog, db, cache` (the local Ollama service was removed) |
 
 ### Upgrading an existing database
 
@@ -58,22 +58,20 @@ Persian is the default. A visitor picks a language with the dropdown at the top 
 - After changing text in a template or Python file run `make i18n` (extracts into every `.po`; runs in Docker because it needs GNU gettext), translate the new empty entries, then `make i18n-check` (fails on missing, fuzzy or placeholder-breaking translations).
 - `.mo` files are not committed. `make dev` builds them with a pure-Python script (`make i18n-compile`); the Docker services run Django's `compilemessages`.
 
-## AI providers
+## AI summaries
 
-Resume summaries run in the background (Celery) in the employer's language.
+Resume summaries run in the background (Celery) in the employer's language, through OpenRouter only:
 
-| `AI_PROVIDER` | Behaviour |
-|---|---|
-| `auto` (default) | OpenRouter if `OPENROUTER_API_KEY` is set, else Ollama if `LLAMA_SERVER_URL` is set, else no summaries |
-| `openrouter` / `ollama` / `none` | force one provider, or switch AI off |
+- `OPENROUTER_API_KEY` set: summaries are on.
+- No key: the feature is skipped silently (applications work as usual, no summary is shown).
 
-Settings: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `openrouter/auto`), `AI_TIMEOUT_SECONDS`, `AI_MAX_INPUT_CHARS` (resume text is cut to this length, default 12000). The key is read from the environment only and is never logged or shown. **Privacy:** with OpenRouter the text of uploaded resumes is sent to OpenRouter and the model provider behind it; use Ollama (`COMPOSE_PROFILES=local-ai`, needs an NVIDIA GPU) to keep everything on your own server.
+Settings: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `google/gemma-3-4b-it`, a very light multilingual model; any OpenRouter model id works), `AI_TIMEOUT_SECONDS`, `AI_MAX_INPUT_CHARS` (resume text is cut to this length, default 12000). The key is read from the environment only and is never logged or shown. **Privacy:** the text of uploaded resumes is sent to OpenRouter and the model provider behind it.
 
 ## Required tools
 
 - **Python 3.12** and **uv** (`uv sync` installs everything from `pyproject.toml` / `uv.lock`)
 - **Docker** and Docker Compose for the full stack, translations extraction and diagrams
-- Services in the stack: **MariaDB** (`db`), **Redis** (`cache`, Celery broker), **Elasticsearch 9** (`search`), **MailHog** (`mailhog`), **Celery** worker (`tasks`) and beat (`scheduler`), optional **Ollama** (`llm`)
+- Services in the stack: **MariaDB** (`db`), **Redis** (`cache`, Celery broker), **Elasticsearch 9** (`search`), **MailHog** (`mailhog`), **Celery** worker (`tasks`) and beat (`scheduler`)
 
 ## Makefile commands
 

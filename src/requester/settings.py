@@ -153,24 +153,15 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-# AI resume summaries. AI_PROVIDER=auto picks OpenRouter when an API key is set,
-# else a local Ollama server when LLAMA_SERVER_URL is set, else summaries are off.
-# Enabling OpenRouter sends the text of uploaded resumes to that third party.
-AI_PROVIDER = os.environ.get("AI_PROVIDER", "auto").strip().lower()
-AI_TIMEOUT_SECONDS = int(
-    os.environ.get("AI_TIMEOUT_SECONDS")
-    or os.environ.get("LLAMA_TIMEOUT_SECONDS")
-    or 120
-)
+# AI resume summaries through OpenRouter: on when OPENROUTER_API_KEY is set, skipped
+# otherwise. Enabling it sends the text of uploaded resumes to that third party.
+AI_TIMEOUT_SECONDS = int(os.environ.get("AI_TIMEOUT_SECONDS") or 120)
 AI_MAX_INPUT_CHARS = int(os.environ.get("AI_MAX_INPUT_CHARS", "12000"))
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
-OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "openrouter/auto")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "google/gemma-3-4b-it")
 OPENROUTER_BASE_URL = os.environ.get(
     "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"
 ).rstrip("/")
-# Local Ollama server (optional, `docker compose --profile local-ai`).
-LLAMA_SERVER_URL = os.environ.get("LLAMA_SERVER_URL", "")
-LLAMA_MODEL = os.environ.get("LLAMA_MODEL", "llama3.2")
 
 # Logging: structlog, one JSON object per line on stdout (see docs/log-schema.md).
 # LOG_FORMAT=console gives human-readable lines; it is the default with DEBUG on.

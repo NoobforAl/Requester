@@ -2,7 +2,7 @@
 #   web        Django (gunicorn)             tasks      Celery worker (AI summaries, reports, e-mails)
 #   scheduler  Celery beat (job alerts)      db         MariaDB
 #   cache      Redis (cache + Celery broker) search     Elasticsearch
-#   mailhog    catches outgoing mail         llm        optional local Ollama (profile "local-ai")
+#   mailhog    catches outgoing mail
 #
 # Secrets and per-machine settings come from a `.env` file next to this one
 # (see .env.example); nothing secret is written in this file.
@@ -32,13 +32,10 @@ x-app-env: &app-env
     CELERY_TASK_SERIALIZER: "json"
     CELERY_RESULT_SERIALIZER: "json"
     CELERY_TIMEZONE: "UTC"
-    # AI resume summaries: OpenRouter when a key is set (resume text is sent to
-    # OpenRouter), else the local `llm` service if LLAMA_SERVER_URL is set, else off.
-    AI_PROVIDER: "${AI_PROVIDER:-auto}"
+    # AI resume summaries: on when OPENROUTER_API_KEY is set (resume text is sent to
+    # OpenRouter), skipped otherwise.
     OPENROUTER_API_KEY: "${OPENROUTER_API_KEY:-}"
-    OPENROUTER_MODEL: "${OPENROUTER_MODEL:-openrouter/auto}"
-    LLAMA_SERVER_URL: "${LLAMA_SERVER_URL:-}"
-    LLAMA_MODEL: "${LLAMA_MODEL:-llama3.2}"
+    OPENROUTER_MODEL: "${OPENROUTER_MODEL:-google/gemma-3-4b-it}"
     DJANGO_SUPERUSER_USERNAME: "${DJANGO_SUPERUSER_USERNAME:-admin}"
     DJANGO_SUPERUSER_PASSWORD: "${DJANGO_SUPERUSER_PASSWORD:-}"
 
@@ -98,24 +95,6 @@ services:
                 condition: service_healthy
             db:
                 condition: service_healthy
-
-    llm:
-        profiles: ["local-ai"]
-        image: ollama/ollama:0.5.3
-        container_name: requester_llm
-        restart: unless-stopped
-        runtime: nvidia
-        entrypoint: ["/bin/sh", "-c"]
-        command: ["ollama serve & sleep 3s; ollama pull llama3.2; sleep 48h;"]
-        deploy:
-            resources:
-                reservations:
-                    devices:
-                        - capabilities: ["gpu"]
-        ports:
-            - "11434:11434"
-        volumes:
-            - ./ollama_data:/root/.ollama
 
     search:
         image: elasticsearch:9.5.1
