@@ -33,7 +33,7 @@ COMPOSE_ALL := docker compose --env-file monitoring/dev-defaults.env $(if $(wild
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
         format lint typecheck test bench bench-check loadtest audit fix \
-        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down dev-all dev-all-down \
+        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down docker-pull dev-all dev-all-down \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
 
 help: ## Show this help
@@ -131,6 +131,9 @@ docker-down: ## Stop the dev stack
 docker-clean: ## Stop the stack and delete its data folders (asks sudo)
 	$(COMPOSE_DEV) down
 	sudo rm -rf es_data mariadb_data redis_data
+
+docker-pull: ## Pull every image used by the full stack (base, dev, monitoring, loadgen) ahead of time
+	$(COMPOSE_ALL) pull --ignore-buildable
 
 dev-all: ## Dev stack + Faker data + monitoring + live load (Grafana :3000 admin/admin, Jaeger :16686)
 	mkdir -p es_data mariadb_data redis_data
