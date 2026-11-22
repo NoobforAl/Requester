@@ -133,6 +133,9 @@ CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_TASK_EAGER_PROPAGATES = False
 # Keep Django's LOGGING (JSON) in workers instead of Celery's own handlers.
 CELERY_WORKER_HIJACK_ROOT_LOGGER = False
+# Task events for celery-exporter (the worker also runs with -E).
+CELERY_WORKER_SEND_TASK_EVENTS = True
+CELERY_TASK_SEND_SENT_EVENT = True
 
 # Celery beat: job-alert digests. Run with `celery -A requester beat` (the compose
 # `scheduler` service). Times are CELERY_TIMEZONE (UTC); 04:30 UTC = 08:00 Tehran.
@@ -206,6 +209,36 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+# Metrics (django-prometheus). /metrics is served only with PROMETHEUS_ENABLED and
+# answers 404 unless the request carries `Authorization: Bearer $METRICS_TOKEN`.
+# An empty PROMETHEUS_MULTIPROC_DIR must not count as set: prometheus_client only
+# checks that the key exists and would then fail on every scrape.
+if not os.environ.get("PROMETHEUS_MULTIPROC_DIR"):
+    os.environ.pop("PROMETHEUS_MULTIPROC_DIR", None)
+PROMETHEUS_ENABLED = env_bool("PROMETHEUS_ENABLED")
+METRICS_TOKEN = os.environ.get("METRICS_TOKEN", "")
+METRICS_ALLOWED_IPS = env_list("METRICS_ALLOWED_IPS")
+if PROMETHEUS_ENABLED:
+    INSTALLED_APPS.append("django_prometheus")
+    MIDDLEWARE = [
+        "django_prometheus.middleware.PrometheusBeforeMiddleware",
+        *MIDDLEWARE,
+        "django_prometheus.middleware.PrometheusAfterMiddleware",
+    ]
+    _db_engines = {
+        "django.db.backends.mysql": "django_prometheus.db.backends.mysql",
+        "django.db.backends.sqlite3": "django_prometheus.db.backends.sqlite3",
+    }
+    DATABASES["default"]["ENGINE"] = _db_engines.get(
+        DATABASES["default"]["ENGINE"], DATABASES["default"]["ENGINE"]
+    )
+    if CACHES["default"]["BACKEND"] == "django.core.cache.backends.locmem.LocMemCache":
+        CACHES["default"]["BACKEND"] = (
+            "django_prometheus.cache.backends.locmem.LocMemCache"
+        )
+    # The Redis cache stays on Django's RedisCache: the django-prometheus Redis
+    # wrapper needs django-redis. Redis numbers come from redis-exporter.
 
 ROOT_URLCONF = "requester.urls"
 

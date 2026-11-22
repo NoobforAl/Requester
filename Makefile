@@ -24,11 +24,12 @@ export PYTHON
 # a known admin login. `make docker-up` uses both.
 COMPOSE     := docker compose
 COMPOSE_DEV := docker compose -f docker-compose.yaml -f docker-compose.dev.yaml
+COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitoring.yaml
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed migrate migrations superuser shell check \
         format lint typecheck test audit fix \
-        clean clean-all docker-up docker-down docker-clean \
+        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
 
 help: ## Show this help
@@ -115,6 +116,13 @@ docker-clean: ## Stop the stack and delete its data folders (asks sudo)
 	$(COMPOSE_DEV) down
 	sudo rm -rf es_data mariadb_data redis_data ollama_data
 
+monitoring-up: ## Start the stack with Prometheus, Grafana, Loki and exporters (needs METRICS_TOKEN, GRAFANA_ADMIN_PASSWORD)
+	mkdir -p es_data mariadb_data redis_data
+	$(COMPOSE_MON) up -d --build
+
+monitoring-down: ## Stop the monitoring stack
+	$(COMPOSE_MON) down
+
 test-mariadb: ## Run the tests against a real MariaDB (starts and stops the compose service)
 	$(COMPOSE) up -d --wait db
 	DB_HOST=127.0.0.1 $(RUN) pytest --ds=requester.settings_mariadb_test --create-db; 	  status=$$?; $(COMPOSE) stop db; exit $$status
@@ -123,6 +131,8 @@ test-mariadb: ## Run the tests against a real MariaDB (starts and stops the comp
 # deploy: production-like (gunicorn, SECRET_KEY and ALLOWED_HOSTS required, no demo data).
 deploy: migrate import_legacy_data compilemessages create_es_fields ensure_superuser collectstatic
 	@echo "Starting gunicorn"
+	@# Prometheus multiprocess mode: start every run with an empty metrics directory.
+	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then rm -rf "$$PROMETHEUS_MULTIPROC_DIR" && mkdir -p "$$PROMETHEUS_MULTIPROC_DIR"; fi
 	cd $(SRC) && $(RUN) gunicorn -w 4 --bind 0.0.0.0:8000 requester.wsgi:application
 
 # deploy-dev: Django dev server, mock data, and an admin from DJANGO_SUPERUSER_*.
@@ -131,7 +141,7 @@ deploy-dev: migrate import_legacy_data compilemessages create_es_fields insert_m
 	$(MANAGE) runserver 0.0.0.0:8000
 
 setup_celery: migrate compilemessages create_es_fields
-	cd $(SRC) && $(CELERY) -A requester worker --loglevel=info
+	cd $(SRC) && $(CELERY) -A requester worker -E --loglevel=info
 
 # Celery beat: sends the daily and weekly job-alert digests (CELERY_BEAT_SCHEDULE).
 setup_scheduler: migrate

@@ -1,0 +1,42 @@
+# Alert rules. There is no Alertmanager yet, so these show up in the
+# Prometheus "Alerts" page and in Grafana only.
+groups:
+  - name: requester-http
+    rules:
+      - alert: HighHttp5xxRate
+        expr: |
+          (
+            sum(rate(django_http_responses_total_by_status_view_method_total{status=~"5.."}[5m]))
+            /
+            sum(rate(django_http_responses_total_by_status_view_method_total[5m]))
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "More than 5% of HTTP responses are 5xx"
+          description: "5xx ratio is {{ $value | humanizePercentage }} over the last 5 minutes."
+
+      - alert: HighP95Latency
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(django_http_requests_latency_seconds_by_view_method_bucket[5m]))
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "HTTP p95 latency is above 1s"
+          description: "p95 latency is {{ $value | humanizeDuration }} (all views)."
+
+  - name: requester-targets
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Scrape target {{ $labels.job }} ({{ $labels.instance }}) is down"
+          description: "Prometheus could not scrape {{ $labels.instance }} for 2 minutes."

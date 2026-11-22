@@ -1,8 +1,10 @@
+from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
+from observability.metrics import metrics_view
 from requester.views import home
 
 handler404 = "requester.views.handler404"
@@ -26,3 +28,7 @@ urlpatterns = [
     ),
     path("offer/", RedirectView.as_view(url="/employers/", permanent=True)),
 ]
+
+if settings.PROMETHEUS_ENABLED:
+    # Token-protected (404 otherwise); scraped by Prometheus on the internal network.
+    urlpatterns.append(path("metrics", metrics_view, name="prometheus-metrics"))

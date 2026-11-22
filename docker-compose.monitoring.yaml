@@ -1,0 +1,126 @@
+# Monitoring overlay: metrics, logs, traces. Use it together with the base file:
+#
+#   docker compose -f docker-compose.yaml -f docker-compose.monitoring.yaml up -d --build
+#   (or `make monitoring-up`)
+#
+# Needs METRICS_TOKEN and GRAFANA_ADMIN_PASSWORD in `.env`. Every UI is bound to
+# 127.0.0.1 only; nothing here should be exposed publicly.
+#
+#   Grafana     http://localhost:3000    Prometheus  http://localhost:9090
+#   Loki        http://localhost:3100    (the Jaeger UI is added with tracing)
+
+services:
+    # --- the app: turn the instrumentation on ---------------------------------
+    web:
+        environment:
+            PROMETHEUS_ENABLED: "true"
+            METRICS_TOKEN: "${METRICS_TOKEN:?set METRICS_TOKEN in .env}"
+            PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus-multiproc
+        tmpfs:
+            - /tmp/prometheus-multiproc # fresh on every container start
+
+    # --- metrics -------------------------------------------------------------
+    prometheus:
+        image: prom/prometheus:v3.5.0
+        container_name: requester_prometheus
+        restart: unless-stopped
+        command:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=15d"
+        ports:
+            - "127.0.0.1:9090:9090"
+        volumes:
+            # Single files, not the directory: the token secret lands in /etc/prometheus.
+            - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+            - ./monitoring/prometheus/alerts.yml:/etc/prometheus/alerts.yml:ro
+            - prometheus_data:/prometheus
+        secrets:
+            - source: metrics_token
+              target: /etc/prometheus/metrics_token
+
+    grafana:
+        image: grafana/grafana:12.1.1
+        container_name: requester_grafana
+        restart: unless-stopped
+        ports:
+            - "127.0.0.1:3000:3000"
+        environment:
+            GF_SECURITY_ADMIN_USER: admin
+            GF_SECURITY_ADMIN_PASSWORD: "${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}"
+            GF_AUTH_ANONYMOUS_ENABLED: "false"
+            GF_USERS_ALLOW_SIGN_UP: "false"
+        volumes:
+            - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+            - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+            - grafana_data:/var/lib/grafana
+        depends_on:
+            - prometheus
+            - loki
+
+    mysqld-exporter:
+        image: prom/mysqld-exporter:v0.17.2
+        container_name: requester_mysqld_exporter
+        restart: unless-stopped
+        command: ["--mysqld.address=db:3306", "--mysqld.username=${DB_USER:-requester}"]
+        environment:
+            MYSQLD_EXPORTER_PASSWORD: "${DB_PASSWORD:-requester-dev-password}"
+        depends_on:
+            db:
+                condition: service_healthy
+
+    redis-exporter:
+        image: oliver006/redis_exporter:v1.74.0
+        container_name: requester_redis_exporter
+        restart: unless-stopped
+        environment:
+            REDIS_ADDR: "redis://cache:6379"
+            REDIS_PASSWORD: "${REDIS_PASSWORD:-requester-dev-redis}"
+        depends_on:
+            cache:
+                condition: service_healthy
+
+    celery-exporter:
+        image: danihodovic/celery-exporter:0.11.1
+        container_name: requester_celery_exporter
+        restart: unless-stopped
+        command:
+            - "--broker-url=redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
+            - "--port=9808"
+        depends_on:
+            cache:
+                condition: service_healthy
+
+    # --- logs: docker stdout -> Vector -> Loki -> Grafana ----------------------
+    loki:
+        image: grafana/loki:3.5.0
+        container_name: requester_loki
+        restart: unless-stopped
+        command: ["-config.file=/etc/loki/loki.yaml"]
+        ports:
+            - "127.0.0.1:3100:3100"
+        volumes:
+            - ./monitoring/loki/loki.yaml:/etc/loki/loki.yaml:ro
+            - loki_data:/loki
+
+    vector:
+        image: timberio/vector:0.46.1-alpine
+        container_name: requester_vector
+        restart: unless-stopped
+        command: ["--config", "/etc/vector/vector.yaml"]
+        volumes:
+            - ./monitoring/vector/vector.yaml:/etc/vector/vector.yaml:ro
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - vector_data:/var/lib/vector
+        depends_on:
+            - loki
+
+secrets:
+    metrics_token:
+        environment: METRICS_TOKEN # written to the file Prometheus reads
+
+volumes:
+    prometheus_data:
+    grafana_data:
+    loki_data:
+    vector_data:
