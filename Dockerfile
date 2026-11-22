@@ -24,7 +24,10 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv
 ENV UV_LINK_MODE=copy
 ENV PATH="/opt/venv/bin:$PATH"
 
+# Production installs runtime deps only; docker-compose.dev.yaml passes "--dev"
+# (Faker for the fake data, debug toolbar, silk...).
+ARG UV_SYNC_ARGS="--no-dev"
 COPY pyproject.toml uv.lock .python-version /app/
-RUN uv sync --frozen --no-dev
+RUN uv sync --frozen ${UV_SYNC_ARGS}
 
 EXPOSE 8000

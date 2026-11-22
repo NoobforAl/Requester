@@ -17,9 +17,9 @@ POSTINGS = 50
 
 
 @pytest.fixture
-def scenario(make_employer, make_candidate, make_posting, make_application):
-    scenario = Scenario(make_employer, make_candidate, make_posting, make_application)
-    return scenario.grow(POSTINGS)
+def scenario(db):
+    """Faker data from ``tests.factories`` with a fixed seed, so runs compare."""
+    return Scenario().grow(POSTINGS)
 
 
 @pytest.mark.benchmark(group="matching")

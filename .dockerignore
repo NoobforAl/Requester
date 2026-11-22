@@ -166,6 +166,8 @@ cython_debug/
 
 # pdf files
 src/resumes/*.pdf
+# Resumes written by seed_fake_data
+src/resumes/fake/
 
 # docker files
 docker-compose.yml

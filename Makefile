@@ -27,7 +27,7 @@ COMPOSE_DEV := docker compose -f docker-compose.yaml -f docker-compose.dev.yaml
 COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitoring.yaml
 
 .DEFAULT_GOAL := help
-.PHONY: help install dev seed migrate migrations superuser shell check \
+.PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
         format lint typecheck test bench bench-check loadtest audit fix \
         clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
@@ -49,6 +49,9 @@ dev: ## Run the dev server on SQLite (change with PORT=8001 HOST=0.0.0.0)
 
 seed: ## Fill the SQLite dev database with demo employers, jobs, candidates and applications
 	cd $(SRC) && DJANGO_DEBUG=true PYTHONUTF8=1 $(PYTHON) manage.py seed_demo_data
+
+seed-fake: ## Fill the SQLite dev database with lots of Faker data (fake_* users; FAKE_ARGS="--seed 7 --wipe-fake")
+	cd $(SRC) && DJANGO_DEBUG=true PYTHONUTF8=1 $(PYTHON) manage.py seed_fake_data $(FAKE_ARGS)
 
 migrate: ## Apply database migrations
 	$(MANAGE) migrate --noinput
@@ -145,7 +148,8 @@ deploy: migrate import_legacy_data compilemessages create_es_fields ensure_super
 	cd $(SRC) && $(RUN) gunicorn -w 4 --bind 0.0.0.0:8000 requester.wsgi:application
 
 # deploy-dev: Django dev server, mock data, and an admin from DJANGO_SUPERUSER_*.
-deploy-dev: migrate import_legacy_data compilemessages create_es_fields insert_mock_data ensure_superuser
+# Seed first, then rebuild the search index, so bulk-inserted rows are always indexed.
+deploy-dev: migrate import_legacy_data compilemessages insert_mock_data insert_fake_data create_es_fields ensure_superuser
 	@echo "Starting the dev server"
 	$(MANAGE) runserver 0.0.0.0:8000
 
@@ -165,6 +169,10 @@ collectstatic:
 # Demo accounts have a known password: the commands refuse to run unless DEBUG is on.
 insert_mock_data: migrate
 	cd $(SRC) && PYTHONUTF8=1 $(PYTHON) manage.py seed_demo_data
+
+# Faker volume data (fake_* users, unusable passwords): refuses unless DEBUG is on.
+insert_fake_data: migrate
+	cd $(SRC) && PYTHONUTF8=1 $(PYTHON) manage.py seed_fake_data $(FAKE_ARGS)
 
 # Needs GNU gettext (installed in the Docker image): compiles src/locale/*/django.po.
 compilemessages:

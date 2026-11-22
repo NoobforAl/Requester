@@ -8,11 +8,20 @@ x-dev-env: &dev-env
     DJANGO_SUPERUSER_USERNAME: "admin"
     DJANGO_SUPERUSER_PASSWORD: "admin"
 
+# The dev image also installs the dev dependency group (Faker for `seed_fake_data`).
+x-dev-build: &dev-build
+    args:
+        UV_SYNC_ARGS: "--dev"
+
 services:
     web:
+        build: *dev-build
+        # deploy-dev seeds the demo accounts and Faker volume data (see Makefile).
         command: ["make", "RUN=", "deploy-dev"]
         environment: *dev-env
     tasks:
+        build: *dev-build
         environment: *dev-env
     scheduler:
+        build: *dev-build
         environment: *dev-env

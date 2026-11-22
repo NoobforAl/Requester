@@ -169,6 +169,8 @@ src/staticfiles/
 
 # pdf files
 src/resumes/*.pdf
+# Resumes written by seed_fake_data
+src/resumes/fake/
 
 # database val
 es_data

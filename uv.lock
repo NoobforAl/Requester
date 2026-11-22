@@ -649,6 +649,18 @@ wheels = [
 ]
 
 [[package]]
+name = "faker"
+version = "40.63.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tzdata", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/48/e5/3121da6a4e8721773d787c654a7b3e6901eb7df455ffc6391708794de9c1/faker-40.63.0.tar.gz", hash = "sha256:6c5a09bfb17b3a5fa29f349a2ea86ec5af959df95ec71adc831268adfccc9d62", size = 2041479, upload-time = "2026-11-20T18:16:31.277Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/76/54/f1a9cf45b52014d221d8ef4b29f13df8e11fbd8dba854a075ac3f3b16dcf/faker-40.63.0-py3-none-any.whl", hash = "sha256:36627c20b575b4138f54b6c21f8703e9ab122fd487aca11319beec2aa6ca7232", size = 2074417, upload-time = "2026-11-20T18:16:29.32Z" },
+]
+
+[[package]]
 name = "filelock"
 version = "4.3.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1932,6 +1944,7 @@ dev = [
     { name = "django-silk" },
     { name = "django-stubs", extra = ["compatible-mypy"] },
     { name = "djlint" },
+    { name = "faker" },
     { name = "flake8" },
     { name = "mypy" },
     { name = "pip-audit" },
@@ -1986,6 +1999,7 @@ dev = [
     { name = "django-silk", specifier = "==5.6.0" },
     { name = "django-stubs", extras = ["compatible-mypy"], specifier = ">=5.1" },
     { name = "djlint", specifier = ">=1.36" },
+    { name = "faker", specifier = "==40.63.0" },
     { name = "flake8", specifier = ">=7.1" },
     { name = "mypy", specifier = ">=1.13" },
     { name = "pip-audit", specifier = ">=2.7" },
