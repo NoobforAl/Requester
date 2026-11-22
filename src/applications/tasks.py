@@ -1,10 +1,10 @@
 """Background jobs: AI resume summaries, posting reports, status e-mails, job alerts."""
 
-import logging
 from pathlib import Path
 
 import httpx
 import pdfplumber
+import structlog
 from celery import shared_task
 from django.conf import settings
 from django.core.mail import EmailMessage, send_mail
@@ -18,7 +18,7 @@ from employers.models import JobPosting
 from . import ai
 from .models import Application
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 
 def report_base_url() -> str:
@@ -54,7 +54,7 @@ def pdf_to_markdown(pdf_path: str) -> str:
 def summarize_application(application_id: int) -> None:
     """Summarise an uploaded resume and store the summary on the application."""
     if not ai.active_provider():
-        logger.info("No AI provider configured; skipping resume summary.")
+        logger.info("resume_summary_skipped", reason="no_ai_provider")
         return
 
     try:
@@ -62,13 +62,13 @@ def summarize_application(application_id: int) -> None:
             id=application_id
         )
     except Application.DoesNotExist:
-        logger.warning("Application %s no longer exists.", application_id)
+        logger.warning("application_not_found", application_id=application_id)
         return
 
     try:
         resume_content = pdf_to_markdown(application.resume.path)
     except Exception:
-        logger.exception("Could not read resume of application %s", application_id)
+        logger.exception("resume_read_failed", application_id=application_id)
         return
 
     try:
@@ -78,7 +78,7 @@ def summarize_application(application_id: int) -> None:
     except ai.RetryableAIError:
         raise
     except ai.AIError:
-        logger.exception("AI summary failed for application %s", application_id)
+        logger.exception("resume_summary_failed", application_id=application_id)
         return
 
     application.ai_summary = summary
@@ -99,7 +99,7 @@ def send_posting_report(posting_id: int) -> None:
     try:
         posting = JobPosting.objects.select_related("employer").get(id=posting_id)
     except JobPosting.DoesNotExist:
-        logger.warning("Posting %s no longer exists; no report sent.", posting_id)
+        logger.warning("posting_not_found", posting_id=posting_id)
         return
 
     employer = posting.employer
@@ -126,7 +126,9 @@ def send_posting_report(posting_id: int) -> None:
     )
     email.attach(f"posting_report_{posting.id}.pdf", pdf, "application/pdf")
     email.send()
-    logger.info("Report for posting %s sent to %s", posting.id, employer.contact_email)
+    logger.info(
+        "job_report_sent", posting_id=posting.id, contact_email=employer.contact_email
+    )
 
 
 @shared_task

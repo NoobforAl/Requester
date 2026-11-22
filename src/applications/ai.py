@@ -10,12 +10,11 @@ Provider choice (``settings.AI_PROVIDER``):
 The API key is read from the environment only; it is never logged or stored.
 """
 
-import logging
-
 import httpx
+import structlog
 from django.conf import settings
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 OPENROUTER = "openrouter"
 OLLAMA = "ollama"

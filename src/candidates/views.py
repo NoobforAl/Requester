@@ -1,5 +1,4 @@
-import logging
-
+import structlog
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db import IntegrityError, transaction
@@ -32,7 +31,7 @@ from .form import (
 from .matching import candidate_skill_ids, match_score
 from .models import JobAlert, SavedPosting
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 POSTING_NOT_FOUND = _("This job posting was not found. It may have been deleted.")
 ALREADY_APPLIED = _("You have already applied for this job.")
@@ -221,7 +220,9 @@ class Postings(CandidateAccessMixin, View):
             summarize_application.delay(application.id)
         except Exception:
             # The application is saved; only the AI summary is delayed.
-            logger.exception("Could not queue resume summary for %s", application.id)
+            logger.exception(
+                "resume_summary_queue_failed", application_id=application.id
+            )
 
         messages.success(req, _("Your application was sent."))
         return redirect(job_url, pk=posting.pk)

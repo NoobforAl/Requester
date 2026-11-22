@@ -1,7 +1,6 @@
 """Job-alert digests: pick the new postings for an alert and e-mail them."""
 
-import logging
-
+import structlog
 from django.conf import settings
 from django.core import signing
 from django.core.mail import send_mail
@@ -12,7 +11,7 @@ from django.utils.translation import ngettext
 
 from .models import JobAlert
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 UNSUBSCRIBE_SALT = "candidates.job-alert-unsubscribe"
 MAX_POSTINGS_PER_DIGEST = 20
@@ -86,7 +85,7 @@ def send_alerts(frequency: str) -> int:
         try:
             send_digest(alert, postings)
         except Exception:
-            logger.exception("Could not send job alert %s", alert.pk)
+            logger.exception("job_alert_send_failed", alert_id=alert.pk)
             continue
         alert.last_sent_at = timezone.now()
         alert.save(update_fields=["last_sent_at", "updated_at"])

@@ -1,0 +1,69 @@
+# Vector: ship the JSON logs of the Requester app containers to Loki.
+#
+# Source: the Docker daemon (socket mounted read-only).
+# Only the app containers are read: requester_web, requester_tasks,
+# requester_scheduler. JSON lines are parsed; any other line is kept with
+# level "unknown" so nothing is lost.
+# Loki labels are ONLY level, service and environment (low cardinality).
+# request_id, user_id, trace_id, path, ... stay in the line; query them with
+# `| json` in LogQL (see docs/log-schema.md).
+
+data_dir: /var/lib/vector
+
+api:
+  enabled: false
+
+sources:
+  app_containers:
+    type: docker_logs
+    docker_host: unix:///var/run/docker.sock
+    # Prefix match on the container name.
+    include_containers:
+      - requester_web
+      - requester_tasks
+      - requester_scheduler
+
+transforms:
+  app_logs:
+    type: remap
+    inputs:
+      - app_containers
+    source: |
+      raw = string(.message) ?? ""
+      container = string(.container_name) ?? ""
+      stream = string(.stream) ?? ""
+      docker_ts = .timestamp
+
+      parsed, err = parse_json(raw)
+      if err == null && is_object(parsed) {
+        . = object!(parsed)
+      } else {
+        . = {"event": "unparsed_line", "message": raw, "level": "unknown"}
+      }
+
+      .container = container
+      .stream = stream
+      .timestamp = parse_timestamp(string(.timestamp) ?? "", format: "%+") ?? docker_ts
+
+      # Label values must be plain, non-empty strings.
+      .level = downcase(string(.level) ?? "unknown")
+      if .level == "" { .level = "unknown" }
+      .service = string(.service) ?? replace(container, "requester_", "")
+      if .service == "" { .service = "unknown" }
+      .environment = string(.environment) ?? "unknown"
+      if .environment == "" { .environment = "unknown" }
+
+sinks:
+  loki:
+    type: loki
+    inputs:
+      - app_logs
+    endpoint: http://loki:3100
+    encoding:
+      codec: json
+    labels:
+      level: "{{ level }}"
+      service: "{{ service }}"
+      environment: "{{ environment }}"
+    healthcheck:
+      enabled: true

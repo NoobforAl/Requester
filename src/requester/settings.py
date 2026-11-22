@@ -11,6 +11,8 @@ from pathlib import Path
 from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 
+from observability.logging_config import build_logging, configure_structlog
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -129,6 +131,8 @@ CELERY_TIMEZONE = "UTC"
 # Without a broker (local dev, tests) run tasks inline instead of failing.
 CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_TASK_EAGER_PROPAGATES = False
+# Keep Django's LOGGING (JSON) in workers instead of Celery's own handlers.
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 
 # Celery beat: job-alert digests. Run with `celery -A requester beat` (the compose
 # `scheduler` service). Times are CELERY_TIMEZONE (UTC); 04:30 UTC = 08:00 Tehran.
@@ -164,26 +168,16 @@ OPENROUTER_BASE_URL = os.environ.get(
 LLAMA_SERVER_URL = os.environ.get("LLAMA_SERVER_URL", "")
 LLAMA_MODEL = os.environ.get("LLAMA_MODEL", "llama3.2")
 
-LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "{levelname} {asctime} {name} {message}",
-            "style": "{",
-        },
-    },
-    "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        },
-    },
-    "root": {"handlers": ["console"], "level": "INFO"},
-    "loggers": {
-        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
-    },
-}
+# Logging: structlog, one JSON object per line on stdout (see docs/log-schema.md).
+# LOG_FORMAT=console gives human-readable lines; it is the default with DEBUG on.
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_FORMAT = os.environ.get("LOG_FORMAT") or ("console" if DEBUG else "json")
+configure_structlog(LOG_LEVEL, LOG_FORMAT)
+LOGGING = build_logging(LOG_LEVEL, LOG_FORMAT)
+# RequestLogMiddleware already logs every request (with the route template, not the
+# raw URL). Keep django.request for 5xx only, so 4xx lines are not duplicated and
+# raw paths (e.g. signed unsubscribe tokens) are not logged for 404s.
+LOGGING["loggers"]["django.request"]["level"] = "ERROR"
 
 INSTALLED_APPS = [
     "employers",
@@ -201,6 +195,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    # Request ID + one structured `http_request` log line per request.
+    "observability.middleware.RequestLogMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",

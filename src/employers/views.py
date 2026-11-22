@@ -1,6 +1,6 @@
-import logging
 from datetime import date, datetime, time
 
+import structlog
 from django.contrib import messages
 from django.core.paginator import Page, Paginator
 from django.db.models import Count, Q
@@ -31,7 +31,7 @@ from .form import (
 )
 from .models import JobPosting
 
-logger = logging.getLogger(__name__)
+logger = structlog.get_logger(__name__)
 
 POSTING_NOT_FOUND = _("This job posting was not found. It may have been deleted.")
 FORM_INVALID = _("Nothing was saved. Fix the form errors.")
@@ -336,6 +336,8 @@ class ApplicationStatusUpdate(OwnedApplicationMixin, View):
                 notify_status_change.delay(application.pk)
             except Exception:
                 # The change is saved; only the candidate's e-mail is delayed.
-                logger.exception("Could not queue status e-mail for %s", application.pk)
+                logger.exception(
+                    "status_email_queue_failed", application_id=application.pk
+                )
             messages.success(req, _("Application status updated."))
         return redirect("employer_job", pk=application.posting_id)
