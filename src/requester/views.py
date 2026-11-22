@@ -1,19 +1,18 @@
 from django.http import Http404, HttpRequest, HttpResponse
 from django.shortcuts import redirect, render
-from django.views.decorators.cache import cache_page
 
 
-@cache_page(60 * 60 * 24)
 def handler404(req: HttpRequest, exception: Http404) -> HttpResponse:
+    # Not cached: the page shows the visitor's language and flash messages.
     return render(req, "assets/404.html", status=404)
 
 
-def mainPage(req: HttpRequest) -> HttpResponse:
+def home(req: HttpRequest) -> HttpResponse:
     """Landing page; signed-in users go straight to their own portal."""
     if req.user.is_authenticated:
-        if hasattr(req.user, "worker"):
-            return redirect("/worker/")
-        if hasattr(req.user, "offer"):
-            return redirect("/offer/")
+        if hasattr(req.user, "candidate"):
+            return redirect("candidate_dashboard")
+        if hasattr(req.user, "employer"):
+            return redirect("employer_dashboard")
 
     return render(req, "assets/home.html")

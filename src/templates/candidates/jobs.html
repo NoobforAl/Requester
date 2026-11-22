@@ -1,0 +1,37 @@
+{% extends "candidates/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Jobs" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Open jobs" %}</h1>
+        <a class="btn" href="{% url 'candidate_alerts' %}">{% trans "Get alerts for new jobs" %}</a>
+    </div>
+    <form class="panel filters"
+          method="get"
+          action="{% url 'candidate_jobs' %}"
+          role="search">
+        {% for field in filter_form %}
+            {% include "assets/field.html" with field=field %}
+        {% endfor %}
+        <div class="filters__actions">
+            <button class="btn btn-primary" type="submit">{% trans "Search" %}</button>
+            <a class="btn" href="{% url 'candidate_jobs' %}">{% trans "Clear filters" %}</a>
+        </div>
+    </form>
+    {% if postings %}
+        <ul class="job-list">
+            {% for posting in postings %}
+                {% include "candidates/_posting_card.html" with posting=posting next="candidate_jobs" %}
+            {% endfor %}
+        </ul>
+        {% if query_string %}
+            {% include "assets/pagination.html" with page=postings param="page" extra="&"|add:query_string %}
+        {% else %}
+            {% include "assets/pagination.html" with page=postings param="page" %}
+        {% endif %}
+    {% elif query_string %}
+        <p class="empty">{% trans "No job matches these filters. Remove a filter or search for other words." %}</p>
+    {% else %}
+        <p class="empty">{% trans "No jobs are open right now. Check again later." %}</p>
+    {% endif %}
+{% endblock content %}

@@ -10,6 +10,7 @@ RUN apt-get update && \
     pkg-config libmariadb-dev-compat \
     libmariadb-dev build-essential \
     libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz-subset0 \
+    gettext \
     make gcc curl && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*

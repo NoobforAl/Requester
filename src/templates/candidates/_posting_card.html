@@ -1,0 +1,40 @@
+{% load i18n filters %}
+{% comment %}One posting in a list. Usage: {% include "candidates/_posting_card.html" with posting=p next="candidate_jobs" %}{% endcomment %}
+<li class="job">
+    <div>
+        <h2 class="job__title">
+            <a href="{% url 'candidate_job' posting.pk %}">{{ posting.title }}</a>
+        </h2>
+        <p class="job__meta">
+            {{ posting.employer.name }}
+            {% if posting.location %}· {{ posting.location }}{% endif %}
+            · {{ posting.get_work_mode_display }}
+            · {{ posting.get_employment_type_display }}
+            · {{ posting.created_at|localdate }}
+        </p>
+        {% if posting|salary_label %}<p class="job__meta">{{ posting|salary_label }}</p>{% endif %}
+        <p class="job__summary">{{ posting.description|truncatechars:160 }}</p>
+        {% if posting.skills.all %}
+            <div class="tags">
+                {% for skill in posting.skills.all %}<span class="tag">{{ skill.name }}</span>{% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="job__actions">
+        {% if posting.match is not None %}
+            <span class="stamp stamp--pending">{% trans "Match" %} {{ posting.match }}%</span>
+        {% endif %}
+        <a class="btn btn-sm" href="{% url 'candidate_job' posting.pk %}">{% trans "View and apply" %}</a>
+        <form action="{% url 'candidate_job_save' posting.pk %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <button type="submit" class="btn btn-sm">
+                {% if posting.is_saved or next == "candidate_saved" %}
+                    {% trans "Remove from saved" %}
+                {% else %}
+                    {% trans "Save job" %}
+                {% endif %}
+            </button>
+        </form>
+    </div>
+</li>

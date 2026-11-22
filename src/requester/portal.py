@@ -1,8 +1,9 @@
-"""Shared building blocks for the two portals (``worker`` and ``offer``).
+"""Shared building blocks for the two portals (``candidate`` and ``employer``).
 
 Both portals have the same login, logout and registration flow and the same rule:
 a signed-in user may only use the portal their account belongs to. The user's
-profile is the one-to-one object reachable as ``user.worker`` or ``user.offer``.
+profile is the one-to-one object reachable as ``user.candidate`` or ``user.employer``.
+URL names follow the pattern ``<portal>_login`` / ``<portal>_dashboard``.
 """
 
 from django.contrib import messages
@@ -12,9 +13,13 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 
-NO_ACCESS_MESSAGE = "شما به این بخش دسترسی ندارید. با حساب کاربری همین بخش وارد شوید."
+NO_ACCESS_MESSAGE = _(
+    "You do not have access to this area. Sign in with an account of this area."
+)
 
 
 class AuthenticatedRequest(HttpRequest):
@@ -34,7 +39,7 @@ class PortalAccessMixin(LoginRequiredMixin):
     portal: str = ""
 
     def get_login_url(self) -> str:
-        return f"/{self.portal}/login/"
+        return reverse(f"{self.portal}_login")
 
     def dispatch(self, request: HttpRequest, *args, **kwargs) -> HttpResponseBase:
         if request.user.is_authenticated and not has_profile(request.user, self.portal):
@@ -50,25 +55,25 @@ class PortalLoginView(View):
 
     def get(self, req: HttpRequest) -> HttpResponse:
         if has_profile(req.user, self.portal):
-            return redirect(f"/{self.portal}/")
+            return redirect(f"{self.portal}_dashboard")
         return render(req, self.template_name, {"form": self.form_class()})
 
     def post(self, req: HttpRequest) -> HttpResponse:
         if has_profile(req.user, self.portal):
-            return redirect(f"/{self.portal}/")
+            return redirect(f"{self.portal}_dashboard")
 
         form = self.form_class(request=req, data=req.POST)
         if not form.is_valid():
-            messages.error(req, "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید.")
-            return redirect(f"/{self.portal}/login/")
+            messages.error(req, _("Wrong username or password. Try again."))
+            return redirect(f"{self.portal}_login")
 
         user = form.get_user()
         if not has_profile(user, self.portal):
             messages.error(req, NO_ACCESS_MESSAGE)
-            return redirect(f"/{self.portal}/login/")
+            return redirect(f"{self.portal}_login")
 
         login(req, user)
-        return redirect(f"/{self.portal}/")
+        return redirect(f"{self.portal}_dashboard")
 
 
 class PortalLogoutView(View):
@@ -78,7 +83,7 @@ class PortalLogoutView(View):
 
     def post(self, req: HttpRequest) -> HttpResponse:
         logout(req)
-        return redirect(f"/{self.portal}/login/")
+        return redirect(f"{self.portal}_login")
 
 
 class PortalRegisterView(View):
@@ -88,18 +93,18 @@ class PortalRegisterView(View):
 
     def get(self, req: HttpRequest) -> HttpResponse:
         if has_profile(req.user, self.portal):
-            return redirect(f"/{self.portal}/")
+            return redirect(f"{self.portal}_dashboard")
         return render(req, self.template_name, {"form": self.form_class()})
 
     def post(self, req: HttpRequest) -> HttpResponse:
         if has_profile(req.user, self.portal):
-            return redirect(f"/{self.portal}/")
+            return redirect(f"{self.portal}_dashboard")
 
         form = self.form_class(req.POST)
         if form.is_valid():
             form.save()
-            messages.success(req, "ثبت نام انجام شد. اکنون وارد شوید.")
-            return redirect(f"/{self.portal}/login/")
+            messages.success(req, _("You are registered. Sign in now."))
+            return redirect(f"{self.portal}_login")
 
-        messages.error(req, "ثبت نام انجام نشد. خطاهای فرم را اصلاح کنید.")
+        messages.error(req, _("Registration failed. Fix the form errors."))
         return render(req, self.template_name, {"form": form})

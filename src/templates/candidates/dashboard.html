@@ -1,0 +1,87 @@
+{% extends "candidates/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Candidate dashboard" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Your applications" %}</h1>
+        <a class="btn btn-primary" href="{% url 'candidate_jobs' %}">{% trans "Browse jobs" %}</a>
+    </div>
+    <dl class="figures">
+        <div class="figure">
+            <dt>{% trans "Profile completeness" %}</dt>
+            <dd>
+                {{ completeness }}%
+                <progress max="100" value="{{ completeness }}" aria-label="{% trans 'Profile completeness' %}"></progress>
+            </dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Saved jobs" %}</dt>
+            <dd>
+                <a href="{% url 'candidate_saved' %}">{{ saved_count }}</a>
+            </dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Active job alerts" %}</dt>
+            <dd>
+                <a href="{% url 'candidate_alerts' %}">{{ alert_count }}</a>
+            </dd>
+        </div>
+    </dl>
+    {% if completeness < 100 %}
+        <p class="muted">
+            <a href="{% url 'candidate_settings' %}">{% trans "Complete your profile for better job matches." %}</a>
+        </p>
+    {% endif %}
+    {% if total %}
+        <section aria-labelledby="status-title">
+            <h2 class="section__title" id="status-title">
+                <span>{% trans "Application status" %}</span>
+                <span class="muted">{% blocktrans count n=total %}{{ n }} application sent{% plural %}{{ n }} applications sent{% endblocktrans %}</span>
+            </h2>
+            <div class="bars">
+                <div class="bar bar--stamp bar--accepted">
+                    <span class="bar__label"><span class="stamp stamp--accepted">{% trans "Accepted" %}</span></span>
+                    <progress max="{{ total }}"
+                              value="{{ accepted }}"
+                              aria-label="{% trans 'Accepted applications' %}"></progress>
+                    <span class="bar__value">{{ accepted }}</span>
+                </div>
+                <div class="bar bar--stamp bar--pending">
+                    <span class="bar__label"><span class="stamp stamp--pending">{% trans "In progress" %}</span></span>
+                    <progress max="{{ total }}"
+                              value="{{ in_progress }}"
+                              aria-label="{% trans 'Applications in progress' %}"></progress>
+                    <span class="bar__value">{{ in_progress }}</span>
+                </div>
+                <div class="bar bar--stamp bar--rejected">
+                    <span class="bar__label"><span class="stamp stamp--rejected">{% trans "Rejected" %}</span></span>
+                    <progress max="{{ total }}"
+                              value="{{ rejected }}"
+                              aria-label="{% trans 'Rejected applications' %}"></progress>
+                    <span class="bar__value">{{ rejected }}</span>
+                </div>
+            </div>
+        </section>
+    {% else %}
+        <p class="empty">{% trans "You have not applied yet. Pick a job and send your resume for it." %}</p>
+    {% endif %}
+    <section class="section" aria-labelledby="tips-title">
+        <h2 class="section__title" id="tips-title">{% trans "Make your resume stronger" %}</h2>
+        <ul class="link-list">
+            <li>
+                <a href="https://www.coursera.org/articles/ways-to-enhance-your-resume"
+                   rel="noopener"
+                   lang="en"
+                   hreflang="en">Ways to enhance your resume</a>
+                <span class="muted">{% trans "(guide in English)" %}</span>
+            </li>
+            <li>
+                <a href="https://www.kickresume.com/en/ai-resume-rewrite/"
+                   rel="noopener"
+                   lang="en"
+                   hreflang="en">AI resume rewrite</a>
+                <span class="muted">{% trans "(AI rewriting tool, in English)" %}</span>
+            </li>
+        </ul>
+    </section>
+{% endblock content %}

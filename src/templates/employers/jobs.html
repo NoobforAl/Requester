@@ -1,0 +1,58 @@
+{% extends "employers/base.html" %}
+{% load i18n filters %}
+{% block title %}{% trans "My jobs" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Posted jobs" %}</h1>
+        <a class="btn btn-primary" href="#new-job">{% trans "Post a new job" %}</a>
+    </div>
+    {% if postings %}
+        <ul class="job-list">
+            {% for posting in postings %}
+                <li class="job">
+                    <div>
+                        <h2 class="job__title">
+                            <a href="{% url 'employer_job' posting.pk %}">{{ posting.title }}</a>
+                            {% if not posting.is_open %}<span class="stamp stamp--rejected">{% trans "Closed" %}</span>{% endif %}
+                        </h2>
+                        <p class="job__meta">
+                            {% blocktrans with date=posting.created_at|localdate %}Posted on {{ date }}{% endblocktrans %}
+                            · {% blocktrans count n=posting.application_count %}{{ n }} application{% plural %}{{ n }} applications{% endblocktrans %}
+                        </p>
+                        <p class="job__summary">{{ posting.description|truncatechars:160 }}</p>
+                        {% if posting.skills.all %}
+                            <div class="tags">
+                                {% for skill in posting.skills.all %}<span class="tag">{{ skill.name }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="job__actions">
+                        <a class="btn btn-sm" href="{% url 'employer_job' posting.pk %}">{% trans "View applications" %}</a>
+                        <form action="{% url 'employer_job_delete' posting.pk %}"
+                              method="post"
+                              data-confirm="{% trans 'This job and all its applications will be deleted. Continue?' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">{% trans "Delete job" %}</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+        {% include "assets/pagination.html" with page=postings param="page" %}
+    {% else %}
+        <p class="empty">{% trans "You have not posted any job yet. Fill in the form below to publish your first one." %}</p>
+    {% endif %}
+    <section class="section" id="new-job" aria-labelledby="new-job-title">
+        <h2 class="section__title" id="new-job-title">{% trans "Post a new job" %}</h2>
+        <form class="panel auth--wide"
+              action="{% url 'employer_jobs' %}"
+              method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% include "assets/field.html" with field=field %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">{% trans "Publish job" %}</button>
+        </form>
+    </section>
+{% endblock content %}

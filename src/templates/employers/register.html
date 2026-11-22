@@ -1,0 +1,22 @@
+{% extends "assets/body.html" %}
+{% load i18n %}
+{% block title %}{% trans "Create an employer account" %} | {% trans "Requester" %}{% endblock title %}
+{% block portal %}employer{% endblock portal %}
+{% block content %}
+    <div class="auth auth--wide">
+        <p class="auth__portal">{% trans "Employer area" %}</p>
+        <h1>{% trans "Create a new account" %}</h1>
+        <form action="{% url 'employer_register' %}" method="post">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% include "assets/field.html" with field=field %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary btn-block">{% trans "Create account" %}</button>
+        </form>
+        <div class="auth__alt">
+            <p>{% trans "Already registered?" %}</p>
+            <a class="btn btn-block" href="{% url 'employer_login' %}">{% trans "Sign in to your account" %}</a>
+        </div>
+    </div>
+{% endblock content %}

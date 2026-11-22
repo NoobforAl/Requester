@@ -1,0 +1,123 @@
+{% extends "employers/base.html" %}
+{% load i18n filters %}
+{% block title %}{{ posting.title }} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <p>
+        <a href="{% url 'employer_jobs' %}">{% trans "Back to jobs" %}</a>
+    </p>
+    <div class="page-head">
+        <h1>
+            {{ posting.title }}
+            {% if not posting.is_open %}<span class="stamp stamp--rejected">{% trans "Closed" %}</span>{% endif %}
+        </h1>
+        <div class="job__actions">
+            <form method="post" action="{% url 'employer_job_toggle' posting.pk %}">
+                {% csrf_token %}
+                <button class="btn" type="submit">
+                    {% if posting.is_active %}
+                        {% trans "Close to new applications" %}
+                    {% else %}
+                        {% trans "Open for applications" %}
+                    {% endif %}
+                </button>
+            </form>
+            <form method="post" action="{% url 'employer_job_report' posting.pk %}">
+                {% csrf_token %}
+                <button class="btn" type="submit">{% trans "Get a report by e-mail" %}</button>
+            </form>
+        </div>
+    </div>
+    <section aria-labelledby="edit-title">
+        <h2 class="section__title" id="edit-title">{% trans "Job details" %}</h2>
+        <form class="panel auth--wide"
+              method="post"
+              action="{% url 'employer_job_edit' posting.pk %}">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% include "assets/field.html" with field=field %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+        </form>
+    </section>
+    <section class="section" aria-labelledby="requests-title">
+        <h2 class="section__title" id="requests-title">{% trans "Applications received" %}</h2>
+        <form class="search" method="get" role="search">
+            <label class="visually-hidden" for="applicant-search">{% trans "Search applicants" %}</label>
+            <input class="form-control"
+                   id="applicant-search"
+                   type="search"
+                   name="search"
+                   placeholder="{% trans 'Candidate name or email' %}"
+                   value="{{ search_query }}">
+            <label class="visually-hidden" for="status-filter">{% trans "Status" %}</label>
+            <select id="status-filter" name="status" class="form-select">
+                <option value="">{% trans "Any status" %}</option>
+                {% for value, label in statuses %}
+                    <option value="{{ value }}"
+                            {% if value == status_filter %}selected{% endif %}>{{ label }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-primary">{% trans "Search" %}</button>
+        </form>
+        {% if applications %}
+            <ul>
+                {% for application in applications %}
+                    <li class="applicant">
+                        <div class="applicant__head">
+                            <div>
+                                <h3 class="applicant__name">
+                                    {{ application.candidate.first_name }} {{ application.candidate.last_name }}
+                                </h3>
+                                <p class="applicant__meta">
+                                    {{ application.candidate.email }}
+                                    · {% blocktrans with date=application.applied_at|localdate %}Sent on {{ date }}{% endblocktrans %}
+                                </p>
+                                {% if application.candidate.headline %}<p class="applicant__meta">{{ application.candidate.headline }}</p>{% endif %}
+                            </div>
+                            <span class="stamp stamp--{{ application.status }}">{{ application.get_status_display }}</span>
+                        </div>
+                        <div class="applicant__body">
+                            <a class="btn btn-sm"
+                               href="{% url 'employer_resume' application.pk %}">{% trans "Download resume" %}</a>
+                            {% with next_statuses=application.employer_status_choices %}
+                            {% if next_statuses %}
+                                <form class="inline-form"
+                                      method="post"
+                                      action="{% url 'employer_application_status' application.pk %}">
+                                    {% csrf_token %}
+                                    <label class="visually-hidden" for="status-{{ application.pk }}">{% trans "Change the status of this application" %}</label>
+                                    <select id="status-{{ application.pk }}" name="status">
+                                        {% for value, label in next_statuses %}
+                                            <option value="{{ value }}">{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <input class="form-control"
+                                           type="text"
+                                           name="note"
+                                           maxlength="500"
+                                           placeholder="{% trans 'Note (optional)' %}">
+                                    <button type="submit" class="btn btn-sm btn-primary">{% trans "Change status" %}</button>
+                                </form>
+                            {% endif %}
+                            {% endwith %}
+                        </div>
+                        {% if application.ai_summary %}
+                            <details>
+                                <summary>{% trans "Resume summary (generated by AI)" %}</summary>
+                                <p class="prose">{{ application.ai_summary }}</p>
+                            </details>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% with q=search_query|urlencode s=status_filter|urlencode %}
+                {% include "assets/pagination.html" with page=applications param="page" extra="&search="|add:q|add:"&status="|add:s %}
+            {% endwith %}
+        {% elif search_query or status_filter %}
+            <p class="empty">{% trans "No application matches. Clear the search or try other words." %}</p>
+        {% else %}
+            <p class="empty">{% trans "Nobody has applied for this job yet." %}</p>
+        {% endif %}
+    </section>
+{% endblock content %}

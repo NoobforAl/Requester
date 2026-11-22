@@ -176,3 +176,6 @@ mariadb_data
 mysql_data
 redis_data
 ollama_data
+
+# remove claude files
+.claude

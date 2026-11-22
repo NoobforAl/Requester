@@ -1,12 +1,13 @@
 {% extends "assets/body.html" %}
-{% block title %}صفحه پیدا نشد | درخواستی{% endblock title %}
+{% load i18n %}
+{% block title %}{% trans "Page not found" %} | {% trans "Requester" %}{% endblock title %}
 {% block content %}
     <div class="lost">
         <p class="lost__code" aria-hidden="true">404</p>
-        <h1>این صفحه پیدا نشد</h1>
+        <h1>{% trans "This page was not found" %}</h1>
         <p class="muted">
-            نشانی را بررسی کنید، یا از صفحه اصلی دوباره شروع کنید. ممکن است آگهی یا صفحه‌ای که دنبالش بودید حذف شده باشد.
+            {% trans "Check the address, or start again from the home page. The job or page you were looking for may have been deleted." %}
         </p>
-        <a class="btn btn-primary" href="/">رفتن به صفحه اصلی</a>
+        <a class="btn btn-primary" href="/">{% trans "Go to the home page" %}</a>
     </div>
 {% endblock content %}

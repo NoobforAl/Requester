@@ -1,0 +1,1003 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: en\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "In review"
+msgstr "In review"
+
+msgid "Shortlisted"
+msgstr "Shortlisted"
+
+msgid "Accepted"
+msgstr "Accepted"
+
+msgid "Rejected"
+msgstr "Rejected"
+
+msgid "Withdrawn"
+msgstr "Withdrawn"
+
+msgid "Resume"
+msgstr "Resume"
+
+msgid "Cover letter"
+msgstr "Cover letter"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Private note"
+msgstr "Private note"
+
+msgid "AI summary"
+msgstr "AI summary"
+
+msgid "Application"
+msgstr "Application"
+
+msgid "Applications"
+msgstr "Applications"
+
+msgid "Application event"
+msgstr "Application event"
+
+msgid "Application events"
+msgstr "Application events"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "Report for %(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "The report is attached: %(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "Update on your application: %(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "%(count)d new job for “%(name)s”"
+msgstr[1] "%(count)d new jobs for “%(name)s”"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "Hello %(name)s,"
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "Stop this alert: %(url)s"
+
+msgid "Username"
+msgstr "Username"
+
+msgid "Password"
+msgstr "Password"
+
+msgid "First name"
+msgstr "First name"
+
+msgid "Last name"
+msgstr "Last name"
+
+msgid "Email"
+msgstr "Email"
+
+msgid "Confirm password"
+msgstr "Confirm password"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr ""
+"This email is already registered. Register with another email or sign in."
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr "The file is larger than %(limit)d MB. Choose a smaller file."
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "Only PDF files are allowed. Save your resume as a PDF."
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "This file is not a valid PDF. Save it again as a PDF."
+
+msgid "Headline"
+msgstr "Headline"
+
+msgid "City"
+msgstr "City"
+
+msgid "This email is already registered."
+msgstr "This email is already registered."
+
+msgid "Alert name"
+msgstr "Alert name"
+
+msgid "Keywords"
+msgstr "Keywords"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "Search jobs"
+msgstr "Search jobs"
+
+msgid "Work mode"
+msgstr "Work mode"
+
+msgid "Any work mode"
+msgstr "Any work mode"
+
+msgid "Employment type"
+msgstr "Employment type"
+
+msgid "Any type"
+msgstr "Any type"
+
+msgid "Seniority"
+msgstr "Seniority"
+
+msgid "Any level"
+msgstr "Any level"
+
+msgid "Minimum salary"
+msgstr "Minimum salary"
+
+msgid "Skills"
+msgstr "Skills"
+
+msgid "Remote only"
+msgstr "Remote only"
+
+msgid "Sort by"
+msgstr "Sort by"
+
+msgid "Newest first"
+msgstr "Newest first"
+
+msgid "Highest salary"
+msgstr "Highest salary"
+
+msgid "Closing soon"
+msgstr "Closing soon"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr "Enter a valid phone number (digits, spaces, + ( ) - only)."
+
+msgid "Date of birth cannot be in the future."
+msgstr "Date of birth cannot be in the future."
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "Candidates must be at least %(age)d years old."
+
+msgid "High school"
+msgstr "High school"
+
+msgid "Associate degree"
+msgstr "Associate degree"
+
+msgid "Bachelor's degree"
+msgstr "Bachelor's degree"
+
+msgid "Master's degree"
+msgstr "Master's degree"
+
+msgid "Doctorate"
+msgstr "Doctorate"
+
+msgid "Phone number"
+msgstr "Phone number"
+
+msgid "Address"
+msgstr "Address"
+
+msgid "Date of birth"
+msgstr "Date of birth"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "One line about you, e.g. “Backend developer, 5 years”."
+
+msgid "Years of experience"
+msgstr "Years of experience"
+
+msgid "Education"
+msgstr "Education"
+
+msgid "Expected salary"
+msgstr "Expected salary"
+
+msgid "Salary currency"
+msgstr "Salary currency"
+
+msgid "Preferred work mode"
+msgstr "Preferred work mode"
+
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+msgid "Open to work"
+msgstr "Open to work"
+
+msgid "Preferred language"
+msgstr "Preferred language"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "Language of e-mails such as job alerts."
+
+msgid "Candidate"
+msgstr "Candidate"
+
+msgid "Candidates"
+msgstr "Candidates"
+
+msgid "Saved posting"
+msgstr "Saved posting"
+
+msgid "Saved postings"
+msgstr "Saved postings"
+
+msgid "Daily"
+msgstr "Daily"
+
+msgid "Weekly"
+msgstr "Weekly"
+
+msgid "How often"
+msgstr "How often"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Job alert"
+msgstr "Job alert"
+
+msgid "Job alerts"
+msgstr "Job alerts"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr "This job posting was not found. It may have been deleted."
+
+msgid "You have already applied for this job."
+msgstr "You have already applied for this job."
+
+msgid "This job is no longer accepting applications."
+msgstr "This job is no longer accepting applications."
+
+msgid "Your application was sent."
+msgstr "Your application was sent."
+
+msgid "Job saved."
+msgstr "Job saved."
+
+msgid "Job removed from your saved jobs."
+msgstr "Job removed from your saved jobs."
+
+msgid "This application was not found."
+msgstr "This application was not found."
+
+msgid "This application can no longer be withdrawn."
+msgstr "This application can no longer be withdrawn."
+
+msgid "Your application was withdrawn."
+msgstr "Your application was withdrawn."
+
+msgid "Your details were saved."
+msgstr "Your details were saved."
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "Nothing was saved. Fix the form errors."
+
+msgid "Job alert created."
+msgstr "Job alert created."
+
+msgid "This job alert was not found."
+msgstr "This job alert was not found."
+
+msgid "Job alert switched on."
+msgstr "Job alert switched on."
+
+msgid "Job alert switched off."
+msgstr "Job alert switched off."
+
+msgid "Job alert deleted."
+msgstr "Job alert deleted."
+
+msgid "Company name"
+msgstr "Company name"
+
+msgid "Company email"
+msgstr "Company email"
+
+msgid "Description"
+msgstr "Description"
+
+msgid "Extra information about the company"
+msgstr "Extra information about the company"
+
+msgid "This company email is already registered. Enter another one."
+msgstr "This company email is already registered. Enter another one."
+
+msgid "Industry"
+msgstr "Industry"
+
+msgid "Job title"
+msgstr "Job title"
+
+msgid "Job description"
+msgstr "Job description"
+
+msgid "Country"
+msgstr "Country"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr "You already have a posting with this title. Choose another."
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "The maximum salary cannot be lower than the minimum."
+
+msgid "Iranian rial (IRR)"
+msgstr "Iranian rial (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "US dollar (USD)"
+
+msgid "Euro (EUR)"
+msgstr "Euro (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "Pound sterling (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "Russian ruble (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "Chinese yuan (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "UAE dirham (AED)"
+
+msgid "On-site"
+msgstr "On-site"
+
+msgid "Hybrid"
+msgstr "Hybrid"
+
+msgid "Remote"
+msgstr "Remote"
+
+msgid "1-10 employees"
+msgstr "1-10 employees"
+
+msgid "11-50 employees"
+msgstr "11-50 employees"
+
+msgid "51-200 employees"
+msgstr "51-200 employees"
+
+msgid "201-1000 employees"
+msgstr "201-1000 employees"
+
+msgid "More than 1000 employees"
+msgstr "More than 1000 employees"
+
+msgid "User"
+msgstr "User"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Company size"
+msgstr "Company size"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "Language of reports and e-mails sent to the company."
+
+msgid "Employer"
+msgstr "Employer"
+
+msgid "Employers"
+msgstr "Employers"
+
+msgid "Skill name"
+msgstr "Skill name"
+
+msgid "Skill"
+msgstr "Skill"
+
+msgid "Full-time"
+msgstr "Full-time"
+
+msgid "Part-time"
+msgstr "Part-time"
+
+msgid "Contract"
+msgstr "Contract"
+
+msgid "Internship"
+msgstr "Internship"
+
+msgid "Freelance"
+msgstr "Freelance"
+
+msgid "Intern"
+msgstr "Intern"
+
+msgid "Junior"
+msgstr "Junior"
+
+msgid "Mid-level"
+msgstr "Mid-level"
+
+msgid "Senior"
+msgstr "Senior"
+
+msgid "Lead / Manager"
+msgstr "Lead / Manager"
+
+msgid "Maximum salary"
+msgstr "Maximum salary"
+
+msgid "Application deadline"
+msgstr "Application deadline"
+
+msgid "Accepting applications"
+msgstr "Accepting applications"
+
+msgid "Job posting"
+msgstr "Job posting"
+
+msgid "Job postings"
+msgstr "Job postings"
+
+msgid "Company details saved."
+msgstr "Company details saved."
+
+msgid "Job posting created."
+msgstr "Job posting created."
+
+msgid "Job posting updated."
+msgstr "Job posting updated."
+
+msgid "The posting is open for applications again."
+msgstr "The posting is open for applications again."
+
+msgid "The posting is closed to new applications."
+msgstr "The posting is closed to new applications."
+
+msgid "Job posting deleted."
+msgstr "Job posting deleted."
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr "The resume file was not found. Ask the candidate to apply again."
+
+msgid "The selected status is not valid."
+msgstr "The selected status is not valid."
+
+msgid "This status change is not allowed."
+msgstr "This status change is not allowed."
+
+msgid "Application status updated."
+msgstr "Application status updated."
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr ""
+"You do not have access to this area. Sign in with an account of this area."
+
+msgid "Wrong username or password. Try again."
+msgstr "Wrong username or password. Try again."
+
+msgid "You are registered. Sign in now."
+msgstr "You are registered. Sign in now."
+
+msgid "Registration failed. Fix the form errors."
+msgstr "Registration failed. Fix the form errors."
+
+msgid "Page not found"
+msgstr "Page not found"
+
+msgid "Requester"
+msgstr "Requester"
+
+msgid "This page was not found"
+msgstr "This page was not found"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+
+msgid "Go to the home page"
+msgstr "Go to the home page"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "Requester: a place to find a job and to hire"
+
+msgid "Skip to the page content"
+msgstr "Skip to the page content"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+
+msgid "I am looking for a job"
+msgstr "I am looking for a job"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr "Browse jobs, send your resume and follow the result from here."
+
+msgid "Open the candidate area"
+msgstr "Open the candidate area"
+
+msgid "I am hiring"
+msgstr "I am hiring"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr "Post a job, read resumes and accept or reject every application."
+
+msgid "Open the employer area"
+msgstr "Open the employer area"
+
+msgid "Language"
+msgstr "Language"
+
+msgid "Change"
+msgstr "Change"
+
+msgid "Pagination"
+msgstr "Pagination"
+
+msgid "Previous"
+msgstr "Previous"
+
+msgid "Next"
+msgstr "Next"
+
+msgid "Employer area"
+msgstr "Employer area"
+
+msgid "Candidate area"
+msgstr "Candidate area"
+
+msgid "Main menu"
+msgstr "Main menu"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Jobs"
+msgstr "Jobs"
+
+msgid "Saved jobs"
+msgstr "Saved jobs"
+
+msgid "My applications"
+msgstr "My applications"
+
+msgid "Settings"
+msgstr "Settings"
+
+msgid "Sign out"
+msgstr "Sign out"
+
+msgid "Match"
+msgstr "Match"
+
+msgid "View and apply"
+msgstr "View and apply"
+
+msgid "Remove from saved"
+msgstr "Remove from saved"
+
+msgid "Save job"
+msgstr "Save job"
+
+msgid "Stop job alert"
+msgstr "Stop job alert"
+
+msgid "This link is not valid"
+msgstr "This link is not valid"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+
+msgid "Job alert switched off"
+msgstr "Job alert switched off"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "You will no longer get e-mails for “%(name)s”."
+
+msgid "Stop this job alert?"
+msgstr "Stop this job alert?"
+
+msgid "Back to the home page"
+msgstr "Back to the home page"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr "We e-mail you when new jobs match a search you saved."
+
+msgid "Off"
+msgstr "Off"
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "Last e-mail on %(date)s"
+
+msgid "Switch off"
+msgstr "Switch off"
+
+msgid "Switch on"
+msgstr "Switch on"
+
+msgid "Delete this job alert?"
+msgstr "Delete this job alert?"
+
+msgid "Delete"
+msgstr "Delete"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "You have no job alerts yet. Create one below."
+
+msgid "New job alert"
+msgstr "New job alert"
+
+msgid "Create alert"
+msgstr "Create alert"
+
+msgid "Applications you have sent"
+msgstr "Applications you have sent"
+
+msgid "Browse jobs"
+msgstr "Browse jobs"
+
+msgid "Job"
+msgstr "Job"
+
+msgid "Company"
+msgstr "Company"
+
+msgid "Date sent"
+msgstr "Date sent"
+
+msgid "You have not applied yet."
+msgstr "You have not applied yet."
+
+msgid "Candidate dashboard"
+msgstr "Candidate dashboard"
+
+msgid "Your applications"
+msgstr "Your applications"
+
+msgid "Profile completeness"
+msgstr "Profile completeness"
+
+msgid "Active job alerts"
+msgstr "Active job alerts"
+
+msgid "Complete your profile for better job matches."
+msgstr "Complete your profile for better job matches."
+
+msgid "Application status"
+msgstr "Application status"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "%(n)s application sent"
+msgstr[1] "%(n)s applications sent"
+
+msgid "Accepted applications"
+msgstr "Accepted applications"
+
+msgid "In progress"
+msgstr "In progress"
+
+msgid "Applications in progress"
+msgstr "Applications in progress"
+
+msgid "Rejected applications"
+msgstr "Rejected applications"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr "You have not applied yet. Pick a job and send your resume for it."
+
+msgid "Make your resume stronger"
+msgstr "Make your resume stronger"
+
+msgid "(guide in English)"
+msgstr "(guide in English)"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "(AI rewriting tool, in English)"
+
+msgid "Back to the job list"
+msgstr "Back to the job list"
+
+msgid "Salary"
+msgstr "Salary"
+
+msgid "Match with your profile"
+msgstr "Match with your profile"
+
+msgid "About the company"
+msgstr "About the company"
+
+msgid "Your application"
+msgstr "Your application"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "Sent on %(date)s"
+
+msgid "Application sent"
+msgstr "Application sent"
+
+msgid "Withdraw this application?"
+msgstr "Withdraw this application?"
+
+msgid "Withdraw application"
+msgstr "Withdraw application"
+
+msgid "Apply"
+msgstr "Apply"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "Send your resume as a PDF file of up to 5 MB."
+
+msgid "Send resume"
+msgstr "Send resume"
+
+msgid "Applications closed"
+msgstr "Applications closed"
+
+msgid "Open jobs"
+msgstr "Open jobs"
+
+msgid "Get alerts for new jobs"
+msgstr "Get alerts for new jobs"
+
+msgid "Clear filters"
+msgstr "Clear filters"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr ""
+"No job matches these filters. Remove a filter or search for other words."
+
+msgid "No jobs are open right now. Check again later."
+msgstr "No jobs are open right now. Check again later."
+
+msgid "Candidate sign in"
+msgstr "Candidate sign in"
+
+msgid "Sign in to your account"
+msgstr "Sign in to your account"
+
+msgid "Sign in"
+msgstr "Sign in"
+
+msgid "No account yet?"
+msgstr "No account yet?"
+
+msgid "Create a new account"
+msgstr "Create a new account"
+
+msgid "Create a candidate account"
+msgstr "Create a candidate account"
+
+msgid "Create account"
+msgstr "Create account"
+
+msgid "Already registered?"
+msgstr "Already registered?"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+
+msgid "Profile settings"
+msgstr "Profile settings"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+
+msgid "Save changes"
+msgstr "Save changes"
+
+msgid "Employer dashboard"
+msgstr "Employer dashboard"
+
+msgid "Your activity at a glance"
+msgstr "Your activity at a glance"
+
+msgid "Post a new job"
+msgstr "Post a new job"
+
+msgid "Jobs posted"
+msgstr "Jobs posted"
+
+msgid "Jobs open for applications"
+msgstr "Jobs open for applications"
+
+msgid "Applications received"
+msgstr "Applications received"
+
+msgid "Waiting for your review"
+msgstr "Waiting for your review"
+
+msgid "Jobs posted this month"
+msgstr "Jobs posted this month"
+
+msgid "Jobs posted last month"
+msgstr "Jobs posted last month"
+
+msgid "Applications per day this month"
+msgstr "Applications per day this month"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "Applications on %(day)s"
+
+msgid "No applications have arrived this month yet."
+msgstr "No applications have arrived this month yet."
+
+msgid "Writing a better job post"
+msgstr "Writing a better job post"
+
+msgid "Back to jobs"
+msgstr "Back to jobs"
+
+msgid "Closed"
+msgstr "Closed"
+
+msgid "Close to new applications"
+msgstr "Close to new applications"
+
+msgid "Open for applications"
+msgstr "Open for applications"
+
+msgid "Get a report by e-mail"
+msgstr "Get a report by e-mail"
+
+msgid "Job details"
+msgstr "Job details"
+
+msgid "Search applicants"
+msgstr "Search applicants"
+
+msgid "Candidate name or email"
+msgstr "Candidate name or email"
+
+msgid "Any status"
+msgstr "Any status"
+
+msgid "Download resume"
+msgstr "Download resume"
+
+msgid "Change the status of this application"
+msgstr "Change the status of this application"
+
+msgid "Note (optional)"
+msgstr "Note (optional)"
+
+msgid "Change status"
+msgstr "Change status"
+
+msgid "Resume summary (generated by AI)"
+msgstr "Resume summary (generated by AI)"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr "No application matches. Clear the search or try other words."
+
+msgid "Nobody has applied for this job yet."
+msgstr "Nobody has applied for this job yet."
+
+msgid "My jobs"
+msgstr "My jobs"
+
+msgid "Posted jobs"
+msgstr "Posted jobs"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "Posted on %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "%(n)s application"
+msgstr[1] "%(n)s applications"
+
+msgid "View applications"
+msgstr "View applications"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr "This job and all its applications will be deleted. Continue?"
+
+msgid "Delete job"
+msgstr "Delete job"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+
+msgid "Publish job"
+msgstr "Publish job"
+
+msgid "Employer sign in"
+msgstr "Employer sign in"
+
+msgid "Create an employer account"
+msgstr "Create an employer account"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "Report for job: %(title)s"
+
+msgid "No applications yet."
+msgstr "No applications yet."
+
+msgid "Company settings"
+msgstr "Company settings"
+
+msgid "The details candidates see next to your jobs."
+msgstr "The details candidates see next to your jobs."

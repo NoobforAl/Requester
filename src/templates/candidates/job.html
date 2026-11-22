@@ -1,0 +1,114 @@
+{% extends "candidates/base.html" %}
+{% load i18n filters %}
+{% block title %}{{ posting.title }} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <p>
+        <a href="{% url 'candidate_jobs' %}">{% trans "Back to the job list" %}</a>
+    </p>
+    <div class="job-page">
+        <article>
+            <h1>{{ posting.title }}</h1>
+            <p class="job__meta">
+                {{ employer.name }}
+                {% if posting.location %}· {{ posting.location }}{% if posting.country %}, {{ posting.country }}{% endif %}{% endif %}
+            </p>
+            <dl class="facts">
+                <dt>{% trans "Work mode" %}</dt>
+                <dd>{{ posting.get_work_mode_display }}</dd>
+                <dt>{% trans "Employment type" %}</dt>
+                <dd>{{ posting.get_employment_type_display }}</dd>
+                {% if posting.seniority %}
+                    <dt>{% trans "Seniority" %}</dt>
+                    <dd>{{ posting.get_seniority_display }}</dd>
+                {% endif %}
+                {% if posting|salary_label %}
+                    <dt>{% trans "Salary" %}</dt>
+                    <dd>{{ posting|salary_label }}</dd>
+                {% endif %}
+                {% if posting.deadline %}
+                    <dt>{% trans "Application deadline" %}</dt>
+                    <dd>{{ posting.deadline|localdate }}</dd>
+                {% endif %}
+                <dt>{% trans "Match with your profile" %}</dt>
+                <dd>{{ match }}%</dd>
+            </dl>
+            {% if posting.skills.all %}
+                <div class="tags">
+                    {% for skill in posting.skills.all %}<span class="tag">{{ skill.name }}</span>{% endfor %}
+                </div>
+            {% endif %}
+            <h2 class="section__title section">{% trans "Job description" %}</h2>
+            <p class="prose">{{ posting.description }}</p>
+            <h2 class="section__title section">{% trans "About the company" %}</h2>
+            <dl class="facts">
+                <dt>{% trans "Company name" %}</dt>
+                <dd>{{ employer.name }}</dd>
+                <dt>{% trans "Email" %}</dt>
+                <dd>{{ employer.contact_email }}</dd>
+                {% if employer.website %}
+                    <dt>{% trans "Website" %}</dt>
+                    <dd>
+                        <a href="{{ employer.website }}" rel="noopener nofollow">{{ employer.website }}</a>
+                    </dd>
+                {% endif %}
+                {% if employer.industry %}
+                    <dt>{% trans "Industry" %}</dt>
+                    <dd>{{ employer.industry }}</dd>
+                {% endif %}
+                <dt>{% trans "Description" %}</dt>
+                <dd class="prose">{{ employer.description }}</dd>
+            </dl>
+        </article>
+        <aside class="job-page__aside panel" aria-labelledby="apply-title">
+            <form action="{% url 'candidate_job_save' posting.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-block">
+                    {% if is_saved %}
+                        {% trans "Remove from saved" %}
+                    {% else %}
+                        {% trans "Save job" %}
+                    {% endif %}
+                </button>
+            </form>
+            {% if application %}
+                <h2 id="apply-title">{% trans "Your application" %}</h2>
+                <p>
+                    <span class="stamp stamp--{{ application.status }}">{{ application.get_status_display }}</span>
+                </p>
+                <p class="muted">{% blocktrans with date=application.applied_at|localdate %}Sent on {{ date }}{% endblocktrans %}</p>
+                <ol class="timeline">
+                    <li>{% trans "Application sent" %} · {{ application.applied_at|localdate }}</li>
+                    {% for event in application.events.all %}
+                        <li>
+                            {{ event.get_to_status_display }} · {{ event.created_at|localdate }}
+                            {% if event.note %}<br><span class="muted">{{ event.note }}</span>{% endif %}
+                        </li>
+                    {% endfor %}
+                </ol>
+                {% if application.can_withdraw %}
+                    <form action="{% url 'candidate_application_withdraw' application.pk %}"
+                          method="post"
+                          data-confirm="{% trans 'Withdraw this application?' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-block">{% trans "Withdraw application" %}</button>
+                    </form>
+                {% endif %}
+            {% elif posting.is_open %}
+                <h2 id="apply-title">{% trans "Apply" %}</h2>
+                <p class="muted">{% trans "Send your resume as a PDF file of up to 5 MB." %}</p>
+                <form method="post"
+                      action="{% url 'candidate_job' posting.pk %}"
+                      enctype="multipart/form-data">
+                    {% csrf_token %}
+                    {{ form.non_field_errors }}
+                    {% include "assets/field.html" with field=form.resume %}
+                    {% include "assets/field.html" with field=form.cover_letter %}
+                    <button type="submit" class="btn btn-primary btn-block">{% trans "Send resume" %}</button>
+                </form>
+            {% else %}
+                <h2 id="apply-title">{% trans "Applications closed" %}</h2>
+                <p class="muted">{% trans "This job is no longer accepting applications." %}</p>
+            {% endif %}
+        </aside>
+    </div>
+{% endblock content %}

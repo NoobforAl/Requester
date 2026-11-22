@@ -1,0 +1,983 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: zh_Hans\n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Pending"
+msgstr "待处理"
+
+msgid "In review"
+msgstr "审核中"
+
+msgid "Shortlisted"
+msgstr "已入围"
+
+msgid "Accepted"
+msgstr "已录用"
+
+msgid "Rejected"
+msgstr "已拒绝"
+
+msgid "Withdrawn"
+msgstr "已撤回"
+
+msgid "Resume"
+msgstr "简历"
+
+msgid "Cover letter"
+msgstr "求职信"
+
+msgid "Status"
+msgstr "状态"
+
+msgid "Private note"
+msgstr "私人备注"
+
+msgid "AI summary"
+msgstr "AI 摘要"
+
+msgid "Application"
+msgstr "申请"
+
+msgid "Applications"
+msgstr "申请"
+
+msgid "Application event"
+msgstr "申请事件"
+
+msgid "Application events"
+msgstr "申请事件"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "职位报告：%(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "报告已附上：%(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "您的申请有更新：%(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"您好，%(name)s：\n"
+"\n"
+"您申请的“%(title)s”（%(company)s）现在的状态是：%(status)s。"
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "“%(name)s”有 %(count)d 个新职位"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "您好，%(name)s："
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "停止此提醒：%(url)s"
+
+msgid "Username"
+msgstr "用户名"
+
+msgid "Password"
+msgstr "密码"
+
+msgid "First name"
+msgstr "名"
+
+msgid "Last name"
+msgstr "姓"
+
+msgid "Email"
+msgstr "电子邮件"
+
+msgid "Confirm password"
+msgstr "确认密码"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr "该电子邮件已被注册。请使用其他邮箱注册或直接登录。"
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr "文件大于 %(limit)d MB，请选择更小的文件。"
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "仅允许 PDF 文件。请将简历保存为 PDF。"
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "该文件不是有效的 PDF，请重新保存为 PDF。"
+
+msgid "Headline"
+msgstr "个人简介标题"
+
+msgid "City"
+msgstr "城市"
+
+msgid "This email is already registered."
+msgstr "该电子邮件已被注册。"
+
+msgid "Alert name"
+msgstr "提醒名称"
+
+msgid "Keywords"
+msgstr "关键词"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "Search jobs"
+msgstr "搜索职位"
+
+msgid "Work mode"
+msgstr "工作方式"
+
+msgid "Any work mode"
+msgstr "任意工作方式"
+
+msgid "Employment type"
+msgstr "雇佣类型"
+
+msgid "Any type"
+msgstr "任意类型"
+
+msgid "Seniority"
+msgstr "资历级别"
+
+msgid "Any level"
+msgstr "任意级别"
+
+msgid "Minimum salary"
+msgstr "最低薪资"
+
+msgid "Skills"
+msgstr "技能"
+
+msgid "Remote only"
+msgstr "仅远程"
+
+msgid "Sort by"
+msgstr "排序方式"
+
+msgid "Newest first"
+msgstr "最新优先"
+
+msgid "Highest salary"
+msgstr "薪资最高"
+
+msgid "Closing soon"
+msgstr "即将截止"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr "请输入有效的电话号码（仅限数字、空格以及 + ( ) -）。"
+
+msgid "Date of birth cannot be in the future."
+msgstr "出生日期不能晚于今天。"
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "求职者必须年满 %(age)d 岁。"
+
+msgid "High school"
+msgstr "高中"
+
+msgid "Associate degree"
+msgstr "大专"
+
+msgid "Bachelor's degree"
+msgstr "本科"
+
+msgid "Master's degree"
+msgstr "硕士"
+
+msgid "Doctorate"
+msgstr "博士"
+
+msgid "Phone number"
+msgstr "电话号码"
+
+msgid "Address"
+msgstr "地址"
+
+msgid "Date of birth"
+msgstr "出生日期"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "用一句话介绍自己，例如“后端开发工程师，5 年经验”。"
+
+msgid "Years of experience"
+msgstr "工作年限"
+
+msgid "Education"
+msgstr "学历"
+
+msgid "Expected salary"
+msgstr "期望薪资"
+
+msgid "Salary currency"
+msgstr "薪资币种"
+
+msgid "Preferred work mode"
+msgstr "偏好的工作方式"
+
+msgid "LinkedIn"
+msgstr "领英"
+
+msgid "Open to work"
+msgstr "正在求职"
+
+msgid "Preferred language"
+msgstr "首选语言"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "邮件（如职位提醒）所使用的语言。"
+
+msgid "Candidate"
+msgstr "求职者"
+
+msgid "Candidates"
+msgstr "求职者"
+
+msgid "Saved posting"
+msgstr "已收藏的职位"
+
+msgid "Saved postings"
+msgstr "已收藏的职位"
+
+msgid "Daily"
+msgstr "每天"
+
+msgid "Weekly"
+msgstr "每周"
+
+msgid "How often"
+msgstr "提醒频率"
+
+msgid "Active"
+msgstr "启用"
+
+msgid "Job alert"
+msgstr "职位提醒"
+
+msgid "Job alerts"
+msgstr "职位提醒"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr "找不到该职位，它可能已被删除。"
+
+msgid "You have already applied for this job."
+msgstr "您已经申请过这个职位。"
+
+msgid "This job is no longer accepting applications."
+msgstr "该职位已不再接受申请。"
+
+msgid "Your application was sent."
+msgstr "您的申请已发送。"
+
+msgid "Job saved."
+msgstr "职位已收藏。"
+
+msgid "Job removed from your saved jobs."
+msgstr "已从收藏中移除该职位。"
+
+msgid "This application was not found."
+msgstr "找不到该申请。"
+
+msgid "This application can no longer be withdrawn."
+msgstr "该申请已无法撤回。"
+
+msgid "Your application was withdrawn."
+msgstr "您的申请已撤回。"
+
+msgid "Your details were saved."
+msgstr "您的信息已保存。"
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "未能保存，请修正表单中的错误。"
+
+msgid "Job alert created."
+msgstr "职位提醒已创建。"
+
+msgid "This job alert was not found."
+msgstr "找不到该职位提醒。"
+
+msgid "Job alert switched on."
+msgstr "职位提醒已开启。"
+
+msgid "Job alert switched off."
+msgstr "职位提醒已关闭。"
+
+msgid "Job alert deleted."
+msgstr "职位提醒已删除。"
+
+msgid "Company name"
+msgstr "公司名称"
+
+msgid "Company email"
+msgstr "公司邮箱"
+
+msgid "Description"
+msgstr "描述"
+
+msgid "Extra information about the company"
+msgstr "公司的补充介绍"
+
+msgid "This company email is already registered. Enter another one."
+msgstr "该公司邮箱已被注册，请输入其他邮箱。"
+
+msgid "Industry"
+msgstr "行业"
+
+msgid "Job title"
+msgstr "职位名称"
+
+msgid "Job description"
+msgstr "职位描述"
+
+msgid "Country"
+msgstr "国家"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr "您已经发布过同名职位，请换一个名称。"
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "最高薪资不能低于最低薪资。"
+
+msgid "Iranian rial (IRR)"
+msgstr "伊朗里亚尔 (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "美元 (USD)"
+
+msgid "Euro (EUR)"
+msgstr "欧元 (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "英镑 (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "俄罗斯卢布 (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "人民币 (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "阿联酋迪拉姆 (AED)"
+
+msgid "On-site"
+msgstr "现场办公"
+
+msgid "Hybrid"
+msgstr "混合办公"
+
+msgid "Remote"
+msgstr "远程办公"
+
+msgid "1-10 employees"
+msgstr "1–10 人"
+
+msgid "11-50 employees"
+msgstr "11–50 人"
+
+msgid "51-200 employees"
+msgstr "51–200 人"
+
+msgid "201-1000 employees"
+msgstr "201–1000 人"
+
+msgid "More than 1000 employees"
+msgstr "1000 人以上"
+
+msgid "User"
+msgstr "用户"
+
+msgid "Website"
+msgstr "网站"
+
+msgid "Company size"
+msgstr "公司规模"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "发送给公司的报告和邮件所使用的语言。"
+
+msgid "Employer"
+msgstr "雇主"
+
+msgid "Employers"
+msgstr "雇主"
+
+msgid "Skill name"
+msgstr "技能名称"
+
+msgid "Skill"
+msgstr "技能"
+
+msgid "Full-time"
+msgstr "全职"
+
+msgid "Part-time"
+msgstr "兼职"
+
+msgid "Contract"
+msgstr "合同工"
+
+msgid "Internship"
+msgstr "实习"
+
+msgid "Freelance"
+msgstr "自由职业"
+
+msgid "Intern"
+msgstr "实习生"
+
+msgid "Junior"
+msgstr "初级"
+
+msgid "Mid-level"
+msgstr "中级"
+
+msgid "Senior"
+msgstr "高级"
+
+msgid "Lead / Manager"
+msgstr "负责人 / 经理"
+
+msgid "Maximum salary"
+msgstr "最高薪资"
+
+msgid "Application deadline"
+msgstr "申请截止日期"
+
+msgid "Accepting applications"
+msgstr "接受申请"
+
+msgid "Job posting"
+msgstr "职位"
+
+msgid "Job postings"
+msgstr "职位"
+
+msgid "Company details saved."
+msgstr "公司信息已保存。"
+
+msgid "Job posting created."
+msgstr "职位已发布。"
+
+msgid "Job posting updated."
+msgstr "职位已更新。"
+
+msgid "The posting is open for applications again."
+msgstr "该职位已重新开放申请。"
+
+msgid "The posting is closed to new applications."
+msgstr "该职位已停止接受新申请。"
+
+msgid "Job posting deleted."
+msgstr "职位已删除。"
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr "已提交报告请求。报告将在三个工作日内发送到贵公司的邮箱。"
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr "找不到简历文件。请让求职者重新申请。"
+
+msgid "The selected status is not valid."
+msgstr "所选状态无效。"
+
+msgid "This status change is not allowed."
+msgstr "不允许这样更改状态。"
+
+msgid "Application status updated."
+msgstr "申请状态已更新。"
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr "您无权访问此区域。请使用该区域的账号登录。"
+
+msgid "Wrong username or password. Try again."
+msgstr "用户名或密码错误，请重试。"
+
+msgid "You are registered. Sign in now."
+msgstr "注册成功，请登录。"
+
+msgid "Registration failed. Fix the form errors."
+msgstr "注册失败，请修正表单中的错误。"
+
+msgid "Page not found"
+msgstr "页面未找到"
+
+msgid "Requester"
+msgstr "Requester"
+
+msgid "This page was not found"
+msgstr "找不到此页面"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr "请检查网址，或从首页重新开始。您要找的职位或页面可能已被删除。"
+
+msgid "Go to the home page"
+msgstr "返回首页"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "Requester：求职与招聘的好地方"
+
+msgid "Skip to the page content"
+msgstr "跳到页面内容"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr "求职者投递简历并跟踪每份申请的状态；雇主发布职位并审核申请。"
+
+msgid "I am looking for a job"
+msgstr "我在找工作"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr "浏览职位、投递简历，并在这里跟踪结果。"
+
+msgid "Open the candidate area"
+msgstr "进入求职者专区"
+
+msgid "I am hiring"
+msgstr "我在招聘"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr "发布职位、查看简历，并录用或拒绝每份申请。"
+
+msgid "Open the employer area"
+msgstr "进入雇主专区"
+
+msgid "Language"
+msgstr "语言"
+
+msgid "Change"
+msgstr "切换"
+
+msgid "Pagination"
+msgstr "分页"
+
+msgid "Previous"
+msgstr "上一页"
+
+msgid "Next"
+msgstr "下一页"
+
+msgid "Employer area"
+msgstr "雇主专区"
+
+msgid "Candidate area"
+msgstr "求职者专区"
+
+msgid "Main menu"
+msgstr "主菜单"
+
+msgid "Dashboard"
+msgstr "仪表盘"
+
+msgid "Jobs"
+msgstr "职位"
+
+msgid "Saved jobs"
+msgstr "收藏的职位"
+
+msgid "My applications"
+msgstr "我的申请"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Sign out"
+msgstr "退出登录"
+
+msgid "Match"
+msgstr "匹配度"
+
+msgid "View and apply"
+msgstr "查看并申请"
+
+msgid "Remove from saved"
+msgstr "取消收藏"
+
+msgid "Save job"
+msgstr "收藏职位"
+
+msgid "Stop job alert"
+msgstr "停止职位提醒"
+
+msgid "This link is not valid"
+msgstr "此链接无效"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr "链接可能不完整。请登录后在提醒页面管理您的职位提醒。"
+
+msgid "Job alert switched off"
+msgstr "职位提醒已关闭"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "您将不再收到“%(name)s”的邮件。"
+
+msgid "Stop this job alert?"
+msgstr "要停止此职位提醒吗？"
+
+msgid "Back to the home page"
+msgstr "返回首页"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr "当有新职位符合您保存的搜索条件时，我们会给您发送邮件。"
+
+msgid "Off"
+msgstr "已关闭"
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "上次发送邮件：%(date)s"
+
+msgid "Switch off"
+msgstr "关闭"
+
+msgid "Switch on"
+msgstr "开启"
+
+msgid "Delete this job alert?"
+msgstr "要删除此职位提醒吗？"
+
+msgid "Delete"
+msgstr "删除"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "您还没有职位提醒，请在下方创建一个。"
+
+msgid "New job alert"
+msgstr "新建职位提醒"
+
+msgid "Create alert"
+msgstr "创建提醒"
+
+msgid "Applications you have sent"
+msgstr "您已发送的申请"
+
+msgid "Browse jobs"
+msgstr "浏览职位"
+
+msgid "Job"
+msgstr "职位"
+
+msgid "Company"
+msgstr "公司"
+
+msgid "Date sent"
+msgstr "发送日期"
+
+msgid "You have not applied yet."
+msgstr "您还没有申请过职位。"
+
+msgid "Candidate dashboard"
+msgstr "求职者仪表盘"
+
+msgid "Your applications"
+msgstr "您的申请"
+
+msgid "Profile completeness"
+msgstr "资料完整度"
+
+msgid "Active job alerts"
+msgstr "已启用的职位提醒"
+
+msgid "Complete your profile for better job matches."
+msgstr "完善资料，获得更精准的职位推荐。"
+
+msgid "Application status"
+msgstr "申请状态"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "已发送 %(n)s 份申请"
+
+msgid "Accepted applications"
+msgstr "已录用的申请"
+
+msgid "In progress"
+msgstr "进行中"
+
+msgid "Applications in progress"
+msgstr "进行中的申请"
+
+msgid "Rejected applications"
+msgstr "已拒绝的申请"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr "您还没有申请过职位。选择一个职位并投递简历吧。"
+
+msgid "Make your resume stronger"
+msgstr "让简历更出色"
+
+msgid "(guide in English)"
+msgstr "（英文指南）"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "（AI 改写工具，英文）"
+
+msgid "Back to the job list"
+msgstr "返回职位列表"
+
+msgid "Salary"
+msgstr "薪资"
+
+msgid "Match with your profile"
+msgstr "与您资料的匹配度"
+
+msgid "About the company"
+msgstr "关于公司"
+
+msgid "Your application"
+msgstr "您的申请"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "发送于 %(date)s"
+
+msgid "Application sent"
+msgstr "申请已发送"
+
+msgid "Withdraw this application?"
+msgstr "要撤回这份申请吗？"
+
+msgid "Withdraw application"
+msgstr "撤回申请"
+
+msgid "Apply"
+msgstr "申请职位"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "请以 PDF 文件发送简历，大小不超过 5 MB。"
+
+msgid "Send resume"
+msgstr "发送简历"
+
+msgid "Applications closed"
+msgstr "申请已截止"
+
+msgid "Open jobs"
+msgstr "开放职位"
+
+msgid "Get alerts for new jobs"
+msgstr "接收新职位提醒"
+
+msgid "Clear filters"
+msgstr "清除筛选"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr "没有符合这些筛选条件的职位。请去掉某个筛选条件或换个关键词。"
+
+msgid "No jobs are open right now. Check again later."
+msgstr "目前没有开放的职位，请稍后再来看看。"
+
+msgid "Candidate sign in"
+msgstr "求职者登录"
+
+msgid "Sign in to your account"
+msgstr "登录您的账号"
+
+msgid "Sign in"
+msgstr "登录"
+
+msgid "No account yet?"
+msgstr "还没有账号？"
+
+msgid "Create a new account"
+msgstr "创建新账号"
+
+msgid "Create a candidate account"
+msgstr "创建求职者账号"
+
+msgid "Create account"
+msgstr "创建账号"
+
+msgid "Already registered?"
+msgstr "已经注册？"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr "您还没有收藏任何职位。点击“收藏职位”，保存想稍后再看的职位。"
+
+msgid "Profile settings"
+msgstr "资料设置"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr "您的资料会用于职位匹配和提醒。雇主会看到您的姓名和邮箱以及简历。"
+
+msgid "Save changes"
+msgstr "保存更改"
+
+msgid "Employer dashboard"
+msgstr "雇主仪表盘"
+
+msgid "Your activity at a glance"
+msgstr "您的动态一览"
+
+msgid "Post a new job"
+msgstr "发布新职位"
+
+msgid "Jobs posted"
+msgstr "已发布的职位"
+
+msgid "Jobs open for applications"
+msgstr "开放申请的职位"
+
+msgid "Applications received"
+msgstr "收到的申请"
+
+msgid "Waiting for your review"
+msgstr "等待您审核"
+
+msgid "Jobs posted this month"
+msgstr "本月发布的职位"
+
+msgid "Jobs posted last month"
+msgstr "上月发布的职位"
+
+msgid "Applications per day this month"
+msgstr "本月每日申请数"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "%(day)s 的申请"
+
+msgid "No applications have arrived this month yet."
+msgstr "本月还没有收到申请。"
+
+msgid "Writing a better job post"
+msgstr "如何写好职位描述"
+
+msgid "Back to jobs"
+msgstr "返回职位列表"
+
+msgid "Closed"
+msgstr "已关闭"
+
+msgid "Close to new applications"
+msgstr "停止接受新申请"
+
+msgid "Open for applications"
+msgstr "开放申请"
+
+msgid "Get a report by e-mail"
+msgstr "通过邮件获取报告"
+
+msgid "Job details"
+msgstr "职位详情"
+
+msgid "Search applicants"
+msgstr "搜索申请人"
+
+msgid "Candidate name or email"
+msgstr "求职者姓名或邮箱"
+
+msgid "Any status"
+msgstr "任意状态"
+
+msgid "Download resume"
+msgstr "下载简历"
+
+msgid "Change the status of this application"
+msgstr "更改此申请的状态"
+
+msgid "Note (optional)"
+msgstr "备注（可选）"
+
+msgid "Change status"
+msgstr "更改状态"
+
+msgid "Resume summary (generated by AI)"
+msgstr "简历摘要（由 AI 生成）"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr "没有符合条件的申请。请清除搜索或换个关键词。"
+
+msgid "Nobody has applied for this job yet."
+msgstr "还没有人申请这个职位。"
+
+msgid "My jobs"
+msgstr "我的职位"
+
+msgid "Posted jobs"
+msgstr "已发布的职位"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "发布于 %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "%(n)s 份申请"
+
+msgid "View applications"
+msgstr "查看申请"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr "该职位及其所有申请都将被删除。是否继续？"
+
+msgid "Delete job"
+msgstr "删除职位"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr "您还没有发布任何职位。填写下方表单即可发布第一个职位。"
+
+msgid "Publish job"
+msgstr "发布职位"
+
+msgid "Employer sign in"
+msgstr "雇主登录"
+
+msgid "Create an employer account"
+msgstr "创建雇主账号"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "职位报告：%(title)s"
+
+msgid "No applications yet."
+msgstr "暂无申请。"
+
+msgid "Company settings"
+msgstr "公司设置"
+
+msgid "The details candidates see next to your jobs."
+msgstr "求职者在您的职位旁边看到的信息。"

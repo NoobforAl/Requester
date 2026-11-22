@@ -1,56 +1,148 @@
 @startuml class_diagram
+title Requester - domain model
+hide empty methods
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
 
-class User {
+class User <<django.contrib.auth>> {
   +username: CharField
   +email: EmailField
   +password: CharField
 }
 
-class Worker {
-  +first_name: CharField
-  +last_name: CharField
-  +email: EmailField
-  +phone_number: CharField
-  +address: TextField
-  +date_of_birth: DateField
-  +created_at: DateTimeField
-  +updated_at: DateTimeField
+package "employers" {
+  class Employer {
+    +name: CharField
+    +contact_email: EmailField <<unique, case-insensitive>>
+    +description: TextField
+    +website: URLField
+    +industry: CharField
+    +size: CharField
+    +city: CharField
+    +language: CharField
+    +created_at: DateTimeField
+    +updated_at: DateTimeField
+  }
+
+  class JobPosting {
+    +title: CharField
+    +description: TextField
+    +location: CharField <<indexed>>
+    +country: CharField
+    +work_mode: onsite | hybrid | remote
+    +employment_type: full_time | part_time | contract | internship | freelance
+    +seniority: intern | junior | mid | senior | lead
+    +salary_min: PositiveInteger
+    +salary_max: PositiveInteger
+    +salary_currency: CharField
+    +deadline: DateField
+    +is_active: BooleanField <<indexed>>
+    +created_at: DateTimeField
+    +updated_at: DateTimeField
+    --
+    +is_open(): bool
+    {static} objects.open()
+    {static} objects.search(filters)
+  }
+
+  class Skill {
+    +name: CharField <<unique>>
+    +created_at: DateTimeField
+    +updated_at: DateTimeField
+  }
 }
 
-class JobRequest {
-  +resume: FileField
-  +cover_letter: TextField
-  +status: CharField
-  +applied_at: DateTimeField
-  +updated_at: DateTimeField
+package "candidates" {
+  class Candidate {
+    +first_name: CharField
+    +last_name: CharField
+    +email: EmailField <<unique, case-insensitive>>
+    +phone_number: CharField
+    +address: TextField
+    +date_of_birth: DateField
+    +headline: CharField
+    +city: CharField
+    +experience_years: SmallInteger
+    +education_level: CharField
+    +expected_salary: PositiveInteger
+    +expected_salary_currency: CharField
+    +preferred_work_mode: CharField
+    +linkedin_url: URLField
+    +is_open_to_work: BooleanField
+    +language: CharField
+    +created_at: DateTimeField
+    +updated_at: DateTimeField
+    --
+    +profile_completeness: int
+  }
+
+  class SavedPosting {
+    +created_at: DateTimeField
+  }
+
+  class JobAlert {
+    +name: CharField
+    +keywords: CharField
+    +location: CharField
+    +work_mode: CharField
+    +employment_type: CharField
+    +min_salary: PositiveInteger
+    +frequency: daily | weekly
+    +is_active: BooleanField
+    +last_sent_at: DateTimeField
+    --
+    +matching_postings()
+  }
 }
 
-class Offer {
-  +company_name: CharField
-  +company_email: EmailField
-  +detail: TextField
-  +created_at: DateTimeField
-  +updated_at: DateTimeField
+package "applications" {
+  class Application {
+    +resume: FileField <<PDF, unguessable name>>
+    +cover_letter: TextField
+    +status: pending | in_review | shortlisted | accepted | rejected | withdrawn
+    +employer_note: TextField
+    +ai_summary: TextField
+    +ai_provider: CharField
+    +applied_at: DateTimeField
+    +updated_at: DateTimeField
+    --
+    +can_employer_set(status): bool
+    +can_withdraw: bool
+    +change_status(status, actor, note)
+  }
+
+  class ApplicationEvent {
+    +from_status: CharField
+    +to_status: CharField
+    +note: TextField
+    +created_at: DateTimeField
+  }
 }
 
-class Job {
-  +job_name: CharField
-  +detail: TextField
-  +created_at: DateTimeField
-  +updated_at: DateTimeField
-}
+User "1" -- "0..1" Employer : "is an"
+User "1" -- "0..1" Candidate : "is a"
+User "0..1" -- "0..*" ApplicationEvent : "acted in"
 
-class Tag {
-  +name: CharField
-  +created_at: DateTimeField
-  +updated_at: DateTimeField
-}
+Employer "1" -- "0..*" JobPosting : "publishes"
+JobPosting "0..*" -- "0..*" Skill : "asks for"
+Candidate "0..*" -- "0..*" Skill : "has"
+JobAlert "0..*" -- "0..*" Skill : "filters by"
 
-User "1" -- "1" Worker : "has"
-User "1" -- "1" Offer : "has"
-Worker "1" -- "0..*" JobRequest : "submits"
-Job "1" -- "0..*" JobRequest : "receives"
-Offer "1" -- "0..*" Job : "posts"
-Job "0..*" -- "0..*" Tag : "tagged with"
+Candidate "1" -- "0..*" Application : "submits"
+JobPosting "1" -- "0..*" Application : "receives"
+Application "1" -- "0..*" ApplicationEvent : "history"
+
+Candidate "1" -- "0..*" SavedPosting : "bookmarks"
+JobPosting "1" -- "0..*" SavedPosting : "bookmarked as"
+Candidate "1" -- "0..*" JobAlert : "owns"
+
+note right of Application
+  Status rules (employer):
+  pending -> in_review | shortlisted | accepted | rejected
+  in_review -> shortlisted | accepted | rejected
+  shortlisted -> in_review | accepted | rejected
+  accepted -> rejected, rejected -> in_review
+  The candidate may withdraw while pending, in_review or shortlisted.
+end note
 
 @enduml

@@ -1,0 +1,76 @@
+{% load i18n filters %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+    <head>
+        <meta charset="utf-8">
+        <title>{% blocktrans with title=posting.title %}Report for {{ title }}{% endblocktrans %}</title>
+        <style>
+            @font-face {
+                font-family: Vazirmatn;
+                src: url("fonts/Vazirmatn-variable.woff2") format("woff2");
+                font-weight: 100 900;
+            }
+            @page { size: A4; margin: 18mm 15mm; }
+            body {
+                font-family: Vazirmatn, Tahoma, "DejaVu Sans", "Noto Sans CJK SC", sans-serif;
+                color: #14202e;
+                font-size: 11pt;
+                line-height: 1.8;
+            }
+            h1 { font-size: 18pt; margin: 0 0 6mm; }
+            h2 { font-size: 13pt; margin: 8mm 0 3mm; border-bottom: 2px solid #14202e; padding-bottom: 1mm; }
+            dl { margin: 0; }
+            dt { float: inline-start; clear: inline-start; width: 32mm; color: #5a6877; }
+            dd { margin: 0 0 1mm 34mm; }
+            [dir="rtl"] dd { margin: 0 34mm 1mm 0; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { padding: 2mm 2mm; text-align: start; vertical-align: top; border-bottom: 1px solid #cfd8de; }
+            th { border-bottom: 2px solid #14202e; }
+            tr { page-break-inside: avoid; }
+            a { color: #34419b; }
+        </style>
+    </head>
+    <body>
+        <h1>{% blocktrans with title=posting.title %}Report for job: {{ title }}{% endblocktrans %}</h1>
+        <dl>
+            <dt>{% trans "Company" %}</dt>
+            <dd>{{ employer.name }}</dd>
+            <dt>{% trans "Company email" %}</dt>
+            <dd>{{ employer.contact_email }}</dd>
+            {% if posting.location %}
+                <dt>{% trans "City" %}</dt>
+                <dd>{{ posting.location }}</dd>
+            {% endif %}
+            {% if posting|salary_label %}
+                <dt>{% trans "Salary" %}</dt>
+                <dd>{{ posting|salary_label }}</dd>
+            {% endif %}
+            <dt>{% trans "Job description" %}</dt>
+            <dd>{{ posting.description }}</dd>
+        </dl>
+        <h2>{% trans "Applications" %}</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>{% trans "Candidate" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Resume" %}</th>
+                    <th>{% trans "AI summary" %}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for application in applications %}
+                    <tr>
+                        <td>{{ application.candidate }}</td>
+                        <td>{{ application.get_status_display }}</td>
+                        <td>{{ application.resume.name }}</td>
+                        <td>{{ application.ai_summary }}</td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4">{% trans "No applications yet." %}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>

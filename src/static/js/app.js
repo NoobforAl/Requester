@@ -5,3 +5,11 @@ document.addEventListener("submit", function (event) {
         event.preventDefault();
     }
 });
+
+// Language switcher: switch as soon as another language is picked.
+document.addEventListener("change", function (event) {
+    var form = event.target.form;
+    if (form && form.hasAttribute("data-autosubmit")) {
+        form.submit();
+    }
+});

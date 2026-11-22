@@ -1,0 +1,1012 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: ar\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5;\n"
+
+msgid "Pending"
+msgstr "قيد الانتظار"
+
+msgid "In review"
+msgstr "قيد المراجعة"
+
+msgid "Shortlisted"
+msgstr "في القائمة المختصرة"
+
+msgid "Accepted"
+msgstr "مقبول"
+
+msgid "Rejected"
+msgstr "مرفوض"
+
+msgid "Withdrawn"
+msgstr "مسحوب"
+
+msgid "Resume"
+msgstr "السيرة الذاتية"
+
+msgid "Cover letter"
+msgstr "رسالة التقديم"
+
+msgid "Status"
+msgstr "الحالة"
+
+msgid "Private note"
+msgstr "ملاحظة خاصة"
+
+msgid "AI summary"
+msgstr "ملخص الذكاء الاصطناعي"
+
+msgid "Application"
+msgstr "الطلب"
+
+msgid "Applications"
+msgstr "الطلبات"
+
+msgid "Application event"
+msgstr "حدث الطلب"
+
+msgid "Application events"
+msgstr "أحداث الطلب"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "تقرير عن %(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "التقرير مرفق: %(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "تحديث بشأن طلبك: %(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"مرحبًا %(name)s،\n"
+"\n"
+"أصبحت حالة طلبك لوظيفة «%(title)s» لدى %(company)s الآن: %(status)s."
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "لا وظائف جديدة لتنبيه «%(name)s»"
+msgstr[1] "وظيفة جديدة واحدة لتنبيه «%(name)s»"
+msgstr[2] "وظيفتان جديدتان لتنبيه «%(name)s»"
+msgstr[3] "%(count)d وظائف جديدة لتنبيه «%(name)s»"
+msgstr[4] "%(count)d وظيفة جديدة لتنبيه «%(name)s»"
+msgstr[5] "%(count)d وظيفة جديدة لتنبيه «%(name)s»"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "مرحبًا %(name)s،"
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "لإيقاف هذا التنبيه: %(url)s"
+
+msgid "Username"
+msgstr "اسم المستخدم"
+
+msgid "Password"
+msgstr "كلمة المرور"
+
+msgid "First name"
+msgstr "الاسم الأول"
+
+msgid "Last name"
+msgstr "اسم العائلة"
+
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+msgid "Confirm password"
+msgstr "تأكيد كلمة المرور"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr "هذا البريد الإلكتروني مسجّل مسبقًا. سجّل ببريد آخر أو سجّل الدخول."
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr "حجم الملف أكبر من %(limit)d ميغابايت. اختر ملفًا أصغر."
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "ملفات PDF فقط مسموحة. احفظ سيرتك الذاتية بصيغة PDF."
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "هذا الملف ليس PDF صالحًا. احفظه مرة أخرى بصيغة PDF."
+
+msgid "Headline"
+msgstr "العنوان التعريفي"
+
+msgid "City"
+msgstr "المدينة"
+
+msgid "This email is already registered."
+msgstr "هذا البريد الإلكتروني مسجّل مسبقًا."
+
+msgid "Alert name"
+msgstr "اسم التنبيه"
+
+msgid "Keywords"
+msgstr "الكلمات المفتاحية"
+
+msgid "Search"
+msgstr "بحث"
+
+msgid "Search jobs"
+msgstr "البحث عن وظائف"
+
+msgid "Work mode"
+msgstr "نمط العمل"
+
+msgid "Any work mode"
+msgstr "أي نمط عمل"
+
+msgid "Employment type"
+msgstr "نوع التوظيف"
+
+msgid "Any type"
+msgstr "أي نوع"
+
+msgid "Seniority"
+msgstr "المستوى الوظيفي"
+
+msgid "Any level"
+msgstr "أي مستوى"
+
+msgid "Minimum salary"
+msgstr "الحد الأدنى للراتب"
+
+msgid "Skills"
+msgstr "المهارات"
+
+msgid "Remote only"
+msgstr "عن بُعد فقط"
+
+msgid "Sort by"
+msgstr "ترتيب حسب"
+
+msgid "Newest first"
+msgstr "الأحدث أولًا"
+
+msgid "Highest salary"
+msgstr "الأعلى راتبًا"
+
+msgid "Closing soon"
+msgstr "تنتهي قريبًا"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr "أدخل رقم هاتف صالحًا (أرقام ومسافات و + ( ) - فقط)."
+
+msgid "Date of birth cannot be in the future."
+msgstr "لا يمكن أن يكون تاريخ الميلاد في المستقبل."
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "يجب ألا يقل عمر المرشح عن %(age)d سنة."
+
+msgid "High school"
+msgstr "الثانوية العامة"
+
+msgid "Associate degree"
+msgstr "دبلوم"
+
+msgid "Bachelor's degree"
+msgstr "بكالوريوس"
+
+msgid "Master's degree"
+msgstr "ماجستير"
+
+msgid "Doctorate"
+msgstr "دكتوراه"
+
+msgid "Phone number"
+msgstr "رقم الهاتف"
+
+msgid "Address"
+msgstr "العنوان"
+
+msgid "Date of birth"
+msgstr "تاريخ الميلاد"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "سطر واحد عنك، مثل «مطوّر واجهات خلفية، 5 سنوات»."
+
+msgid "Years of experience"
+msgstr "سنوات الخبرة"
+
+msgid "Education"
+msgstr "المؤهل العلمي"
+
+msgid "Expected salary"
+msgstr "الراتب المتوقع"
+
+msgid "Salary currency"
+msgstr "عملة الراتب"
+
+msgid "Preferred work mode"
+msgstr "نمط العمل المفضل"
+
+msgid "LinkedIn"
+msgstr "لينكدإن"
+
+msgid "Open to work"
+msgstr "متاح للعمل"
+
+msgid "Preferred language"
+msgstr "اللغة المفضلة"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "لغة الرسائل الإلكترونية مثل تنبيهات الوظائف."
+
+msgid "Candidate"
+msgstr "المرشح"
+
+msgid "Candidates"
+msgstr "المرشحون"
+
+msgid "Saved posting"
+msgstr "وظيفة محفوظة"
+
+msgid "Saved postings"
+msgstr "الوظائف المحفوظة"
+
+msgid "Daily"
+msgstr "يوميًا"
+
+msgid "Weekly"
+msgstr "أسبوعيًا"
+
+msgid "How often"
+msgstr "عدد المرات"
+
+msgid "Active"
+msgstr "نشط"
+
+msgid "Job alert"
+msgstr "تنبيه وظائف"
+
+msgid "Job alerts"
+msgstr "تنبيهات الوظائف"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr "لم يتم العثور على إعلان الوظيفة. ربما تم حذفه."
+
+msgid "You have already applied for this job."
+msgstr "لقد قدّمت على هذه الوظيفة مسبقًا."
+
+msgid "This job is no longer accepting applications."
+msgstr "لم تعد هذه الوظيفة تقبل الطلبات."
+
+msgid "Your application was sent."
+msgstr "تم إرسال طلبك."
+
+msgid "Job saved."
+msgstr "تم حفظ الوظيفة."
+
+msgid "Job removed from your saved jobs."
+msgstr "تمت إزالة الوظيفة من وظائفك المحفوظة."
+
+msgid "This application was not found."
+msgstr "لم يتم العثور على هذا الطلب."
+
+msgid "This application can no longer be withdrawn."
+msgstr "لم يعد بالإمكان سحب هذا الطلب."
+
+msgid "Your application was withdrawn."
+msgstr "تم سحب طلبك."
+
+msgid "Your details were saved."
+msgstr "تم حفظ بياناتك."
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "لم يتم حفظ أي شيء. صحّح أخطاء النموذج."
+
+msgid "Job alert created."
+msgstr "تم إنشاء تنبيه الوظائف."
+
+msgid "This job alert was not found."
+msgstr "لم يتم العثور على تنبيه الوظائف هذا."
+
+msgid "Job alert switched on."
+msgstr "تم تشغيل تنبيه الوظائف."
+
+msgid "Job alert switched off."
+msgstr "تم إيقاف تنبيه الوظائف."
+
+msgid "Job alert deleted."
+msgstr "تم حذف تنبيه الوظائف."
+
+msgid "Company name"
+msgstr "اسم الشركة"
+
+msgid "Company email"
+msgstr "البريد الإلكتروني للشركة"
+
+msgid "Description"
+msgstr "الوصف"
+
+msgid "Extra information about the company"
+msgstr "معلومات إضافية عن الشركة"
+
+msgid "This company email is already registered. Enter another one."
+msgstr "البريد الإلكتروني للشركة مسجّل مسبقًا. أدخل بريدًا آخر."
+
+msgid "Industry"
+msgstr "المجال"
+
+msgid "Job title"
+msgstr "المسمى الوظيفي"
+
+msgid "Job description"
+msgstr "وصف الوظيفة"
+
+msgid "Country"
+msgstr "الدولة"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr "لديك بالفعل إعلان بهذا العنوان. اختر عنوانًا آخر."
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "لا يمكن أن يكون الحد الأقصى للراتب أقل من الحد الأدنى."
+
+msgid "Iranian rial (IRR)"
+msgstr "الريال الإيراني (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "الدولار الأمريكي (USD)"
+
+msgid "Euro (EUR)"
+msgstr "اليورو (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "الجنيه الإسترليني (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "الروبل الروسي (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "اليوان الصيني (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "الدرهم الإماراتي (AED)"
+
+msgid "On-site"
+msgstr "في المقر"
+
+msgid "Hybrid"
+msgstr "هجين"
+
+msgid "Remote"
+msgstr "عن بُعد"
+
+msgid "1-10 employees"
+msgstr "من 1 إلى 10 موظفين"
+
+msgid "11-50 employees"
+msgstr "من 11 إلى 50 موظفًا"
+
+msgid "51-200 employees"
+msgstr "من 51 إلى 200 موظف"
+
+msgid "201-1000 employees"
+msgstr "من 201 إلى 1000 موظف"
+
+msgid "More than 1000 employees"
+msgstr "أكثر من 1000 موظف"
+
+msgid "User"
+msgstr "المستخدم"
+
+msgid "Website"
+msgstr "الموقع الإلكتروني"
+
+msgid "Company size"
+msgstr "حجم الشركة"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "لغة التقارير والرسائل الإلكترونية المرسلة إلى الشركة."
+
+msgid "Employer"
+msgstr "صاحب العمل"
+
+msgid "Employers"
+msgstr "أصحاب العمل"
+
+msgid "Skill name"
+msgstr "اسم المهارة"
+
+msgid "Skill"
+msgstr "المهارة"
+
+msgid "Full-time"
+msgstr "دوام كامل"
+
+msgid "Part-time"
+msgstr "دوام جزئي"
+
+msgid "Contract"
+msgstr "عقد"
+
+msgid "Internship"
+msgstr "تدريب"
+
+msgid "Freelance"
+msgstr "عمل حر"
+
+msgid "Intern"
+msgstr "متدرب"
+
+msgid "Junior"
+msgstr "مبتدئ"
+
+msgid "Mid-level"
+msgstr "متوسط الخبرة"
+
+msgid "Senior"
+msgstr "خبير"
+
+msgid "Lead / Manager"
+msgstr "قائد فريق / مدير"
+
+msgid "Maximum salary"
+msgstr "الحد الأقصى للراتب"
+
+msgid "Application deadline"
+msgstr "آخر موعد للتقديم"
+
+msgid "Accepting applications"
+msgstr "يقبل الطلبات"
+
+msgid "Job posting"
+msgstr "إعلان وظيفة"
+
+msgid "Job postings"
+msgstr "إعلانات الوظائف"
+
+msgid "Company details saved."
+msgstr "تم حفظ بيانات الشركة."
+
+msgid "Job posting created."
+msgstr "تم إنشاء إعلان الوظيفة."
+
+msgid "Job posting updated."
+msgstr "تم تحديث إعلان الوظيفة."
+
+msgid "The posting is open for applications again."
+msgstr "أصبح الإعلان يقبل الطلبات من جديد."
+
+msgid "The posting is closed to new applications."
+msgstr "تم إغلاق الإعلان أمام الطلبات الجديدة."
+
+msgid "Job posting deleted."
+msgstr "تم حذف إعلان الوظيفة."
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr ""
+"تم طلب التقرير. سيُرسل إلى البريد الإلكتروني لشركتك خلال ثلاثة أيام عمل."
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr ""
+"لم يتم العثور على ملف السيرة الذاتية. اطلب من المرشح التقديم مرة أخرى."
+
+msgid "The selected status is not valid."
+msgstr "الحالة المختارة غير صالحة."
+
+msgid "This status change is not allowed."
+msgstr "تغيير الحالة هذا غير مسموح."
+
+msgid "Application status updated."
+msgstr "تم تحديث حالة الطلب."
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr ""
+"ليس لديك صلاحية الوصول إلى هذا القسم. سجّل الدخول بحساب خاص بهذا القسم."
+
+msgid "Wrong username or password. Try again."
+msgstr "اسم المستخدم أو كلمة المرور غير صحيحة. حاول مرة أخرى."
+
+msgid "You are registered. Sign in now."
+msgstr "تم التسجيل. سجّل الدخول الآن."
+
+msgid "Registration failed. Fix the form errors."
+msgstr "فشل التسجيل. صحّح أخطاء النموذج."
+
+msgid "Page not found"
+msgstr "الصفحة غير موجودة"
+
+msgid "Requester"
+msgstr "Requester"
+
+msgid "This page was not found"
+msgstr "لم يتم العثور على هذه الصفحة"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr ""
+"تحقق من العنوان أو ابدأ من جديد من الصفحة الرئيسية. ربما تم حذف الوظيفة أو "
+"الصفحة التي تبحث عنها."
+
+msgid "Go to the home page"
+msgstr "الانتقال إلى الصفحة الرئيسية"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "Requester: مكان للعثور على وظيفة وللتوظيف"
+
+msgid "Skip to the page content"
+msgstr "الانتقال إلى محتوى الصفحة"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr ""
+"يرسل المرشحون سيرهم الذاتية ويتابعون حالة كل طلب. ينشر أصحاب العمل الوظائف "
+"ويراجعون الطلبات."
+
+msgid "I am looking for a job"
+msgstr "أبحث عن عمل"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr "تصفّح الوظائف وأرسل سيرتك الذاتية وتابع النتيجة من هنا."
+
+msgid "Open the candidate area"
+msgstr "فتح منطقة المرشحين"
+
+msgid "I am hiring"
+msgstr "أبحث عن موظفين"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr "انشر وظيفة واقرأ السير الذاتية واقبل كل طلب أو ارفضه."
+
+msgid "Open the employer area"
+msgstr "فتح منطقة أصحاب العمل"
+
+msgid "Language"
+msgstr "اللغة"
+
+msgid "Change"
+msgstr "تغيير"
+
+msgid "Pagination"
+msgstr "ترقيم الصفحات"
+
+msgid "Previous"
+msgstr "السابق"
+
+msgid "Next"
+msgstr "التالي"
+
+msgid "Employer area"
+msgstr "منطقة أصحاب العمل"
+
+msgid "Candidate area"
+msgstr "منطقة المرشحين"
+
+msgid "Main menu"
+msgstr "القائمة الرئيسية"
+
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
+msgid "Jobs"
+msgstr "الوظائف"
+
+msgid "Saved jobs"
+msgstr "الوظائف المحفوظة"
+
+msgid "My applications"
+msgstr "طلباتي"
+
+msgid "Settings"
+msgstr "الإعدادات"
+
+msgid "Sign out"
+msgstr "تسجيل الخروج"
+
+msgid "Match"
+msgstr "التوافق"
+
+msgid "View and apply"
+msgstr "عرض والتقديم"
+
+msgid "Remove from saved"
+msgstr "إزالة من المحفوظات"
+
+msgid "Save job"
+msgstr "حفظ الوظيفة"
+
+msgid "Stop job alert"
+msgstr "إيقاف تنبيه الوظائف"
+
+msgid "This link is not valid"
+msgstr "هذا الرابط غير صالح"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr ""
+"قد يكون الرابط غير مكتمل. سجّل الدخول وأدر تنبيهات الوظائف من صفحة "
+"التنبيهات."
+
+msgid "Job alert switched off"
+msgstr "تم إيقاف تنبيه الوظائف"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "لن تصلك رسائل إلكترونية بعد الآن للتنبيه «%(name)s»."
+
+msgid "Stop this job alert?"
+msgstr "هل تريد إيقاف تنبيه الوظائف هذا؟"
+
+msgid "Back to the home page"
+msgstr "العودة إلى الصفحة الرئيسية"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr "نرسل لك رسالة إلكترونية عندما تطابق وظائف جديدة بحثًا حفظته."
+
+msgid "Off"
+msgstr "متوقف"
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "آخر رسالة إلكترونية بتاريخ %(date)s"
+
+msgid "Switch off"
+msgstr "إيقاف"
+
+msgid "Switch on"
+msgstr "تشغيل"
+
+msgid "Delete this job alert?"
+msgstr "هل تريد حذف تنبيه الوظائف هذا؟"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "ليس لديك تنبيهات وظائف بعد. أنشئ تنبيهًا أدناه."
+
+msgid "New job alert"
+msgstr "تنبيه وظائف جديد"
+
+msgid "Create alert"
+msgstr "إنشاء التنبيه"
+
+msgid "Applications you have sent"
+msgstr "الطلبات التي أرسلتها"
+
+msgid "Browse jobs"
+msgstr "تصفّح الوظائف"
+
+msgid "Job"
+msgstr "الوظيفة"
+
+msgid "Company"
+msgstr "الشركة"
+
+msgid "Date sent"
+msgstr "تاريخ الإرسال"
+
+msgid "You have not applied yet."
+msgstr "لم تقدّم على أي وظيفة بعد."
+
+msgid "Candidate dashboard"
+msgstr "لوحة تحكم المرشح"
+
+msgid "Your applications"
+msgstr "طلباتك"
+
+msgid "Profile completeness"
+msgstr "اكتمال الملف الشخصي"
+
+msgid "Active job alerts"
+msgstr "تنبيهات الوظائف النشطة"
+
+msgid "Complete your profile for better job matches."
+msgstr "أكمل ملفك الشخصي للحصول على اقتراحات وظائف أفضل."
+
+msgid "Application status"
+msgstr "حالة الطلبات"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "لم يتم إرسال أي طلب"
+msgstr[1] "تم إرسال طلب واحد"
+msgstr[2] "تم إرسال طلبين"
+msgstr[3] "تم إرسال %(n)s طلبات"
+msgstr[4] "تم إرسال %(n)s طلبًا"
+msgstr[5] "تم إرسال %(n)s طلب"
+
+msgid "Accepted applications"
+msgstr "الطلبات المقبولة"
+
+msgid "In progress"
+msgstr "قيد التنفيذ"
+
+msgid "Applications in progress"
+msgstr "الطلبات قيد التنفيذ"
+
+msgid "Rejected applications"
+msgstr "الطلبات المرفوضة"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr "لم تقدّم على أي وظيفة بعد. اختر وظيفة وأرسل سيرتك الذاتية لها."
+
+msgid "Make your resume stronger"
+msgstr "اجعل سيرتك الذاتية أقوى"
+
+msgid "(guide in English)"
+msgstr "(دليل بالإنجليزية)"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "(أداة إعادة صياغة بالذكاء الاصطناعي، بالإنجليزية)"
+
+msgid "Back to the job list"
+msgstr "العودة إلى قائمة الوظائف"
+
+msgid "Salary"
+msgstr "الراتب"
+
+msgid "Match with your profile"
+msgstr "التوافق مع ملفك الشخصي"
+
+msgid "About the company"
+msgstr "عن الشركة"
+
+msgid "Your application"
+msgstr "طلبك"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "أُرسل في %(date)s"
+
+msgid "Application sent"
+msgstr "تم إرسال الطلب"
+
+msgid "Withdraw this application?"
+msgstr "هل تريد سحب هذا الطلب؟"
+
+msgid "Withdraw application"
+msgstr "سحب الطلب"
+
+msgid "Apply"
+msgstr "تقديم"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "أرسل سيرتك الذاتية كملف PDF لا يتجاوز 5 ميغابايت."
+
+msgid "Send resume"
+msgstr "إرسال السيرة الذاتية"
+
+msgid "Applications closed"
+msgstr "التقديم مغلق"
+
+msgid "Open jobs"
+msgstr "الوظائف المفتوحة"
+
+msgid "Get alerts for new jobs"
+msgstr "تلقّي تنبيهات بالوظائف الجديدة"
+
+msgid "Clear filters"
+msgstr "مسح عوامل التصفية"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr ""
+"لا توجد وظيفة تطابق عوامل التصفية هذه. أزل عامل تصفية أو ابحث بكلمات أخرى."
+
+msgid "No jobs are open right now. Check again later."
+msgstr "لا توجد وظائف مفتوحة حاليًا. تحقق مرة أخرى لاحقًا."
+
+msgid "Candidate sign in"
+msgstr "تسجيل دخول المرشح"
+
+msgid "Sign in to your account"
+msgstr "سجّل الدخول إلى حسابك"
+
+msgid "Sign in"
+msgstr "تسجيل الدخول"
+
+msgid "No account yet?"
+msgstr "ليس لديك حساب؟"
+
+msgid "Create a new account"
+msgstr "إنشاء حساب جديد"
+
+msgid "Create a candidate account"
+msgstr "إنشاء حساب مرشح"
+
+msgid "Create account"
+msgstr "إنشاء الحساب"
+
+msgid "Already registered?"
+msgstr "مسجّل مسبقًا؟"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr ""
+"لم تحفظ أي وظيفة بعد. استخدم «حفظ الوظيفة» للاحتفاظ بالوظائف التي تريد "
+"العودة إليها."
+
+msgid "Profile settings"
+msgstr "إعدادات الملف الشخصي"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr ""
+"يُستخدم ملفك الشخصي لمطابقة الوظائف والتنبيهات. يرى أصحاب العمل اسمك وبريدك "
+"الإلكتروني مع سيرتك الذاتية."
+
+msgid "Save changes"
+msgstr "حفظ التغييرات"
+
+msgid "Employer dashboard"
+msgstr "لوحة تحكم صاحب العمل"
+
+msgid "Your activity at a glance"
+msgstr "نشاطك في لمحة"
+
+msgid "Post a new job"
+msgstr "نشر وظيفة جديدة"
+
+msgid "Jobs posted"
+msgstr "الوظائف المنشورة"
+
+msgid "Jobs open for applications"
+msgstr "الوظائف المفتوحة للتقديم"
+
+msgid "Applications received"
+msgstr "الطلبات المستلمة"
+
+msgid "Waiting for your review"
+msgstr "بانتظار مراجعتك"
+
+msgid "Jobs posted this month"
+msgstr "الوظائف المنشورة هذا الشهر"
+
+msgid "Jobs posted last month"
+msgstr "الوظائف المنشورة الشهر الماضي"
+
+msgid "Applications per day this month"
+msgstr "الطلبات لكل يوم هذا الشهر"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "الطلبات في %(day)s"
+
+msgid "No applications have arrived this month yet."
+msgstr "لم تصل أي طلبات هذا الشهر بعد."
+
+msgid "Writing a better job post"
+msgstr "كتابة إعلان وظيفة أفضل"
+
+msgid "Back to jobs"
+msgstr "العودة إلى الوظائف"
+
+msgid "Closed"
+msgstr "مغلقة"
+
+msgid "Close to new applications"
+msgstr "الإغلاق أمام الطلبات الجديدة"
+
+msgid "Open for applications"
+msgstr "الفتح لاستقبال الطلبات"
+
+msgid "Get a report by e-mail"
+msgstr "الحصول على تقرير عبر البريد الإلكتروني"
+
+msgid "Job details"
+msgstr "تفاصيل الوظيفة"
+
+msgid "Search applicants"
+msgstr "البحث عن المتقدمين"
+
+msgid "Candidate name or email"
+msgstr "اسم المرشح أو بريده الإلكتروني"
+
+msgid "Any status"
+msgstr "أي حالة"
+
+msgid "Download resume"
+msgstr "تنزيل السيرة الذاتية"
+
+msgid "Change the status of this application"
+msgstr "تغيير حالة هذا الطلب"
+
+msgid "Note (optional)"
+msgstr "ملاحظة (اختيارية)"
+
+msgid "Change status"
+msgstr "تغيير الحالة"
+
+msgid "Resume summary (generated by AI)"
+msgstr "ملخص السيرة الذاتية (أنشأه الذكاء الاصطناعي)"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr "لا يوجد طلب مطابق. امسح البحث أو جرّب كلمات أخرى."
+
+msgid "Nobody has applied for this job yet."
+msgstr "لم يتقدّم أحد لهذه الوظيفة بعد."
+
+msgid "My jobs"
+msgstr "وظائفي"
+
+msgid "Posted jobs"
+msgstr "الوظائف المنشورة"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "نُشرت في %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "لا طلبات"
+msgstr[1] "طلب واحد"
+msgstr[2] "طلبان"
+msgstr[3] "%(n)s طلبات"
+msgstr[4] "%(n)s طلبًا"
+msgstr[5] "%(n)s طلب"
+
+msgid "View applications"
+msgstr "عرض الطلبات"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr "سيتم حذف هذه الوظيفة وجميع طلباتها. هل تريد المتابعة؟"
+
+msgid "Delete job"
+msgstr "حذف الوظيفة"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr "لم تنشر أي وظيفة بعد. املأ النموذج أدناه لنشر أول إعلان لك."
+
+msgid "Publish job"
+msgstr "نشر الوظيفة"
+
+msgid "Employer sign in"
+msgstr "تسجيل دخول صاحب العمل"
+
+msgid "Create an employer account"
+msgstr "إنشاء حساب صاحب عمل"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "تقرير الوظيفة: %(title)s"
+
+msgid "No applications yet."
+msgstr "لا توجد طلبات بعد."
+
+msgid "Company settings"
+msgstr "إعدادات الشركة"
+
+msgid "The details candidates see next to your jobs."
+msgstr "المعلومات التي يراها المرشحون بجانب وظائفك."

@@ -12,5 +12,7 @@ services:
     web:
         command: ["make", "RUN=", "deploy-dev"]
         environment: *dev-env
-    celery:
+    tasks:
+        environment: *dev-env
+    scheduler:
         environment: *dev-env

@@ -1,21 +1,22 @@
 {% extends "assets/body.html" %}
+{% load i18n %}
 {% block content %}
     <div class="home-head">
-        <h1>درخواستی</h1>
+        <h1>{% trans "Requester" %}</h1>
         <p>
-            کارجویان رزومه می‌فرستند و وضعیت هر درخواست را می‌بینند. کارفرمایان آگهی ثبت می‌کنند و درخواست‌ها را بررسی می‌کنند.
+            {% trans "Candidates send resumes and follow the status of every application. Employers post jobs and review applications." %}
         </p>
     </div>
     <div class="doors">
-        <section class="door door--worker" aria-labelledby="door-worker">
-            <h2 id="door-worker">دنبال کار می‌گردم</h2>
-            <p>شغل‌ها را ببینید، رزومه‌تان را بفرستید و نتیجه را از همین‌جا دنبال کنید.</p>
-            <a class="btn" href="{% url 'worker_dashboard' %}">ورود به پنل کارجو</a>
+        <section class="door door--candidate" aria-labelledby="door-candidate">
+            <h2 id="door-candidate">{% trans "I am looking for a job" %}</h2>
+            <p>{% trans "Browse jobs, send your resume and follow the result from here." %}</p>
+            <a class="btn" href="{% url 'candidate_dashboard' %}">{% trans "Open the candidate area" %}</a>
         </section>
-        <section class="door door--offer" aria-labelledby="door-offer">
-            <h2 id="door-offer">استخدام می‌کنم</h2>
-            <p>آگهی شغلی ثبت کنید، رزومه‌ها را بخوانید و هر درخواست را بپذیرید یا رد کنید.</p>
-            <a class="btn" href="{% url 'offer_dashboard' %}">ورود به پنل کارفرما</a>
+        <section class="door door--employer" aria-labelledby="door-employer">
+            <h2 id="door-employer">{% trans "I am hiring" %}</h2>
+            <p>{% trans "Post a job, read resumes and accept or reject every application." %}</p>
+            <a class="btn" href="{% url 'employer_dashboard' %}">{% trans "Open the employer area" %}</a>
         </section>
     </div>
 {% endblock content %}

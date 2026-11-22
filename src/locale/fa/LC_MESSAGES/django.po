@@ -1,0 +1,1008 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: fa\n"
+"Language: fa\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Pending"
+msgstr "در انتظار"
+
+msgid "In review"
+msgstr "در حال بررسی"
+
+msgid "Shortlisted"
+msgstr "در فهرست کوتاه"
+
+msgid "Accepted"
+msgstr "پذیرفته شده"
+
+msgid "Rejected"
+msgstr "رد شده"
+
+msgid "Withdrawn"
+msgstr "پس گرفته شده"
+
+msgid "Resume"
+msgstr "رزومه"
+
+msgid "Cover letter"
+msgstr "توضیحات بیشتر"
+
+msgid "Status"
+msgstr "وضعیت"
+
+msgid "Private note"
+msgstr "یادداشت خصوصی"
+
+msgid "AI summary"
+msgstr "خلاصه هوش مصنوعی"
+
+msgid "Application"
+msgstr "درخواست"
+
+msgid "Applications"
+msgstr "درخواست‌ها"
+
+msgid "Application event"
+msgstr "رویداد درخواست"
+
+msgid "Application events"
+msgstr "رویدادهای درخواست"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "گزارش شغل %(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "فایل گزارش پیوست شده است! %(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "به‌روزرسانی درخواست شما: %(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"سلام %(name)s،\n"
+"\n"
+"وضعیت درخواست شما برای «%(title)s» در %(company)s اکنون این است: %(status)s."
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "%(count)d آگهی شغلی جدید برای «%(name)s»"
+msgstr[1] "%(count)d آگهی شغلی جدید برای «%(name)s»"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "سلام %(name)s،"
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "برای توقف این هشدار: %(url)s"
+
+msgid "Username"
+msgstr "نام کاربری"
+
+msgid "Password"
+msgstr "رمز عبور"
+
+msgid "First name"
+msgstr "نام"
+
+msgid "Last name"
+msgstr "نام خانوادگی"
+
+msgid "Email"
+msgstr "ایمیل"
+
+msgid "Confirm password"
+msgstr "تأیید رمز عبور"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr ""
+"این ایمیل قبلاً ثبت شده است. با ایمیل دیگری ثبت نام کنید یا وارد حساب خود "
+"شوید."
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr "حجم فایل بیش از %(limit)d مگابایت است. فایل کوچک‌تری انتخاب کنید."
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "فقط فایل‌های PDF مجاز هستند. رزومه را به صورت PDF ذخیره کنید."
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "این فایل یک PDF معتبر نیست. فایل را دوباره ذخیره کنید."
+
+msgid "Headline"
+msgstr "عنوان کوتاه"
+
+msgid "City"
+msgstr "شهر"
+
+msgid "This email is already registered."
+msgstr "این ایمیل قبلاً ثبت شده است."
+
+msgid "Alert name"
+msgstr "نام هشدار"
+
+msgid "Keywords"
+msgstr "کلیدواژه‌ها"
+
+msgid "Search"
+msgstr "جستجو"
+
+msgid "Search jobs"
+msgstr "جستجوی شغل"
+
+msgid "Work mode"
+msgstr "شکل کار"
+
+msgid "Any work mode"
+msgstr "هر شکل کار"
+
+msgid "Employment type"
+msgstr "نوع همکاری"
+
+msgid "Any type"
+msgstr "هر نوع"
+
+msgid "Seniority"
+msgstr "سطح ارشدیت"
+
+msgid "Any level"
+msgstr "هر سطح"
+
+msgid "Minimum salary"
+msgstr "حداقل حقوق"
+
+msgid "Skills"
+msgstr "مهارت‌ها"
+
+msgid "Remote only"
+msgstr "فقط دورکاری"
+
+msgid "Sort by"
+msgstr "مرتب‌سازی بر اساس"
+
+msgid "Newest first"
+msgstr "جدیدترین"
+
+msgid "Highest salary"
+msgstr "بیشترین حقوق"
+
+msgid "Closing soon"
+msgstr "نزدیک به پایان مهلت"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr "شماره تلفن معتبر وارد کنید (فقط رقم، فاصله و + ( ) -)."
+
+msgid "Date of birth cannot be in the future."
+msgstr "تاریخ تولد نمی‌تواند در آینده باشد."
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "کارجو باید دست‌کم %(age)d سال سن داشته باشد."
+
+msgid "High school"
+msgstr "دیپلم"
+
+msgid "Associate degree"
+msgstr "کاردانی"
+
+msgid "Bachelor's degree"
+msgstr "کارشناسی"
+
+msgid "Master's degree"
+msgstr "کارشناسی ارشد"
+
+msgid "Doctorate"
+msgstr "دکتری"
+
+msgid "Phone number"
+msgstr "شماره تلفن"
+
+msgid "Address"
+msgstr "نشانی"
+
+msgid "Date of birth"
+msgstr "تاریخ تولد"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "یک خط درباره خودتان، مثلاً «توسعه‌دهنده بک‌اند، ۵ سال»."
+
+msgid "Years of experience"
+msgstr "سال‌های تجربه"
+
+msgid "Education"
+msgstr "تحصیلات"
+
+msgid "Expected salary"
+msgstr "حقوق مورد انتظار"
+
+msgid "Salary currency"
+msgstr "واحد پول حقوق"
+
+msgid "Preferred work mode"
+msgstr "شکل کار دلخواه"
+
+msgid "LinkedIn"
+msgstr "لینکدین"
+
+msgid "Open to work"
+msgstr "آماده همکاری"
+
+msgid "Preferred language"
+msgstr "زبان دلخواه"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "زبان ایمیل‌هایی مانند هشدارهای شغلی."
+
+msgid "Candidate"
+msgstr "کارجو"
+
+msgid "Candidates"
+msgstr "کارجویان"
+
+msgid "Saved posting"
+msgstr "شغل ذخیره‌شده"
+
+msgid "Saved postings"
+msgstr "شغل‌های ذخیره‌شده"
+
+msgid "Daily"
+msgstr "روزانه"
+
+msgid "Weekly"
+msgstr "هفتگی"
+
+msgid "How often"
+msgstr "هر چند وقت یک‌بار"
+
+msgid "Active"
+msgstr "فعال"
+
+msgid "Job alert"
+msgstr "هشدار شغلی"
+
+msgid "Job alerts"
+msgstr "هشدارهای شغلی"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr "این آگهی شغلی پیدا نشد. ممکن است حذف شده باشد."
+
+msgid "You have already applied for this job."
+msgstr "شما قبلاً برای این شغل درخواست داده‌اید."
+
+msgid "This job is no longer accepting applications."
+msgstr "این شغل دیگر درخواست نمی‌پذیرد."
+
+msgid "Your application was sent."
+msgstr "رزومه شما ارسال شد."
+
+msgid "Job saved."
+msgstr "شغل ذخیره شد."
+
+msgid "Job removed from your saved jobs."
+msgstr "شغل از فهرست ذخیره‌شده‌ها برداشته شد."
+
+msgid "This application was not found."
+msgstr "این درخواست پیدا نشد."
+
+msgid "This application can no longer be withdrawn."
+msgstr "این درخواست دیگر قابل پس گرفتن نیست."
+
+msgid "Your application was withdrawn."
+msgstr "درخواست شما پس گرفته شد."
+
+msgid "Your details were saved."
+msgstr "اطلاعات شما ذخیره شد."
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "اطلاعات ذخیره نشد. خطاهای فرم را اصلاح کنید."
+
+msgid "Job alert created."
+msgstr "هشدار شغلی ساخته شد."
+
+msgid "This job alert was not found."
+msgstr "این هشدار شغلی پیدا نشد."
+
+msgid "Job alert switched on."
+msgstr "هشدار شغلی روشن شد."
+
+msgid "Job alert switched off."
+msgstr "هشدار شغلی خاموش شد."
+
+msgid "Job alert deleted."
+msgstr "هشدار شغلی حذف شد."
+
+msgid "Company name"
+msgstr "نام شرکت"
+
+msgid "Company email"
+msgstr "ایمیل شرکت"
+
+msgid "Description"
+msgstr "توضیحات"
+
+msgid "Extra information about the company"
+msgstr "توضیحات اضافی در مورد شرکت"
+
+msgid "This company email is already registered. Enter another one."
+msgstr "این ایمیل شرکت قبلاً ثبت شده است. ایمیل دیگری وارد کنید."
+
+msgid "Industry"
+msgstr "صنعت"
+
+msgid "Job title"
+msgstr "نام شغل"
+
+msgid "Job description"
+msgstr "شرح شغل"
+
+msgid "Country"
+msgstr "کشور"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr "شما قبلاً آگهی‌ای با همین نام ثبت کرده‌اید. نام دیگری انتخاب کنید."
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "حداکثر حقوق نمی‌تواند کمتر از حداقل باشد."
+
+msgid "Iranian rial (IRR)"
+msgstr "ریال ایران (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "دلار آمریکا (USD)"
+
+msgid "Euro (EUR)"
+msgstr "یورو (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "پوند استرلینگ (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "روبل روسیه (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "یوان چین (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "درهم امارات (AED)"
+
+msgid "On-site"
+msgstr "حضوری"
+
+msgid "Hybrid"
+msgstr "ترکیبی"
+
+msgid "Remote"
+msgstr "دورکاری"
+
+msgid "1-10 employees"
+msgstr "۱ تا ۱۰ نفر"
+
+msgid "11-50 employees"
+msgstr "۱۱ تا ۵۰ نفر"
+
+msgid "51-200 employees"
+msgstr "۵۱ تا ۲۰۰ نفر"
+
+msgid "201-1000 employees"
+msgstr "۲۰۱ تا ۱۰۰۰ نفر"
+
+msgid "More than 1000 employees"
+msgstr "بیش از ۱۰۰۰ نفر"
+
+msgid "User"
+msgstr "کاربر"
+
+msgid "Website"
+msgstr "وب‌سایت"
+
+msgid "Company size"
+msgstr "اندازه شرکت"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "زبان گزارش‌ها و ایمیل‌هایی که برای شرکت فرستاده می‌شود."
+
+msgid "Employer"
+msgstr "کارفرما"
+
+msgid "Employers"
+msgstr "کارفرمایان"
+
+msgid "Skill name"
+msgstr "نام مهارت"
+
+msgid "Skill"
+msgstr "مهارت"
+
+msgid "Full-time"
+msgstr "تمام‌وقت"
+
+msgid "Part-time"
+msgstr "پاره‌وقت"
+
+msgid "Contract"
+msgstr "قراردادی"
+
+msgid "Internship"
+msgstr "کارآموزی"
+
+msgid "Freelance"
+msgstr "فریلنس"
+
+msgid "Intern"
+msgstr "کارآموز"
+
+msgid "Junior"
+msgstr "جونیور"
+
+msgid "Mid-level"
+msgstr "سطح میانی"
+
+msgid "Senior"
+msgstr "ارشد"
+
+msgid "Lead / Manager"
+msgstr "سرپرست / مدیر"
+
+msgid "Maximum salary"
+msgstr "حداکثر حقوق"
+
+msgid "Application deadline"
+msgstr "مهلت ارسال درخواست"
+
+msgid "Accepting applications"
+msgstr "پذیرش درخواست"
+
+msgid "Job posting"
+msgstr "آگهی شغلی"
+
+msgid "Job postings"
+msgstr "آگهی‌های شغلی"
+
+msgid "Company details saved."
+msgstr "اطلاعات شرکت ذخیره شد."
+
+msgid "Job posting created."
+msgstr "آگهی شغلی ثبت شد."
+
+msgid "Job posting updated."
+msgstr "آگهی شغلی به‌روز شد."
+
+msgid "The posting is open for applications again."
+msgstr "آگهی دوباره برای دریافت درخواست باز شد."
+
+msgid "The posting is closed to new applications."
+msgstr "آگهی برای درخواست‌های جدید بسته شد."
+
+msgid "Job posting deleted."
+msgstr "آگهی شغلی حذف شد."
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr ""
+"درخواست گزارش ثبت شد. گزارش تا حداکثر سه روز کاری به ایمیل شرکت شما ارسال "
+"می‌شود."
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr "فایل رزومه پیدا نشد. از کارجو بخواهید دوباره ارسال کند."
+
+msgid "The selected status is not valid."
+msgstr "وضعیت انتخاب‌شده معتبر نیست."
+
+msgid "This status change is not allowed."
+msgstr "این تغییر وضعیت مجاز نیست."
+
+msgid "Application status updated."
+msgstr "وضعیت درخواست تغییر کرد."
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr "شما به این بخش دسترسی ندارید. با حساب کاربری همین بخش وارد شوید."
+
+msgid "Wrong username or password. Try again."
+msgstr "نام کاربری یا رمز عبور اشتباه است. دوباره تلاش کنید."
+
+msgid "You are registered. Sign in now."
+msgstr "ثبت نام انجام شد. اکنون وارد شوید."
+
+msgid "Registration failed. Fix the form errors."
+msgstr "ثبت نام انجام نشد. خطاهای فرم را اصلاح کنید."
+
+msgid "Page not found"
+msgstr "صفحه پیدا نشد"
+
+msgid "Requester"
+msgstr "درخواستی"
+
+msgid "This page was not found"
+msgstr "این صفحه پیدا نشد"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr ""
+"نشانی را بررسی کنید، یا از صفحه اصلی دوباره شروع کنید. ممکن است آگهی یا "
+"صفحه‌ای که دنبالش بودید حذف شده باشد."
+
+msgid "Go to the home page"
+msgstr "رفتن به صفحه اصلی"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "درخواستی؛ جایی برای پیدا کردن شغل و استخدام"
+
+msgid "Skip to the page content"
+msgstr "رفتن به محتوای صفحه"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr ""
+"کارجویان رزومه می‌فرستند و وضعیت هر درخواست را می‌بینند. کارفرمایان آگهی ثبت"
+" می‌کنند و درخواست‌ها را بررسی می‌کنند."
+
+msgid "I am looking for a job"
+msgstr "دنبال کار می‌گردم"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr ""
+"شغل‌ها را ببینید، رزومه‌تان را بفرستید و نتیجه را از همین‌جا دنبال کنید."
+
+msgid "Open the candidate area"
+msgstr "ورود به پنل کارجو"
+
+msgid "I am hiring"
+msgstr "استخدام می‌کنم"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr ""
+"آگهی شغلی ثبت کنید، رزومه‌ها را بخوانید و هر درخواست را بپذیرید یا رد کنید."
+
+msgid "Open the employer area"
+msgstr "ورود به پنل کارفرما"
+
+msgid "Language"
+msgstr "زبان"
+
+msgid "Change"
+msgstr "تغییر"
+
+msgid "Pagination"
+msgstr "صفحه‌بندی"
+
+msgid "Previous"
+msgstr "قبلی"
+
+msgid "Next"
+msgstr "بعدی"
+
+msgid "Employer area"
+msgstr "پنل کارفرما"
+
+msgid "Candidate area"
+msgstr "پنل کارجو"
+
+msgid "Main menu"
+msgstr "منوی اصلی"
+
+msgid "Dashboard"
+msgstr "داشبورد"
+
+msgid "Jobs"
+msgstr "شغل‌ها"
+
+msgid "Saved jobs"
+msgstr "شغل‌های ذخیره‌شده"
+
+msgid "My applications"
+msgstr "درخواست‌های من"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+msgid "Sign out"
+msgstr "خروج از حساب"
+
+msgid "Match"
+msgstr "تطابق"
+
+msgid "View and apply"
+msgstr "دیدن و ثبت درخواست"
+
+msgid "Remove from saved"
+msgstr "حذف از ذخیره‌شده‌ها"
+
+msgid "Save job"
+msgstr "ذخیره شغل"
+
+msgid "Stop job alert"
+msgstr "توقف هشدار شغلی"
+
+msgid "This link is not valid"
+msgstr "این پیوند معتبر نیست"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr ""
+"ممکن است پیوند ناقص باشد. وارد حساب شوید و هشدارهای شغلی خود را از صفحه "
+"هشدارها مدیریت کنید."
+
+msgid "Job alert switched off"
+msgstr "هشدار شغلی خاموش شد"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "دیگر برای «%(name)s» ایمیل دریافت نخواهید کرد."
+
+msgid "Stop this job alert?"
+msgstr "این هشدار شغلی متوقف شود؟"
+
+msgid "Back to the home page"
+msgstr "بازگشت به صفحه اصلی"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr ""
+"وقتی شغل تازه‌ای با جستجوی ذخیره‌شده شما هم‌خوان باشد، برایتان ایمیل "
+"می‌فرستیم."
+
+msgid "Off"
+msgstr "خاموش"
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "آخرین ایمیل در %(date)s"
+
+msgid "Switch off"
+msgstr "خاموش کردن"
+
+msgid "Switch on"
+msgstr "روشن کردن"
+
+msgid "Delete this job alert?"
+msgstr "این هشدار شغلی حذف شود؟"
+
+msgid "Delete"
+msgstr "حذف"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "هنوز هشدار شغلی ندارید. از فرم زیر یکی بسازید."
+
+msgid "New job alert"
+msgstr "هشدار شغلی جدید"
+
+msgid "Create alert"
+msgstr "ساخت هشدار"
+
+msgid "Applications you have sent"
+msgstr "درخواست‌هایی که فرستاده‌اید"
+
+msgid "Browse jobs"
+msgstr "دیدن شغل‌ها"
+
+msgid "Job"
+msgstr "شغل"
+
+msgid "Company"
+msgstr "شرکت"
+
+msgid "Date sent"
+msgstr "تاریخ ارسال"
+
+msgid "You have not applied yet."
+msgstr "هنوز درخواستی نفرستاده‌اید."
+
+msgid "Candidate dashboard"
+msgstr "داشبورد کارجو"
+
+msgid "Your applications"
+msgstr "درخواست‌های شما"
+
+msgid "Profile completeness"
+msgstr "کامل بودن پروفایل"
+
+msgid "Active job alerts"
+msgstr "هشدارهای شغلی فعال"
+
+msgid "Complete your profile for better job matches."
+msgstr "برای پیشنهاد بهتر شغل‌ها، پروفایل خود را کامل کنید."
+
+msgid "Application status"
+msgstr "وضعیت درخواست‌ها"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "%(n)s درخواست ارسال شده"
+msgstr[1] "%(n)s درخواست ارسال شده"
+
+msgid "Accepted applications"
+msgstr "درخواست‌های پذیرفته شده"
+
+msgid "In progress"
+msgstr "در جریان"
+
+msgid "Applications in progress"
+msgstr "درخواست‌های در جریان"
+
+msgid "Rejected applications"
+msgstr "درخواست‌های رد شده"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr ""
+"هنوز درخواستی نفرستاده‌اید. یک شغل انتخاب کنید و رزومه‌تان را برای آن "
+"بفرستید."
+
+msgid "Make your resume stronger"
+msgstr "برای قوی‌تر شدن رزومه"
+
+msgid "(guide in English)"
+msgstr "(راهنمای انگلیسی)"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "(ابزار بازنویسی با هوش مصنوعی، انگلیسی)"
+
+msgid "Back to the job list"
+msgstr "بازگشت به فهرست شغل‌ها"
+
+msgid "Salary"
+msgstr "حقوق"
+
+msgid "Match with your profile"
+msgstr "تطابق با پروفایل شما"
+
+msgid "About the company"
+msgstr "درباره شرکت"
+
+msgid "Your application"
+msgstr "درخواست شما"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "ارسال‌شده در %(date)s"
+
+msgid "Application sent"
+msgstr "درخواست ارسال شد"
+
+msgid "Withdraw this application?"
+msgstr "این درخواست پس گرفته شود؟"
+
+msgid "Withdraw application"
+msgstr "پس گرفتن درخواست"
+
+msgid "Apply"
+msgstr "ثبت درخواست"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "رزومه را به‌صورت فایل PDF و تا ۵ مگابایت بفرستید."
+
+msgid "Send resume"
+msgstr "ارسال رزومه"
+
+msgid "Applications closed"
+msgstr "دریافت درخواست بسته شده است"
+
+msgid "Open jobs"
+msgstr "شغل‌های باز"
+
+msgid "Get alerts for new jobs"
+msgstr "دریافت هشدار شغل‌های تازه"
+
+msgid "Clear filters"
+msgstr "پاک کردن فیلترها"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr ""
+"شغلی با این فیلترها پیدا نشد. یک فیلتر را بردارید یا عبارت دیگری جستجو کنید."
+
+msgid "No jobs are open right now. Check again later."
+msgstr "فعلاً شغلی باز نیست. بعداً دوباره سر بزنید."
+
+msgid "Candidate sign in"
+msgstr "ورود پنل کارجو"
+
+msgid "Sign in to your account"
+msgstr "ورود به حساب"
+
+msgid "Sign in"
+msgstr "ورود"
+
+msgid "No account yet?"
+msgstr "حساب ندارید؟"
+
+msgid "Create a new account"
+msgstr "ساخت حساب جدید"
+
+msgid "Create a candidate account"
+msgstr "ساخت حساب کارجو"
+
+msgid "Create account"
+msgstr "ساخت حساب"
+
+msgid "Already registered?"
+msgstr "قبلاً ثبت‌نام کرده‌اید؟"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr ""
+"هنوز شغلی ذخیره نکرده‌اید. با «ذخیره شغل» شغل‌هایی را که می‌خواهید دوباره "
+"ببینید نگه دارید."
+
+msgid "Profile settings"
+msgstr "تنظیمات پروفایل"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr ""
+"پروفایل شما برای پیشنهاد شغل و هشدارها استفاده می‌شود. کارفرمایان نام و "
+"ایمیل شما را همراه رزومه می‌بینند."
+
+msgid "Save changes"
+msgstr "ذخیره تغییرات"
+
+msgid "Employer dashboard"
+msgstr "داشبورد کارفرما"
+
+msgid "Your activity at a glance"
+msgstr "خلاصه فعالیت شما"
+
+msgid "Post a new job"
+msgstr "ثبت شغل جدید"
+
+msgid "Jobs posted"
+msgstr "شغل‌های ثبت‌شده"
+
+msgid "Jobs open for applications"
+msgstr "شغل‌های در حال پذیرش درخواست"
+
+msgid "Applications received"
+msgstr "درخواست‌های دریافتی"
+
+msgid "Waiting for your review"
+msgstr "در انتظار بررسی شما"
+
+msgid "Jobs posted this month"
+msgstr "شغل‌های ثبت‌شده در این ماه"
+
+msgid "Jobs posted last month"
+msgstr "شغل‌های ثبت‌شده در ماه گذشته"
+
+msgid "Applications per day this month"
+msgstr "درخواست‌های هر روز در این ماه"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "درخواست‌های %(day)s"
+
+msgid "No applications have arrived this month yet."
+msgstr "در این ماه هنوز درخواستی نرسیده است."
+
+msgid "Writing a better job post"
+msgstr "برای نوشتن آگهی بهتر"
+
+msgid "Back to jobs"
+msgstr "بازگشت به شغل‌ها"
+
+msgid "Closed"
+msgstr "بسته"
+
+msgid "Close to new applications"
+msgstr "بستن دریافت درخواست"
+
+msgid "Open for applications"
+msgstr "باز کردن دریافت درخواست"
+
+msgid "Get a report by e-mail"
+msgstr "دریافت گزارش با ایمیل"
+
+msgid "Job details"
+msgstr "اطلاعات شغل"
+
+msgid "Search applicants"
+msgstr "جستجوی درخواست‌دهنده"
+
+msgid "Candidate name or email"
+msgstr "نام یا ایمیل کارجو"
+
+msgid "Any status"
+msgstr "هر وضعیت"
+
+msgid "Download resume"
+msgstr "دانلود رزومه"
+
+msgid "Change the status of this application"
+msgstr "تغییر وضعیت این درخواست"
+
+msgid "Note (optional)"
+msgstr "یادداشت (اختیاری)"
+
+msgid "Change status"
+msgstr "تغییر وضعیت"
+
+msgid "Resume summary (generated by AI)"
+msgstr "خلاصه رزومه (تولیدشده با هوش مصنوعی)"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr "درخواستی پیدا نشد. جستجو را پاک کنید یا عبارت دیگری بنویسید."
+
+msgid "Nobody has applied for this job yet."
+msgstr "هنوز کسی برای این شغل درخواست نفرستاده است."
+
+msgid "My jobs"
+msgstr "شغل‌های من"
+
+msgid "Posted jobs"
+msgstr "شغل‌های ثبت‌شده"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "ثبت‌شده در %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "%(n)s درخواست"
+msgstr[1] "%(n)s درخواست"
+
+msgid "View applications"
+msgstr "دیدن درخواست‌ها"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr "این شغل و همه درخواست‌های آن حذف می‌شود. ادامه می‌دهید؟"
+
+msgid "Delete job"
+msgstr "حذف شغل"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr ""
+"هنوز شغلی ثبت نکرده‌اید. فرم زیر را پر کنید تا اولین آگهی شما منتشر شود."
+
+msgid "Publish job"
+msgstr "ثبت شغل"
+
+msgid "Employer sign in"
+msgstr "ورود پنل کارفرما"
+
+msgid "Create an employer account"
+msgstr "ساخت حساب کارفرما"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "گزارش شغل: %(title)s"
+
+msgid "No applications yet."
+msgstr "هنوز درخواستی ثبت نشده است."
+
+msgid "Company settings"
+msgstr "تنظیمات شرکت"
+
+msgid "The details candidates see next to your jobs."
+msgstr "اطلاعاتی که کارجویان کنار آگهی‌های شما می‌بینند."

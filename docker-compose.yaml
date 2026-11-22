@@ -1,39 +1,65 @@
+# Service names say what each container is for:
+#   web        Django (gunicorn)             tasks      Celery worker (AI summaries, reports, e-mails)
+#   scheduler  Celery beat (job alerts)      db         MariaDB
+#   cache      Redis (cache + Celery broker) search     Elasticsearch
+#   mailhog    catches outgoing mail         llm        optional local Ollama (profile "local-ai")
+#
+# Secrets and per-machine settings come from a `.env` file next to this one
+# (see .env.example); nothing secret is written in this file.
+
 x-app-env: &app-env
     ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1}"
     SECRET_KEY: "${SECRET_KEY:-}" # required: Django refuses to start without it when DEBUG is off
     DJANGO_DEBUG: "${DJANGO_DEBUG:-false}"
-    DB_HOST: "mariadb"
+    SITE_URL: "${SITE_URL:-http://localhost:8000}"
+    DB_HOST: "db"
     DB_PORT: 3306
-    DB_USER: "myuser"
-    DB_PASSWORD: "mypassword"
-    DB_NAME: "mydatabase"
-    REDIS_URL: "redis://:yourpassword@redis:6379/1"
-    EMAIL_HOST: "mailserver"
+    DB_USER: "${DB_USER:-requester}"
+    DB_PASSWORD: "${DB_PASSWORD:-requester-dev-password}"
+    DB_NAME: "${DB_NAME:-requester}"
+    REDIS_URL: "redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
+    EMAIL_HOST: "mailhog"
     EMAIL_PORT: 1025
     EMAIL_HOST_USER: ""
     EMAIL_HOST_PASSWORD: ""
     EMAIL_USE_TLS: False
-    ELASTICSEARCH_URL: "http://elasticsearch:9200"
+    ELASTICSEARCH_URL: "http://search:9200"
     ELASTICSEARCH_USERNAME: ""
     ELASTICSEARCH_PASSWORD: ""
-    ELASTICSEARCH_PORT: 9200
-    CELERY_BROKER_URL: "redis://:yourpassword@redis:6379/1"
-    CELERY_RESULT_BACKEND: "redis://:yourpassword@redis:6379/1"
+    CELERY_BROKER_URL: "redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
+    CELERY_RESULT_BACKEND: "redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
     CELERY_ACCEPT_CONTENT: '["json"]'
     CELERY_TASK_SERIALIZER: "json"
     CELERY_RESULT_SERIALIZER: "json"
     CELERY_TIMEZONE: "UTC"
-    LLAMA_SERVER_URL: "http://ollama:11434"
-    LLAMA_MODEL: "llama3.2"
+    # AI resume summaries: OpenRouter when a key is set (resume text is sent to
+    # OpenRouter), else the local `llm` service if LLAMA_SERVER_URL is set, else off.
+    AI_PROVIDER: "${AI_PROVIDER:-auto}"
+    OPENROUTER_API_KEY: "${OPENROUTER_API_KEY:-}"
+    OPENROUTER_MODEL: "${OPENROUTER_MODEL:-openrouter/auto}"
+    LLAMA_SERVER_URL: "${LLAMA_SERVER_URL:-}"
+    LLAMA_MODEL: "${LLAMA_MODEL:-llama3.2}"
     DJANGO_SUPERUSER_USERNAME: "${DJANGO_SUPERUSER_USERNAME:-admin}"
     DJANGO_SUPERUSER_PASSWORD: "${DJANGO_SUPERUSER_PASSWORD:-}"
 
+x-app-build: &app-build
+    context: .
+    dockerfile: Dockerfile
+
+x-app-deps: &app-deps
+    db:
+        condition: service_healthy
+    cache:
+        condition: service_healthy
+    search:
+        condition: service_healthy
+    mailhog:
+        condition: service_healthy
+
 services:
     web:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: django_app
+        build: *app-build
+        container_name: requester_web
         restart: unless-stopped
         command: ["make", "RUN=", "deploy"]
         volumes:
@@ -41,40 +67,36 @@ services:
         ports:
             - "8000:8000"
         environment: *app-env
-        depends_on:
-            mariadb:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
-            elasticsearch:
-                condition: service_healthy
-            mailserver:
-                condition: service_healthy
-    celery:
-        build:
-            context: .
-            dockerfile: Dockerfile
-        container_name: celery_worker
+        depends_on: *app-deps
+
+    tasks:
+        build: *app-build
+        container_name: requester_tasks
         restart: unless-stopped
         command: ["make", "RUN=", "setup_celery"]
         volumes:
             - .:/app
         environment: *app-env
-        depends_on:
-            mariadb:
-                condition: service_healthy
-            redis:
-                condition: service_healthy
-            elasticsearch:
-                condition: service_healthy
-            mailserver:
-                condition: service_healthy
-            ollama:
-                condition: service_started
+        depends_on: *app-deps
 
-    ollama:
+    scheduler:
+        build: *app-build
+        container_name: requester_scheduler
+        restart: unless-stopped
+        command: ["make", "RUN=", "setup_scheduler"]
+        volumes:
+            - .:/app
+        environment: *app-env
+        depends_on:
+            cache:
+                condition: service_healthy
+            db:
+                condition: service_healthy
+
+    llm:
+        profiles: ["local-ai"]
         image: ollama/ollama:0.5.3
-        container_name: ollama_gpu
+        container_name: requester_llm
         restart: unless-stopped
         runtime: nvidia
         entrypoint: ["/bin/sh", "-c"]
@@ -89,9 +111,9 @@ services:
         volumes:
             - ./ollama_data:/root/.ollama
 
-    elasticsearch:
-        image: elasticsearch:8.15.5
-        container_name: elasticsearch
+    search:
+        image: elasticsearch:9.5.1
+        container_name: requester_search
         environment:
             - discovery.type=single-node
             - xpack.security.enabled=false
@@ -107,9 +129,9 @@ services:
             timeout: 10s
             retries: 3
 
-    mailserver:
+    mailhog:
         image: mailhog/mailhog:v1.0.1
-        container_name: mailserver
+        container_name: requester_mailhog
         ports:
             - "1025:1025"
             - "8025:8025"
@@ -119,15 +141,15 @@ services:
             timeout: 10s
             retries: 3
 
-    mariadb:
+    db:
         image: mariadb:11.4
-        container_name: mariadb_server
+        container_name: requester_db
         restart: unless-stopped
         environment:
-            MARIADB_DATABASE: mydatabase
-            MARIADB_USER: myuser
-            MARIADB_PASSWORD: mypassword
-            MARIADB_ROOT_PASSWORD: rootpassword
+            MARIADB_DATABASE: "${DB_NAME:-requester}"
+            MARIADB_USER: "${DB_USER:-requester}"
+            MARIADB_PASSWORD: "${DB_PASSWORD:-requester-dev-password}"
+            MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-requester-dev-root}"
         ports:
             - "3306:3306"
         volumes:
@@ -138,11 +160,11 @@ services:
             timeout: 10s
             retries: 5
 
-    redis:
+    cache:
         image: redis:7.2.4
-        container_name: redis_server
+        container_name: requester_cache
         restart: unless-stopped
-        command: ["redis-server", "--requirepass", "yourpassword"]
+        command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-requester-dev-redis}"]
         ports:
             - "6379:6379"
         volumes:

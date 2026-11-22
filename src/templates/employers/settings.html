@@ -1,0 +1,17 @@
+{% extends "employers/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Company settings" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Company settings" %}</h1>
+        <p>{% trans "The details candidates see next to your jobs." %}</p>
+    </div>
+    <form class="panel auth--wide" method="post" action="{% url 'employer_settings' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            {% include "assets/field.html" with field=field %}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+    </form>
+{% endblock content %}

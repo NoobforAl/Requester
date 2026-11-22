@@ -11,6 +11,8 @@ for _name in (
     "ELASTICSEARCH_URL",
     "CELERY_BROKER_URL",
     "LLAMA_SERVER_URL",
+    "OPENROUTER_API_KEY",
+    "AI_PROVIDER",
 ):
     os.environ.pop(_name, None)
 

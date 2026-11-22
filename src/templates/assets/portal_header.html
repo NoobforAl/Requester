@@ -1,38 +1,50 @@
+{% load i18n %}
 {% comment %}
-  Shared portal header. Usage: {% include "assets/portal_header.html" with portal="offer" %}
-  (portal is "offer" for employers, "worker" for job seekers).
+  Shared portal header. Usage: {% include "assets/portal_header.html" with portal="employer" %}
+  (portal is "employer" for employers, "candidate" for job seekers).
 {% endcomment %}
-{% if portal == "offer" %}
-    {% url 'offer_dashboard' as nav_home %}
-    {% url 'offer_jobs' as nav_jobs %}
-    {% url 'offer_settings' as nav_settings %}
-    {% url 'offer_logout' as nav_logout %}
+{% if portal == "employer" %}
+    {% url 'employer_dashboard' as nav_home %}
+    {% url 'employer_jobs' as nav_jobs %}
+    {% url 'employer_settings' as nav_settings %}
+    {% url 'employer_logout' as nav_logout %}
 {% else %}
-    {% url 'worker_dashboard' as nav_home %}
-    {% url 'worker_jobs' as nav_jobs %}
-    {% url 'worker_settings' as nav_settings %}
-    {% url 'worker_logout' as nav_logout %}
+    {% url 'candidate_dashboard' as nav_home %}
+    {% url 'candidate_jobs' as nav_jobs %}
+    {% url 'candidate_saved' as nav_saved %}
+    {% url 'candidate_applications' as nav_applications %}
+    {% url 'candidate_alerts' as nav_alerts %}
+    {% url 'candidate_settings' as nav_settings %}
+    {% url 'candidate_logout' as nav_logout %}
 {% endif %}
 <header class="topbar">
     <div class="topbar__inner">
         <p class="topbar__name">
-            {% if portal == "offer" %}
-                پنل کارفرما
+            {% if portal == "employer" %}
+                {% trans "Employer area" %}
             {% else %}
-                پنل کارجو
+                {% trans "Candidate area" %}
             {% endif %}
         </p>
-        <nav class="topbar__nav" aria-label="منوی اصلی">
+        <nav class="topbar__nav" aria-label="{% trans 'Main menu' %}">
             <a href="{{ nav_home }}"
-               {% if request.path == nav_home %}aria-current="page"{% endif %}>داشبورد</a>
+               {% if request.path == nav_home %}aria-current="page"{% endif %}>{% trans "Dashboard" %}</a>
             <a href="{{ nav_jobs }}"
-               {% if nav_jobs in request.path %}aria-current="page"{% endif %}>شغل‌ها</a>
+               {% if nav_jobs in request.path %}aria-current="page"{% endif %}>{% trans "Jobs" %}</a>
+            {% if portal == "candidate" %}
+                <a href="{{ nav_saved }}"
+                   {% if nav_saved in request.path %}aria-current="page"{% endif %}>{% trans "Saved jobs" %}</a>
+                <a href="{{ nav_applications }}"
+                   {% if nav_applications in request.path %}aria-current="page"{% endif %}>{% trans "My applications" %}</a>
+                <a href="{{ nav_alerts }}"
+                   {% if nav_alerts in request.path %}aria-current="page"{% endif %}>{% trans "Job alerts" %}</a>
+            {% endif %}
             <a href="{{ nav_settings }}"
-               {% if nav_settings in request.path %}aria-current="page"{% endif %}>تنظیمات</a>
+               {% if nav_settings in request.path %}aria-current="page"{% endif %}>{% trans "Settings" %}</a>
         </nav>
         <form method="post" action="{{ nav_logout }}">
             {% csrf_token %}
-            <button type="submit" class="btn btn-sm">خروج از حساب</button>
+            <button type="submit" class="btn btn-sm">{% trans "Sign out" %}</button>
         </form>
     </div>
 </header>

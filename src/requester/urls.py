@@ -1,13 +1,28 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
+from django.views.i18n import set_language
 
-from requester.views import mainPage
+from requester.views import home
 
 handler404 = "requester.views.handler404"
 
 urlpatterns = [
-    path("", mainPage, name="home"),
+    path("", home, name="home"),
     path("admin/", admin.site.urls),
-    path("worker/", include("worker.urls")),
-    path("offer/", include("offer.urls")),
+    # POST-only language switcher (cookie + session); see the header dropdown.
+    path("i18n/set-language/", set_language, name="set_language"),
+    path("candidates/", include("candidates.urls")),
+    path("employers/", include("employers.urls")),
+    # Old URLs from before the rename keep working.
+    path(
+        "worker/<path:rest>",
+        RedirectView.as_view(url="/candidates/%(rest)s", permanent=True),
+    ),
+    path("worker/", RedirectView.as_view(url="/candidates/", permanent=True)),
+    path(
+        "offer/<path:rest>",
+        RedirectView.as_view(url="/employers/%(rest)s", permanent=True),
+    ),
+    path("offer/", RedirectView.as_view(url="/employers/", permanent=True)),
 ]

@@ -1,5 +1,6 @@
-/* Requester: stylesheet. RTL first, logical properties only.
-   One accent per portal: firouzeh for job seekers, indigo for employers. */
+/* Requester: stylesheet. Logical properties only, so one file serves right-to-left
+   (fa, ar) and left-to-right (en, de, fr, ru, zh-hans) pages: the <html dir> decides.
+   One accent per portal: firouzeh for candidates, indigo for employers. */
 
 @font-face {
     font-family: "Vazirmatn";
@@ -51,7 +52,7 @@
     --page: 68rem;
 }
 
-body[data-portal="offer"] {
+body[data-portal="employer"] {
     --accent: var(--indigo);
 }
 
@@ -71,7 +72,10 @@ body {
     min-block-size: 100vh;
     display: flex;
     flex-direction: column;
-    font-family: "Vazirmatn", Tahoma, sans-serif;
+    /* Vazirmatn covers Latin, Arabic and Persian; the system fonts after it cover
+       Cyrillic and Chinese. */
+    font-family: "Vazirmatn", system-ui, "Segoe UI", Roboto, "Noto Sans",
+        "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", Tahoma, sans-serif;
     font-size: var(--step-0);
     line-height: 1.85;
     color: var(--ink);
@@ -527,6 +531,18 @@ fieldset legend {
     --stamp: var(--rejected);
 }
 
+.stamp--in_review {
+    --stamp: var(--indigo);
+}
+
+.stamp--shortlisted {
+    --stamp: var(--firouzeh);
+}
+
+.stamp--withdrawn {
+    --stamp: var(--ink-soft);
+}
+
 /* Job list ----------------------------------------------------------- */
 
 .job-list {
@@ -927,7 +943,7 @@ th {
     border-block-start: 8px solid var(--door);
 }
 
-.door--offer {
+.door--employer {
     --door: var(--indigo);
 }
 
@@ -1006,4 +1022,61 @@ th {
     body {
         background: #fff;
     }
+}
+
+
+/* Language switcher ----------------------------------------------------- */
+
+.lang-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--space-2) var(--space-4);
+    background: var(--surface);
+    border-block-end: 1px solid var(--rule);
+}
+
+.lang-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--step--1);
+}
+
+.lang-switch select {
+    padding: var(--space-1) var(--space-3);
+    font: inherit;
+    border: 1px solid var(--rule);
+    border-radius: var(--radius);
+    background: var(--surface);
+}
+
+/* Job filters, application timeline -------------------------------------- */
+
+.filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: var(--space-2) var(--space-4);
+    margin-block-end: var(--space-5);
+}
+
+.filters__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    grid-column: 1 / -1;
+}
+
+.timeline {
+    margin: var(--space-3) 0;
+    padding-inline-start: var(--space-5);
+    font-size: var(--step--1);
+}
+
+.timeline li {
+    margin-block-end: var(--space-1);
+}
+
+.bar progress,
+.figure progress {
+    inline-size: 100%;
 }

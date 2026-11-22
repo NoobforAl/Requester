@@ -8,6 +8,7 @@ cache and eager Celery tasks, so `make dev` works without any service running.
 import os
 from pathlib import Path
 
+from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,6 +45,8 @@ CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS")
 
 # Email
 DEFAULT_FROM_EMAIL = os.environ.get("DEFAULT_FROM_EMAIL", "no-reply@requester.local")
+# Absolute base of the links placed in e-mails (job alerts).
+SITE_URL = os.environ.get("SITE_URL", "http://localhost:8000").rstrip("/")
 # Django 6.1 replaced the EMAIL_* settings with MAILERS. Without EMAIL_HOST mail
 # is printed to the console, which is what you want in development.
 if os.environ.get("EMAIL_HOST"):
@@ -127,10 +130,39 @@ CELERY_TIMEZONE = "UTC"
 CELERY_TASK_ALWAYS_EAGER = not CELERY_BROKER_URL
 CELERY_TASK_EAGER_PROPAGATES = False
 
-# Local LLM used to summarise resumes. Empty URL disables summaries.
+# Celery beat: job-alert digests. Run with `celery -A requester beat` (the compose
+# `scheduler` service). Times are CELERY_TIMEZONE (UTC); 04:30 UTC = 08:00 Tehran.
+CELERY_BEAT_SCHEDULE = {
+    "job-alerts-daily": {
+        "task": "applications.tasks.send_job_alerts",
+        "schedule": crontab(hour=4, minute=30),
+        "args": ("daily",),
+    },
+    "job-alerts-weekly": {
+        "task": "applications.tasks.send_job_alerts",
+        "schedule": crontab(hour=4, minute=30, day_of_week="mon"),
+        "args": ("weekly",),
+    },
+}
+
+# AI resume summaries. AI_PROVIDER=auto picks OpenRouter when an API key is set,
+# else a local Ollama server when LLAMA_SERVER_URL is set, else summaries are off.
+# Enabling OpenRouter sends the text of uploaded resumes to that third party.
+AI_PROVIDER = os.environ.get("AI_PROVIDER", "auto").strip().lower()
+AI_TIMEOUT_SECONDS = int(
+    os.environ.get("AI_TIMEOUT_SECONDS")
+    or os.environ.get("LLAMA_TIMEOUT_SECONDS")
+    or 120
+)
+AI_MAX_INPUT_CHARS = int(os.environ.get("AI_MAX_INPUT_CHARS", "12000"))
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL", "openrouter/auto")
+OPENROUTER_BASE_URL = os.environ.get(
+    "OPENROUTER_BASE_URL", "https://openrouter.ai/api/v1"
+).rstrip("/")
+# Local Ollama server (optional, `docker compose --profile local-ai`).
 LLAMA_SERVER_URL = os.environ.get("LLAMA_SERVER_URL", "")
 LLAMA_MODEL = os.environ.get("LLAMA_MODEL", "llama3.2")
-LLAMA_TIMEOUT_SECONDS = int(os.environ.get("LLAMA_TIMEOUT_SECONDS", "120"))
 
 LOGGING = {
     "version": 1,
@@ -154,9 +186,9 @@ LOGGING = {
 }
 
 INSTALLED_APPS = [
-    "offer",
-    "worker",
-    "requester_handler",
+    "employers",
+    "candidates",
+    "applications",
     "django_extensions",
     "django_elasticsearch_dsl",
     "django.contrib.admin",
@@ -171,6 +203,7 @@ MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -188,6 +221,8 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
+                "requester.context_processors.languages",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
             ],
@@ -209,7 +244,19 @@ AUTH_PASSWORD_VALIDATORS = [
     for name in _PASSWORD_VALIDATORS
 ]
 
-LANGUAGE_CODE = "fa-ir"
+# Persian is the default; the language is chosen per visitor (cookie/session) with
+# the switcher in the page header, so URLs do not carry a language prefix.
+LANGUAGE_CODE = "fa"
+LANGUAGES = [
+    ("fa", "فارسی"),
+    ("en", "English"),
+    ("ar", "العربية"),
+    ("de", "Deutsch"),
+    ("fr", "Français"),
+    ("ru", "Русский"),
+    ("zh-hans", "简体中文"),
+]
+LOCALE_PATHS = [BASE_DIR / "locale"]
 TIME_ZONE = "Asia/Tehran"
 USE_I18N = True
 USE_TZ = True
@@ -235,6 +282,7 @@ MEDIA_ROOT = BASE_DIR
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+# Each portal sends anonymous visitors to its own login page; this is the fallback.
 LOGIN_URL = "/"
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = "Lax"

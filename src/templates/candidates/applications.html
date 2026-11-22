@@ -1,0 +1,40 @@
+{% extends "candidates/base.html" %}
+{% load i18n filters %}
+{% block title %}{% trans "My applications" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Applications you have sent" %}</h1>
+        <a class="btn btn-primary" href="{% url 'candidate_jobs' %}">{% trans "Browse jobs" %}</a>
+    </div>
+    {% if applications %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th scope="col">{% trans "Job" %}</th>
+                        <th scope="col">{% trans "Company" %}</th>
+                        <th scope="col">{% trans "Status" %}</th>
+                        <th scope="col">{% trans "Date sent" %}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for application in applications %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'candidate_job' application.posting_id %}">{{ application.posting.title }}</a>
+                            </td>
+                            <td>{{ application.posting.employer.name }}</td>
+                            <td>
+                                <span class="stamp stamp--{{ application.status }}">{{ application.get_status_display }}</span>
+                            </td>
+                            <td>{{ application.applied_at|localdate }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "assets/pagination.html" with page=applications param="page" %}
+    {% else %}
+        <p class="empty">{% trans "You have not applied yet." %}</p>
+    {% endif %}
+{% endblock content %}

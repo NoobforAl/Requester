@@ -1,0 +1,65 @@
+{% extends "employers/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Employer dashboard" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Your activity at a glance" %}</h1>
+        <a class="btn btn-primary" href="{% url 'employer_jobs' %}#new-job">{% trans "Post a new job" %}</a>
+    </div>
+    <dl class="figures">
+        <div class="figure">
+            <dt>{% trans "Jobs posted" %}</dt>
+            <dd>{{ num_of_postings }}</dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Jobs open for applications" %}</dt>
+            <dd>{{ num_of_open_postings }}</dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Applications received" %}</dt>
+            <dd>{{ num_of_applications }}</dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Waiting for your review" %}</dt>
+            <dd>{{ to_review }}</dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Jobs posted this month" %}</dt>
+            <dd>{{ postings_current_month }}</dd>
+        </div>
+        <div class="figure">
+            <dt>{% trans "Jobs posted last month" %}</dt>
+            <dd>{{ postings_last_month }}</dd>
+        </div>
+    </dl>
+    <section class="section" aria-labelledby="daily-title">
+        <h2 class="section__title" id="daily-title">{% trans "Applications per day this month" %}</h2>
+        {% if applications_per_day %}
+            <div class="bars">
+                {% for item in applications_per_day %}
+                    <div class="bar">
+                        <span class="bar__label">{{ item.day }}</span>
+                        <progress max="{{ applications_per_day_max }}"
+                                  value="{{ item.count }}"
+                                  aria-label="{% blocktrans with day=item.day %}Applications on {{ day }}{% endblocktrans %}"></progress>
+                        <span class="bar__value">{{ item.count }}</span>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="empty">{% trans "No applications have arrived this month yet." %}</p>
+        {% endif %}
+    </section>
+    <section class="section" aria-labelledby="tips-title">
+        <h2 class="section__title" id="tips-title">{% trans "Writing a better job post" %}</h2>
+        <ul class="link-list">
+            <li>
+                <a href="https://resources.workable.com/tutorial/how-to-write-a-good-job-description"
+                   rel="noopener"
+                   lang="en"
+                   hreflang="en">How to write a good job description</a>
+                <span class="muted">{% trans "(guide in English)" %}</span>
+            </li>
+        </ul>
+    </section>
+{% endblock content %}

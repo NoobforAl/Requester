@@ -1,10 +1,10 @@
-{% load static %}<!DOCTYPE html>
-<html lang="fa" dir="rtl">
+{% load i18n static %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="درخواستی؛ جایی برای پیدا کردن شغل و استخدام">
-        <title>{% block title %}درخواستی{% endblock title %}</title>
+        <meta name="description" content="{% trans 'Requester: a place to find a job and to hire' %}">
+        <title>{% block title %}{% trans "Requester" %}{% endblock title %}</title>
         <link rel="preload"
               href="{% static 'fonts/Vazirmatn-variable.woff2' %}"
               as="font"
@@ -13,7 +13,8 @@
         <link rel="stylesheet" href="{% static 'css/app.css' %}">
     </head>
     <body data-portal="{% block portal %}{% endblock portal %}">
-        <a class="skip-link" href="#main">رفتن به محتوای صفحه</a>
+        <a class="skip-link" href="#main">{% trans "Skip to the page content" %}</a>
+        {% include "assets/language_switcher.html" %}
         {% block header %}{% endblock header %}
         {% if messages %}
             <div class="flash-region">
@@ -26,7 +27,7 @@
         <main id="main">
             {% block content %}{% endblock content %}
         </main>
-        <footer class="site-footer">© {% now "Y" %} درخواستی</footer>
+        <footer class="site-footer">© {% now "Y" %} {% trans "Requester" %}</footer>
         <script src="{% static 'js/app.js' %}" defer></script>
     </body>
 </html>

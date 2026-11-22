@@ -1,134 +1,108 @@
 # Requester
 
-Requester is a job recruitment platform designed as a college project. The platform allows workers to search and apply for jobs, while companies can post job offers and manage applications. The project is built using Django and leverages Docker for containerization.
+Requester is a job platform built with Django. **Candidates** find jobs, apply with a PDF resume and follow every application. **Employers** post jobs, review applications and move them through a hiring pipeline. The interface speaks **7 languages**: Persian (default), English, Arabic, German, French, Russian and Simplified Chinese.
 
-## Class Diagrams
+## Features
 
-The class diagram for the project outlines the main entities and their relationships:
+**Candidates** (`/candidates/`)
 
-- **User**: Represents a user of the platform, which can be either a worker or a company offering jobs.
-- **Worker**: Contains personal information about the worker, such as name, email, phone number, address, and date of birth.
-- **JobRequest**: Represents a job application submitted by a worker, including the resume, cover letter, status, and timestamps.
-- **Offer**: Represents a job offer posted by a company, including company details and job information.
-- **Job**: Represents a job listing, including job name, details, and timestamps.
-- **Tag**: Represents tags associated with jobs for categorization.
+- Browse open jobs with filters (city, work mode, employment type, seniority, minimum salary, skills, remote only) and sorting (newest, highest salary, closing soon).
+- A **match score** (0-100) compares each job with the candidate's skills, preferred work mode and expected salary.
+- Save jobs for later, apply with a PDF resume and cover letter, **withdraw** an application, and see the **status timeline** of each application.
+- A full profile: headline, city, skills, experience, education, expected salary, work-mode preference, LinkedIn, language; a completeness bar on the dashboard.
+- **Job alerts**: saved searches that e-mail a daily or weekly digest of new matching jobs, in the candidate's language, with a signed one-click unsubscribe link.
 
-The relationships between these entities are as follows:
+**Employers** (`/employers/`)
 
-- A User can have one Worker profile and one Offer profile.
-- A Worker can submit multiple JobRequests.
-- A Job can receive multiple JobRequests.
-- An Offer can post multiple Jobs.
-- A Job can be tagged with multiple Tags.
+- Post jobs with location, work mode, employment type, seniority, salary range and currency, deadline and skills; close, reopen, edit or delete them.
+- Review applications (search and status filter), download resumes, read an **AI summary** of each resume, and change the status with an optional note. Allowed changes follow fixed rules and every change is logged and e-mailed to the candidate.
+- Request a PDF report of all applications for a job by e-mail, in the employer's language.
 
-![Class Diagram](diagram/class_diagram.png)
+**AI resume summaries** use [OpenRouter](https://openrouter.ai) (set `OPENROUTER_API_KEY`) or a local Ollama server (`LLAMA_SERVER_URL`). See [AI providers](#ai-providers).
 
-## Use Case Diagrams
+## Names
 
-The use case diagram illustrates the interactions between different actors (Worker, Offer, Admin) and the system:
+The project was renamed so that the code says what things are:
 
-- **Worker Use Cases**:
-  - Login
-  - Logout
-  - Register
-  - View Jobs
-  - Apply for Job
-  - Update Profile
+| Before | Now |
+|---|---|
+| app `offer`, model `Offer` | app `employers`, model `Employer` |
+| `Job`, `Tag` | `JobPosting`, `Skill` (in `employers`) |
+| app `worker`, model `Worker` | app `candidates`, model `Candidate` |
+| `JobRequest` | `Application` (app `applications`, with `ApplicationEvent` for the status history) |
+| app `requester_handler` | merged into `applications` (`tasks.py`, `ai.py`) |
+| `/offer/…`, `/worker/…` | `/employers/…`, `/candidates/…` (old URLs redirect permanently) |
+| compose services `web, celery, ollama, elasticsearch, mailserver, mariadb, redis` | `web, tasks, scheduler, llm, search, mailhog, db, cache` |
 
-- **Offer Use Cases**:
-  - Login
-  - Logout
-  - Register
-  - Create Job
-  - View Job Applications
-  - Update Job Status
-  - Update Profile
+### Upgrading an existing database
 
-- **Admin Use Cases**:
-  - Manage Users
-  - Manage Jobs
-  - Manage Offers
+`make dev` and `make deploy` run `manage.py migrate` and then `manage.py import_legacy_data`. It copies the rows of the old `offer_*` / `worker_*` tables into the new ones, keeping IDs and timestamps (so uploaded resumes still match), does nothing on a fresh database and nothing the second time. The old tables are left in place as a backup; drop them when you are satisfied.
 
-![Use Case Diagram](diagram/use_case_diagram.png)
+## Diagrams
 
-## Sequence Diagram
+The PlantUML sources are in `diagram/`; `make diagrams` redraws the PNGs (PlantUML runs in Docker).
 
-The sequence diagram below illustrates the interactions between different actors (Worker, Employer, Admin) and the system:
-
-- **Worker**:
-  - Logs into the system.
-  - Views job postings.
-  - Submits job applications (resume and cover letter).
-
-- **Employer**:
-  - Creates new job postings.
-  - Views job applications.
-
-- **Admin**:
-  - Manages users.
-  - Manages job postings.
-  - Manages employers.
+| Class diagram | Use cases |
+|---|---|
+| ![Class Diagram](diagram/class_diagram.png) | ![Use Case Diagram](diagram/use_case_diagram.png) |
 
 ![Sequence Diagram](diagram/sequence_diagram.png)
 
-## Activity Diagram
-
-The activity diagram below shows the workflow of the job application process:
-
-- **Worker**:
-  - Registers on the platform.
-  - Searches for job postings.
-  - Applies for a job.
-
-- **Employer**:
-  - Posts a new job.
-  - Reviews job applications.
-  - Updates job status.
-
-- **Admin**:
-  - Oversees platform activities.
-  - Manages user accounts.
-  - Manages job postings.
-
 ![Activity Diagram](diagram/activity_diagram.png)
 
-## Required Tools
+## Languages
 
-To run and develop this project, you will need the following tools:
+Persian is the default. A visitor picks a language with the dropdown at the top of every page (stored in a cookie, no language in the URL); otherwise the browser's language is used. Persian and Arabic render right-to-left, the others left-to-right, from the same stylesheet (CSS logical properties). Persian pages use the Jalali calendar, the other languages the Gregorian one. Candidates and employers also have a preferred language that is used for e-mails and reports.
 
-- **Docker**: Used for containerizing the application and its dependencies.
-- **Docker Compose**: Used to define and run multi-container Docker applications.
-- **Python 3.12**: The programming language used for the project.
-- **uv**: Used as the Python package and project manager (`uv sync` installs dependencies from `pyproject.toml` / `uv.lock`).
-- **Django**: The web framework used to build the application.
-- **MariaDB**: The database used to store application data.
-- **Redis**: Used for caching and message brokering.
-- **Elasticsearch**: The Search engin service.
-- **MmailServer**: The TestMail service.
-- **Ollama**: The LLM service.
+- Messages live in `src/locale/<language>/LC_MESSAGES/django.po` (`zh-hans` is the folder `zh_Hans`). The source language of the code is English.
+- After changing text in a template or Python file run `make i18n` (extracts into every `.po`; runs in Docker because it needs GNU gettext), translate the new empty entries, then `make i18n-check` (fails on missing, fuzzy or placeholder-breaking translations).
+- `.mo` files are not committed. `make dev` builds them with a pure-Python script (`make i18n-compile`); the Docker services run Django's `compilemessages`.
 
-## Makefile Commands
+## AI providers
 
-### Usage
+Resume summaries run in the background (Celery) in the employer's language.
 
-- `make dev` - run the dev server on SQLite (no Docker needed)
-- `make fix` - format everything, run all linters, type check and tests
-- `make clean` - remove caches and build artifacts
-- `make docker-up` - start the dev stack in Docker (MariaDB, Redis, Elasticsearch, Ollama); uses `docker-compose.yaml` + `docker-compose.dev.yaml`
+| `AI_PROVIDER` | Behaviour |
+|---|---|
+| `auto` (default) | OpenRouter if `OPENROUTER_API_KEY` is set, else Ollama if `LLAMA_SERVER_URL` is set, else no summaries |
+| `openrouter` / `ollama` / `none` | force one provider, or switch AI off |
+
+Settings: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `openrouter/auto`), `AI_TIMEOUT_SECONDS`, `AI_MAX_INPUT_CHARS` (resume text is cut to this length, default 12000). The key is read from the environment only and is never logged or shown. **Privacy:** with OpenRouter the text of uploaded resumes is sent to OpenRouter and the model provider behind it; use Ollama (`COMPOSE_PROFILES=local-ai`, needs an NVIDIA GPU) to keep everything on your own server.
+
+## Required tools
+
+- **Python 3.12** and **uv** (`uv sync` installs everything from `pyproject.toml` / `uv.lock`)
+- **Docker** and Docker Compose for the full stack, translations extraction and diagrams
+- Services in the stack: **MariaDB** (`db`), **Redis** (`cache`, Celery broker), **Elasticsearch 9** (`search`), **MailHog** (`mailhog`), **Celery** worker (`tasks`) and beat (`scheduler`), optional **Ollama** (`llm`)
+
+## Makefile commands
+
+- `make dev` - run the dev server on SQLite (no Docker); migrates, imports legacy data, builds translations
+- `make seed` - fill the dev database with demo employers, jobs, candidates and applications (accounts use the password `password123`; refused unless debug is on)
+- `make fix` - format, lint, type check, test and run Django checks
+- `make i18n` / `make i18n-compile` / `make i18n-check` - translations (see above)
+- `make diagrams` - redraw `diagram/*.png`
+- `make docker-up` - start the dev stack (`docker-compose.yaml` + `docker-compose.dev.yaml`)
 - `make test-mariadb` - run the tests against a real MariaDB started from compose
 - `make help` - list every command
 
 ## Docker: development and production
 
-`docker-compose.dev.yaml` is a development override (`make docker-up` uses it): `DJANGO_DEBUG` on, the Django dev server, mock data, and an admin login `admin` / `admin`. Never use it for a real deployment.
+Copy `.env.example` to `.env` to set secrets; nothing secret is written in the compose files.
+
+`docker-compose.dev.yaml` is a development override (`make docker-up` uses it): `DJANGO_DEBUG` on, the Django dev server, demo data and an admin login `admin` / `admin`. Never use it for a real deployment.
 
 `docker compose up -d --build` with only `docker-compose.yaml` is production-like:
 
-- `DJANGO_DEBUG` is off, so Django refuses to start unless `SECRET_KEY` is set (export it or put it in a `.env` file).
-- `ALLOWED_HOSTS` defaults to `localhost,127.0.0.1`; set it to your domain.
-- It runs gunicorn after `collectstatic`, and no demo data or demo accounts are created. The seed commands (`insert_offers`, `insert_workers`) refuse to run with `DJANGO_DEBUG` off.
-- An admin user is created only if `DJANGO_SUPERUSER_PASSWORD` is set (optionally `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`). An existing admin's password is never reset.
+- `DJANGO_DEBUG` is off, so Django refuses to start unless `SECRET_KEY` is set.
+- `ALLOWED_HOSTS` defaults to `localhost,127.0.0.1`; set it to your domain. Set `SITE_URL` to the public address (it is used for links in e-mails).
+- It runs gunicorn after `collectstatic`; no demo data is created.
+- An admin user is created only if `DJANGO_SUPERUSER_PASSWORD` is set. An existing admin's password is never reset.
 - Session and CSRF cookies are `Secure` when debug is off: serve the site over HTTPS (set `BEHIND_PROXY=true` behind a TLS proxy), or set `SECURE_COOKIES=false` for a plain-HTTP test.
+- Database passwords come from `DB_PASSWORD`, `DB_ROOT_PASSWORD` and `REDIS_PASSWORD`; the defaults are for local development only.
 
 Database settings are `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` (MariaDB). Without `DB_NAME`, the app uses SQLite.
 
+### Elasticsearch 9
+
+The stack uses Elasticsearch **9.5.1** with `django-elasticsearch-dsl` 9 / client 9. The indices (`job_postings`, `applications`) are only a synced copy of database data: if you start from an `es_data` folder created by Elasticsearch 8, delete it (`make docker-clean` removes all data folders) and let `make deploy` rebuild the indices (`search_index --rebuild`). Elasticsearch 9 can only upgrade data from 8.19, so rebuilding is simpler than upgrading in place.

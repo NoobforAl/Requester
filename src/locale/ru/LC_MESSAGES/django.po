@@ -1,0 +1,1013 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: ru\n"
+"Language: ru\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Pending"
+msgstr "Ожидает"
+
+msgid "In review"
+msgstr "На рассмотрении"
+
+msgid "Shortlisted"
+msgstr "В шорт-листе"
+
+msgid "Accepted"
+msgstr "Принят"
+
+msgid "Rejected"
+msgstr "Отклонён"
+
+msgid "Withdrawn"
+msgstr "Отозван"
+
+msgid "Resume"
+msgstr "Резюме"
+
+msgid "Cover letter"
+msgstr "Сопроводительное письмо"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Private note"
+msgstr "Личная заметка"
+
+msgid "AI summary"
+msgstr "Краткое содержание от ИИ"
+
+msgid "Application"
+msgstr "Отклик"
+
+msgid "Applications"
+msgstr "Отклики"
+
+msgid "Application event"
+msgstr "Событие отклика"
+
+msgid "Application events"
+msgstr "События отклика"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "Отчёт по вакансии %(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "Отчёт во вложении: %(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "Новости по вашему отклику: %(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"Здравствуйте, %(name)s!\n"
+"\n"
+"Статус вашего отклика на вакансию «%(title)s» в компании %(company)s изменился: %(status)s."
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "%(count)d новая вакансия по оповещению «%(name)s»"
+msgstr[1] "%(count)d новые вакансии по оповещению «%(name)s»"
+msgstr[2] "%(count)d новых вакансий по оповещению «%(name)s»"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "Здравствуйте, %(name)s!"
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "Отключить это оповещение: %(url)s"
+
+msgid "Username"
+msgstr "Имя пользователя"
+
+msgid "Password"
+msgstr "Пароль"
+
+msgid "First name"
+msgstr "Имя"
+
+msgid "Last name"
+msgstr "Фамилия"
+
+msgid "Email"
+msgstr "Эл. почта"
+
+msgid "Confirm password"
+msgstr "Подтверждение пароля"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr ""
+"Этот адрес эл. почты уже зарегистрирован. Зарегистрируйтесь с другим адресом"
+" или войдите."
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr "Файл больше %(limit)d МБ. Выберите файл поменьше."
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "Допускаются только PDF-файлы. Сохраните резюме в формате PDF."
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "Этот файл не является корректным PDF. Сохраните его в PDF заново."
+
+msgid "Headline"
+msgstr "Заголовок профиля"
+
+msgid "City"
+msgstr "Город"
+
+msgid "This email is already registered."
+msgstr "Этот адрес эл. почты уже зарегистрирован."
+
+msgid "Alert name"
+msgstr "Название оповещения"
+
+msgid "Keywords"
+msgstr "Ключевые слова"
+
+msgid "Search"
+msgstr "Поиск"
+
+msgid "Search jobs"
+msgstr "Поиск вакансий"
+
+msgid "Work mode"
+msgstr "Формат работы"
+
+msgid "Any work mode"
+msgstr "Любой формат работы"
+
+msgid "Employment type"
+msgstr "Тип занятости"
+
+msgid "Any type"
+msgstr "Любой тип"
+
+msgid "Seniority"
+msgstr "Уровень"
+
+msgid "Any level"
+msgstr "Любой уровень"
+
+msgid "Minimum salary"
+msgstr "Минимальная зарплата"
+
+msgid "Skills"
+msgstr "Навыки"
+
+msgid "Remote only"
+msgstr "Только удалённо"
+
+msgid "Sort by"
+msgstr "Сортировать по"
+
+msgid "Newest first"
+msgstr "Сначала новые"
+
+msgid "Highest salary"
+msgstr "Наибольшая зарплата"
+
+msgid "Closing soon"
+msgstr "Скоро закрываются"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr "Введите корректный номер телефона (только цифры, пробелы, + ( ) -)."
+
+msgid "Date of birth cannot be in the future."
+msgstr "Дата рождения не может быть в будущем."
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "Соискателю должно быть не менее %(age)d лет."
+
+msgid "High school"
+msgstr "Среднее образование"
+
+msgid "Associate degree"
+msgstr "Среднее специальное"
+
+msgid "Bachelor's degree"
+msgstr "Бакалавриат"
+
+msgid "Master's degree"
+msgstr "Магистратура"
+
+msgid "Doctorate"
+msgstr "Докторская степень"
+
+msgid "Phone number"
+msgstr "Номер телефона"
+
+msgid "Address"
+msgstr "Адрес"
+
+msgid "Date of birth"
+msgstr "Дата рождения"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "Одна строка о вас, например «Бэкенд-разработчик, 5 лет»."
+
+msgid "Years of experience"
+msgstr "Опыт работы (лет)"
+
+msgid "Education"
+msgstr "Образование"
+
+msgid "Expected salary"
+msgstr "Желаемая зарплата"
+
+msgid "Salary currency"
+msgstr "Валюта зарплаты"
+
+msgid "Preferred work mode"
+msgstr "Предпочитаемый формат работы"
+
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+msgid "Open to work"
+msgstr "Открыт к предложениям"
+
+msgid "Preferred language"
+msgstr "Предпочитаемый язык"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "Язык писем, например оповещений о вакансиях."
+
+msgid "Candidate"
+msgstr "Соискатель"
+
+msgid "Candidates"
+msgstr "Соискатели"
+
+msgid "Saved posting"
+msgstr "Сохранённая вакансия"
+
+msgid "Saved postings"
+msgstr "Сохранённые вакансии"
+
+msgid "Daily"
+msgstr "Ежедневно"
+
+msgid "Weekly"
+msgstr "Еженедельно"
+
+msgid "How often"
+msgstr "Как часто"
+
+msgid "Active"
+msgstr "Включено"
+
+msgid "Job alert"
+msgstr "Оповещение о вакансиях"
+
+msgid "Job alerts"
+msgstr "Оповещения о вакансиях"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr "Вакансия не найдена. Возможно, она была удалена."
+
+msgid "You have already applied for this job."
+msgstr "Вы уже откликались на эту вакансию."
+
+msgid "This job is no longer accepting applications."
+msgstr "Эта вакансия больше не принимает отклики."
+
+msgid "Your application was sent."
+msgstr "Ваш отклик отправлен."
+
+msgid "Job saved."
+msgstr "Вакансия сохранена."
+
+msgid "Job removed from your saved jobs."
+msgstr "Вакансия удалена из сохранённых."
+
+msgid "This application was not found."
+msgstr "Отклик не найден."
+
+msgid "This application can no longer be withdrawn."
+msgstr "Этот отклик уже нельзя отозвать."
+
+msgid "Your application was withdrawn."
+msgstr "Ваш отклик отозван."
+
+msgid "Your details were saved."
+msgstr "Ваши данные сохранены."
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "Ничего не сохранено. Исправьте ошибки в форме."
+
+msgid "Job alert created."
+msgstr "Оповещение создано."
+
+msgid "This job alert was not found."
+msgstr "Оповещение не найдено."
+
+msgid "Job alert switched on."
+msgstr "Оповещение включено."
+
+msgid "Job alert switched off."
+msgstr "Оповещение выключено."
+
+msgid "Job alert deleted."
+msgstr "Оповещение удалено."
+
+msgid "Company name"
+msgstr "Название компании"
+
+msgid "Company email"
+msgstr "Эл. почта компании"
+
+msgid "Description"
+msgstr "Описание"
+
+msgid "Extra information about the company"
+msgstr "Дополнительная информация о компании"
+
+msgid "This company email is already registered. Enter another one."
+msgstr "Этот адрес эл. почты компании уже зарегистрирован. Введите другой."
+
+msgid "Industry"
+msgstr "Отрасль"
+
+msgid "Job title"
+msgstr "Название вакансии"
+
+msgid "Job description"
+msgstr "Описание вакансии"
+
+msgid "Country"
+msgstr "Страна"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr "У вас уже есть вакансия с таким названием. Выберите другое."
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "Максимальная зарплата не может быть меньше минимальной."
+
+msgid "Iranian rial (IRR)"
+msgstr "Иранский риал (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "Доллар США (USD)"
+
+msgid "Euro (EUR)"
+msgstr "Евро (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "Фунт стерлингов (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "Российский рубль (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "Китайский юань (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "Дирхам ОАЭ (AED)"
+
+msgid "On-site"
+msgstr "В офисе"
+
+msgid "Hybrid"
+msgstr "Гибрид"
+
+msgid "Remote"
+msgstr "Удалённо"
+
+msgid "1-10 employees"
+msgstr "1–10 сотрудников"
+
+msgid "11-50 employees"
+msgstr "11–50 сотрудников"
+
+msgid "51-200 employees"
+msgstr "51–200 сотрудников"
+
+msgid "201-1000 employees"
+msgstr "201–1000 сотрудников"
+
+msgid "More than 1000 employees"
+msgstr "Более 1000 сотрудников"
+
+msgid "User"
+msgstr "Пользователь"
+
+msgid "Website"
+msgstr "Сайт"
+
+msgid "Company size"
+msgstr "Размер компании"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "Язык отчётов и писем, отправляемых компании."
+
+msgid "Employer"
+msgstr "Работодатель"
+
+msgid "Employers"
+msgstr "Работодатели"
+
+msgid "Skill name"
+msgstr "Название навыка"
+
+msgid "Skill"
+msgstr "Навык"
+
+msgid "Full-time"
+msgstr "Полная занятость"
+
+msgid "Part-time"
+msgstr "Частичная занятость"
+
+msgid "Contract"
+msgstr "Договор подряда"
+
+msgid "Internship"
+msgstr "Стажировка"
+
+msgid "Freelance"
+msgstr "Фриланс"
+
+msgid "Intern"
+msgstr "Стажёр"
+
+msgid "Junior"
+msgstr "Junior"
+
+msgid "Mid-level"
+msgstr "Middle"
+
+msgid "Senior"
+msgstr "Senior"
+
+msgid "Lead / Manager"
+msgstr "Руководитель"
+
+msgid "Maximum salary"
+msgstr "Максимальная зарплата"
+
+msgid "Application deadline"
+msgstr "Крайний срок подачи откликов"
+
+msgid "Accepting applications"
+msgstr "Принимает отклики"
+
+msgid "Job posting"
+msgstr "Вакансия"
+
+msgid "Job postings"
+msgstr "Вакансии"
+
+msgid "Company details saved."
+msgstr "Данные компании сохранены."
+
+msgid "Job posting created."
+msgstr "Вакансия создана."
+
+msgid "Job posting updated."
+msgstr "Вакансия обновлена."
+
+msgid "The posting is open for applications again."
+msgstr "Вакансия снова принимает отклики."
+
+msgid "The posting is closed to new applications."
+msgstr "Вакансия закрыта для новых откликов."
+
+msgid "Job posting deleted."
+msgstr "Вакансия удалена."
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr ""
+"Отчёт запрошен. Он будет отправлен на адрес эл. почты вашей компании в "
+"течение трёх рабочих дней."
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr "Файл резюме не найден. Попросите соискателя откликнуться ещё раз."
+
+msgid "The selected status is not valid."
+msgstr "Выбранный статус недопустим."
+
+msgid "This status change is not allowed."
+msgstr "Такое изменение статуса запрещено."
+
+msgid "Application status updated."
+msgstr "Статус отклика обновлён."
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr ""
+"У вас нет доступа к этому разделу. Войдите с учётной записью этого раздела."
+
+msgid "Wrong username or password. Try again."
+msgstr "Неверное имя пользователя или пароль. Попробуйте ещё раз."
+
+msgid "You are registered. Sign in now."
+msgstr "Регистрация завершена. Теперь войдите."
+
+msgid "Registration failed. Fix the form errors."
+msgstr "Регистрация не удалась. Исправьте ошибки в форме."
+
+msgid "Page not found"
+msgstr "Страница не найдена"
+
+msgid "Requester"
+msgstr "Requester"
+
+msgid "This page was not found"
+msgstr "Эта страница не найдена"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr ""
+"Проверьте адрес или начните заново с главной страницы. Вакансия или "
+"страница, которую вы искали, возможно, удалена."
+
+msgid "Go to the home page"
+msgstr "На главную"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "Requester: место, где можно найти работу и нанять сотрудников"
+
+msgid "Skip to the page content"
+msgstr "Перейти к содержимому страницы"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr ""
+"Соискатели отправляют резюме и следят за статусом каждого отклика. "
+"Работодатели публикуют вакансии и рассматривают отклики."
+
+msgid "I am looking for a job"
+msgstr "Я ищу работу"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr ""
+"Просматривайте вакансии, отправляйте резюме и следите за результатом здесь."
+
+msgid "Open the candidate area"
+msgstr "Открыть раздел соискателя"
+
+msgid "I am hiring"
+msgstr "Я нанимаю"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr ""
+"Публикуйте вакансии, читайте резюме и принимайте или отклоняйте каждый "
+"отклик."
+
+msgid "Open the employer area"
+msgstr "Открыть раздел работодателя"
+
+msgid "Language"
+msgstr "Язык"
+
+msgid "Change"
+msgstr "Изменить"
+
+msgid "Pagination"
+msgstr "Постраничная навигация"
+
+msgid "Previous"
+msgstr "Назад"
+
+msgid "Next"
+msgstr "Далее"
+
+msgid "Employer area"
+msgstr "Раздел работодателя"
+
+msgid "Candidate area"
+msgstr "Раздел соискателя"
+
+msgid "Main menu"
+msgstr "Главное меню"
+
+msgid "Dashboard"
+msgstr "Панель"
+
+msgid "Jobs"
+msgstr "Вакансии"
+
+msgid "Saved jobs"
+msgstr "Сохранённые вакансии"
+
+msgid "My applications"
+msgstr "Мои отклики"
+
+msgid "Settings"
+msgstr "Настройки"
+
+msgid "Sign out"
+msgstr "Выйти"
+
+msgid "Match"
+msgstr "Совпадение"
+
+msgid "View and apply"
+msgstr "Открыть и откликнуться"
+
+msgid "Remove from saved"
+msgstr "Убрать из сохранённых"
+
+msgid "Save job"
+msgstr "Сохранить вакансию"
+
+msgid "Stop job alert"
+msgstr "Отключить оповещение"
+
+msgid "This link is not valid"
+msgstr "Эта ссылка недействительна"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr ""
+"Возможно, ссылка неполная. Войдите и управляйте оповещениями на странице "
+"оповещений."
+
+msgid "Job alert switched off"
+msgstr "Оповещение выключено"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "Вы больше не будете получать письма по оповещению «%(name)s»."
+
+msgid "Stop this job alert?"
+msgstr "Отключить это оповещение?"
+
+msgid "Back to the home page"
+msgstr "Вернуться на главную"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr ""
+"Мы пришлём письмо, когда появятся новые вакансии по вашему сохранённому "
+"поиску."
+
+msgid "Off"
+msgstr "Выкл."
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "Последнее письмо: %(date)s"
+
+msgid "Switch off"
+msgstr "Выключить"
+
+msgid "Switch on"
+msgstr "Включить"
+
+msgid "Delete this job alert?"
+msgstr "Удалить это оповещение?"
+
+msgid "Delete"
+msgstr "Удалить"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "У вас пока нет оповещений. Создайте первое ниже."
+
+msgid "New job alert"
+msgstr "Новое оповещение"
+
+msgid "Create alert"
+msgstr "Создать оповещение"
+
+msgid "Applications you have sent"
+msgstr "Отправленные вами отклики"
+
+msgid "Browse jobs"
+msgstr "Смотреть вакансии"
+
+msgid "Job"
+msgstr "Вакансия"
+
+msgid "Company"
+msgstr "Компания"
+
+msgid "Date sent"
+msgstr "Дата отправки"
+
+msgid "You have not applied yet."
+msgstr "Вы ещё не откликались."
+
+msgid "Candidate dashboard"
+msgstr "Панель соискателя"
+
+msgid "Your applications"
+msgstr "Ваши отклики"
+
+msgid "Profile completeness"
+msgstr "Заполненность профиля"
+
+msgid "Active job alerts"
+msgstr "Активные оповещения"
+
+msgid "Complete your profile for better job matches."
+msgstr "Заполните профиль, чтобы получать более точные подборки вакансий."
+
+msgid "Application status"
+msgstr "Статус откликов"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "Отправлен %(n)s отклик"
+msgstr[1] "Отправлено %(n)s отклика"
+msgstr[2] "Отправлено %(n)s откликов"
+
+msgid "Accepted applications"
+msgstr "Принятые отклики"
+
+msgid "In progress"
+msgstr "В процессе"
+
+msgid "Applications in progress"
+msgstr "Отклики в процессе"
+
+msgid "Rejected applications"
+msgstr "Отклонённые отклики"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr "Вы ещё не откликались. Выберите вакансию и отправьте на неё резюме."
+
+msgid "Make your resume stronger"
+msgstr "Сделайте резюме сильнее"
+
+msgid "(guide in English)"
+msgstr "(руководство на английском)"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "(ИИ-инструмент для переписывания, на английском)"
+
+msgid "Back to the job list"
+msgstr "Назад к списку вакансий"
+
+msgid "Salary"
+msgstr "Зарплата"
+
+msgid "Match with your profile"
+msgstr "Совпадение с вашим профилем"
+
+msgid "About the company"
+msgstr "О компании"
+
+msgid "Your application"
+msgstr "Ваш отклик"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "Отправлено: %(date)s"
+
+msgid "Application sent"
+msgstr "Отклик отправлен"
+
+msgid "Withdraw this application?"
+msgstr "Отозвать этот отклик?"
+
+msgid "Withdraw application"
+msgstr "Отозвать отклик"
+
+msgid "Apply"
+msgstr "Откликнуться"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "Отправьте резюме в виде PDF-файла размером до 5 МБ."
+
+msgid "Send resume"
+msgstr "Отправить резюме"
+
+msgid "Applications closed"
+msgstr "Приём откликов закрыт"
+
+msgid "Open jobs"
+msgstr "Открытые вакансии"
+
+msgid "Get alerts for new jobs"
+msgstr "Получать оповещения о новых вакансиях"
+
+msgid "Clear filters"
+msgstr "Сбросить фильтры"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr ""
+"Нет вакансий, подходящих под эти фильтры. Уберите фильтр или измените "
+"запрос."
+
+msgid "No jobs are open right now. Check again later."
+msgstr "Сейчас нет открытых вакансий. Загляните позже."
+
+msgid "Candidate sign in"
+msgstr "Вход для соискателей"
+
+msgid "Sign in to your account"
+msgstr "Вход в аккаунт"
+
+msgid "Sign in"
+msgstr "Войти"
+
+msgid "No account yet?"
+msgstr "Ещё нет аккаунта?"
+
+msgid "Create a new account"
+msgstr "Создать новый аккаунт"
+
+msgid "Create a candidate account"
+msgstr "Создать аккаунт соискателя"
+
+msgid "Create account"
+msgstr "Создать аккаунт"
+
+msgid "Already registered?"
+msgstr "Уже зарегистрированы?"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr ""
+"Вы ещё не сохранили ни одной вакансии. Нажмите «Сохранить вакансию», чтобы "
+"вернуться к ней позже."
+
+msgid "Profile settings"
+msgstr "Настройки профиля"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr ""
+"Профиль используется для подбора вакансий и оповещений. Работодатели видят "
+"ваше имя и эл. почту вместе с резюме."
+
+msgid "Save changes"
+msgstr "Сохранить изменения"
+
+msgid "Employer dashboard"
+msgstr "Панель работодателя"
+
+msgid "Your activity at a glance"
+msgstr "Ваша активность в двух словах"
+
+msgid "Post a new job"
+msgstr "Опубликовать новую вакансию"
+
+msgid "Jobs posted"
+msgstr "Опубликованные вакансии"
+
+msgid "Jobs open for applications"
+msgstr "Вакансии, открытые для откликов"
+
+msgid "Applications received"
+msgstr "Полученные отклики"
+
+msgid "Waiting for your review"
+msgstr "Ждут вашего рассмотрения"
+
+msgid "Jobs posted this month"
+msgstr "Вакансии за этот месяц"
+
+msgid "Jobs posted last month"
+msgstr "Вакансии за прошлый месяц"
+
+msgid "Applications per day this month"
+msgstr "Отклики по дням в этом месяце"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "Отклики за %(day)s"
+
+msgid "No applications have arrived this month yet."
+msgstr "В этом месяце откликов пока нет."
+
+msgid "Writing a better job post"
+msgstr "Как написать хорошую вакансию"
+
+msgid "Back to jobs"
+msgstr "Назад к вакансиям"
+
+msgid "Closed"
+msgstr "Закрыта"
+
+msgid "Close to new applications"
+msgstr "Закрыть приём откликов"
+
+msgid "Open for applications"
+msgstr "Открыть приём откликов"
+
+msgid "Get a report by e-mail"
+msgstr "Получить отчёт по эл. почте"
+
+msgid "Job details"
+msgstr "Данные вакансии"
+
+msgid "Search applicants"
+msgstr "Поиск среди откликнувшихся"
+
+msgid "Candidate name or email"
+msgstr "Имя или эл. почта соискателя"
+
+msgid "Any status"
+msgstr "Любой статус"
+
+msgid "Download resume"
+msgstr "Скачать резюме"
+
+msgid "Change the status of this application"
+msgstr "Изменить статус этого отклика"
+
+msgid "Note (optional)"
+msgstr "Заметка (необязательно)"
+
+msgid "Change status"
+msgstr "Изменить статус"
+
+msgid "Resume summary (generated by AI)"
+msgstr "Краткое содержание резюме (создано ИИ)"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr "Подходящих откликов нет. Очистите поиск или попробуйте другие слова."
+
+msgid "Nobody has applied for this job yet."
+msgstr "На эту вакансию пока никто не откликнулся."
+
+msgid "My jobs"
+msgstr "Мои вакансии"
+
+msgid "Posted jobs"
+msgstr "Опубликованные вакансии"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "Опубликовано: %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "%(n)s отклик"
+msgstr[1] "%(n)s отклика"
+msgstr[2] "%(n)s откликов"
+
+msgid "View applications"
+msgstr "Смотреть отклики"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr "Эта вакансия и все отклики на неё будут удалены. Продолжить?"
+
+msgid "Delete job"
+msgstr "Удалить вакансию"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr ""
+"Вы ещё не опубликовали ни одной вакансии. Заполните форму ниже, чтобы "
+"опубликовать первую."
+
+msgid "Publish job"
+msgstr "Опубликовать вакансию"
+
+msgid "Employer sign in"
+msgstr "Вход для работодателей"
+
+msgid "Create an employer account"
+msgstr "Создать аккаунт работодателя"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "Отчёт по вакансии: %(title)s"
+
+msgid "No applications yet."
+msgstr "Пока нет откликов."
+
+msgid "Company settings"
+msgstr "Настройки компании"
+
+msgid "The details candidates see next to your jobs."
+msgstr "Сведения, которые соискатели видят рядом с вашими вакансиями."

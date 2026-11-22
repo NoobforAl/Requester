@@ -1,32 +1,86 @@
 @startuml use_case_diagram
+title Requester - use cases
+left to right direction
+skinparam packageStyle rectangle
 
-actor "Worker" as worker
-actor "Offer" as offer
+actor "Candidate" as candidate
+actor "Employer" as employer
 actor "Admin" as admin
+actor "Visitor" as visitor
+actor "Mail server" as mailer <<system>>
+actor "AI provider\n(OpenRouter or Ollama)" as ai <<system>>
+actor "Scheduler\n(Celery beat)" as scheduler <<system>>
 
-rectangle "Worker Use Cases" {
-  worker -- (Login)
-  worker -- (Logout)
-  worker -- (Register)
-  worker -- (View Jobs)
-  worker -- (Apply for Job)
-  worker -- (Update Profile)
+rectangle "Everyone" {
+  usecase "Switch language\n(fa, en, ar, de, fr, ru, zh-hans)" as UC_LANG
 }
 
-rectangle "Offer Use Cases" {
-  offer -- (Login)
-  offer -- (Logout)
-  offer -- (Register)
-  offer -- (Create Job)
-  offer -- (View Job Applications)
-  offer -- (Update Job Status)
-  offer -- (Update Profile)
+rectangle "Candidate area" {
+  usecase "Register / Log in / Log out" as C_AUTH
+  usecase "Edit profile\n(skills, experience, expected salary)" as C_PROFILE
+  usecase "Browse and filter open jobs" as C_BROWSE
+  usecase "See match score" as C_MATCH
+  usecase "Save / unsave a job" as C_SAVE
+  usecase "Apply with resume (PDF)" as C_APPLY
+  usecase "Track application status" as C_TRACK
+  usecase "Withdraw application" as C_WITHDRAW
+  usecase "Manage job alerts" as C_ALERTS
+  usecase "Unsubscribe from an alert\n(signed e-mail link)" as C_UNSUB
 }
 
-rectangle "Admin Use Cases" {
-  admin -- (Manage Users)
-  admin -- (Manage Jobs)
-  admin -- (Manage Offers)
+rectangle "Employer area" {
+  usecase "Register / Log in / Log out" as E_AUTH
+  usecase "Edit company profile" as E_PROFILE
+  usecase "Post, edit, close or delete a job" as E_POST
+  usecase "Review applications" as E_REVIEW
+  usecase "Download resume" as E_RESUME
+  usecase "Change application status\n(with a note)" as E_STATUS
+  usecase "Get posting report by e-mail (PDF)" as E_REPORT
 }
+
+rectangle "Administration" {
+  usecase "Manage users, employers,\ncandidates, skills" as A_USERS
+  usecase "Manage postings and applications" as A_JOBS
+}
+
+rectangle "Background work" {
+  usecase "Summarise resume with AI" as S_AI
+  usecase "Send job-alert digests" as S_DIGEST
+  usecase "E-mail status change to candidate" as S_STATUS
+}
+
+visitor -- UC_LANG
+candidate -- UC_LANG
+employer -- UC_LANG
+
+candidate -- C_AUTH
+candidate -- C_PROFILE
+candidate -- C_BROWSE
+candidate -- C_SAVE
+candidate -- C_APPLY
+candidate -- C_TRACK
+candidate -- C_WITHDRAW
+candidate -- C_ALERTS
+candidate -- C_UNSUB
+C_BROWSE ..> C_MATCH : <<include>>
+C_APPLY ..> S_AI : <<extend>>
+
+employer -- E_AUTH
+employer -- E_PROFILE
+employer -- E_POST
+employer -- E_REVIEW
+employer -- E_REPORT
+E_REVIEW ..> E_RESUME : <<include>>
+E_REVIEW ..> E_STATUS : <<extend>>
+E_STATUS ..> S_STATUS : <<include>>
+
+admin -- A_USERS
+admin -- A_JOBS
+
+ai -- S_AI
+scheduler -- S_DIGEST
+mailer -- S_DIGEST
+mailer -- S_STATUS
+mailer -- E_REPORT
 
 @enduml

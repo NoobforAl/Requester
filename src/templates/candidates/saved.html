@@ -1,0 +1,19 @@
+{% extends "candidates/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Saved jobs" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Saved jobs" %}</h1>
+        <a class="btn btn-primary" href="{% url 'candidate_jobs' %}">{% trans "Browse jobs" %}</a>
+    </div>
+    {% if saved %}
+        <ul class="job-list">
+            {% for item in saved %}
+                {% include "candidates/_posting_card.html" with posting=item.posting next="candidate_saved" %}
+            {% endfor %}
+        </ul>
+        {% include "assets/pagination.html" with page=saved param="page" %}
+    {% else %}
+        <p class="empty">{% trans "You have not saved any job yet. Use “Save job” to keep jobs you want to come back to." %}</p>
+    {% endif %}
+{% endblock content %}

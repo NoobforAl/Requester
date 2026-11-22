@@ -1,0 +1,76 @@
+{% extends "candidates/base.html" %}
+{% load i18n filters %}
+{% block title %}{% trans "Job alerts" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Job alerts" %}</h1>
+        <p>{% trans "We e-mail you when new jobs match a search you saved." %}</p>
+    </div>
+    {% if alerts %}
+        <ul class="job-list">
+            {% for alert in alerts %}
+                <li class="job">
+                    <div>
+                        <h2 class="job__title">
+                            {{ alert.name }}
+                            <span class="stamp stamp--{% if alert.is_active %}accepted{% else %}withdrawn{% endif %}">
+                                {% if alert.is_active %}
+                                    {% trans "Active" %}
+                                {% else %}
+                                    {% trans "Off" %}
+                                {% endif %}
+                            </span>
+                        </h2>
+                        <p class="job__meta">
+                            {{ alert.get_frequency_display }}
+                            {% if alert.keywords %}· {{ alert.keywords }}{% endif %}
+                            {% if alert.location %}· {{ alert.location }}{% endif %}
+                            {% if alert.work_mode %}· {{ alert.get_work_mode_display }}{% endif %}
+                            {% if alert.employment_type %}· {{ alert.get_employment_type_display }}{% endif %}
+                            {% if alert.min_salary %}· ≥ {{ alert.min_salary }}{% endif %}
+                        </p>
+                        {% if alert.skills.all %}
+                            <div class="tags">
+                                {% for skill in alert.skills.all %}<span class="tag">{{ skill.name }}</span>{% endfor %}
+                            </div>
+                        {% endif %}
+                        {% if alert.last_sent_at %}
+                            <p class="job__meta">{% blocktrans with date=alert.last_sent_at|localdate %}Last e-mail on {{ date }}{% endblocktrans %}</p>
+                        {% endif %}
+                    </div>
+                    <div class="job__actions">
+                        <form action="{% url 'candidate_alert_toggle' alert.pk %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm">
+                                {% if alert.is_active %}
+                                    {% trans "Switch off" %}
+                                {% else %}
+                                    {% trans "Switch on" %}
+                                {% endif %}
+                            </button>
+                        </form>
+                        <form action="{% url 'candidate_alert_delete' alert.pk %}"
+                              method="post"
+                              data-confirm="{% trans 'Delete this job alert?' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-danger">{% trans "Delete" %}</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty">{% trans "You have no job alerts yet. Create one below." %}</p>
+    {% endif %}
+    <section class="section" aria-labelledby="new-alert-title">
+        <h2 class="section__title" id="new-alert-title">{% trans "New job alert" %}</h2>
+        <form class="panel auth--wide" method="post" action="{% url 'candidate_alerts' %}">
+            {% csrf_token %}
+            {{ form.non_field_errors }}
+            {% for field in form %}
+                {% include "assets/field.html" with field=field %}
+            {% endfor %}
+            <button type="submit" class="btn btn-primary">{% trans "Create alert" %}</button>
+        </form>
+    </section>
+{% endblock content %}

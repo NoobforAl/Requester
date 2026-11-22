@@ -1,32 +1,64 @@
 @startuml sequence_diagram
+title Requester - applying, reviewing and job alerts
+autonumber
 
-actor "Worker" as Worker
-actor "Employer" as Offer
-actor "Admin" as Admin
-participant "System" as System
+actor "Candidate" as Candidate
+participant "Web\n(Django)" as Web
+database "Database" as DB
+queue "Celery\n(tasks)" as Tasks
+participant "AI provider\n(OpenRouter / Ollama)" as AI
+participant "Mail server" as Mail
+actor "Employer" as Employer
 
-Worker -> System : Login
-System -> Worker : Authenticate
-Worker -> System : View job postings
-System -> Worker : Display job postings
+== Apply ==
+Candidate -> Web : GET /candidates/jobs/?work_mode=remote&skills=...
+Web -> DB : JobPosting.objects.open().search(filters)
+Web --> Candidate : open postings with match score
+Candidate -> Web : POST resume (PDF) + cover letter
+Web -> Web : validate size, extension and %PDF- header
+Web -> DB : INSERT Application (status = pending)
+Web -> Tasks : summarize_application(id)
+Web --> Candidate : "Your application was sent."
 
-Worker -> System : Submit job application (resume and cover letter)
-System -> Offer : Store job application
+== AI summary (background) ==
+Tasks -> DB : load Application and Employer.language
+Tasks -> Tasks : extract resume text, cut to AI_MAX_INPUT_CHARS
+Tasks -> AI : POST summary request\n(Bearer key for OpenRouter, prompt in the employer's language)
+alt 429 / 5xx / network error
+  AI --> Tasks : error
+  Tasks -> Tasks : retry with back-off (max 3)
+else answered
+  AI --> Tasks : summary
+  Tasks -> DB : store ai_summary and ai_provider
+end
 
-Offer -> System : Create new job posting
-System -> Offer : Store job posting
-System -> Worker : Send job posting to worker
+== Review ==
+Employer -> Web : GET /employers/jobs/{id}/?status=pending
+Web -> DB : applications of the employer's own posting only
+Web --> Employer : applications, AI summaries, allowed next statuses
+Employer -> Web : POST status = shortlisted (+ note)
+Web -> Web : check Application.EMPLOYER_TRANSITIONS
+Web -> DB : INSERT ApplicationEvent, UPDATE status
+Web -> Tasks : notify_status_change(id)
+Tasks -> Mail : e-mail in the candidate's language
+Mail --> Candidate : "Update on your application"
 
-Offer -> System : View job applications
-System -> Offer : Display job applications
+== Withdraw ==
+Candidate -> Web : POST /candidates/applications/{id}/withdraw/
+Web -> DB : INSERT ApplicationEvent, status = withdrawn
 
-Admin -> System : Manage users
-System -> Admin : View and edit users
-
-Admin -> System : Manage job postings
-System -> Admin : Approve or delete postings
-
-Admin -> System : Manage employers
-System -> Admin : View and edit employers
+== Job alert digest ==
+participant "Scheduler\n(Celery beat)" as Beat
+Beat -> Tasks : send_job_alerts("daily" | "weekly")
+loop every active alert of that frequency
+  Tasks -> DB : open postings matching the alert\ncreated after last_sent_at
+  alt there are new postings
+    Tasks -> Mail : digest in the candidate's language\n+ signed unsubscribe link
+    Tasks -> DB : last_sent_at = now
+  end
+end
+Candidate -> Web : GET unsubscribe link (shows a confirmation)
+Candidate -> Web : POST confirm
+Web -> DB : alert.is_active = false
 
 @enduml

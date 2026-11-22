@@ -1,0 +1,1028 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Requester\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-11-23 01:45+0330\n"
+"PO-Revision-Date: 2026-11-23 00:00+0000\n"
+"Last-Translator: Requester team\n"
+"Language-Team: de\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "In review"
+msgstr "In Prüfung"
+
+msgid "Shortlisted"
+msgstr "In der engeren Auswahl"
+
+msgid "Accepted"
+msgstr "Angenommen"
+
+msgid "Rejected"
+msgstr "Abgelehnt"
+
+msgid "Withdrawn"
+msgstr "Zurückgezogen"
+
+msgid "Resume"
+msgstr "Lebenslauf"
+
+msgid "Cover letter"
+msgstr "Anschreiben"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Private note"
+msgstr "Private Notiz"
+
+msgid "AI summary"
+msgstr "KI-Zusammenfassung"
+
+msgid "Application"
+msgstr "Bewerbung"
+
+msgid "Applications"
+msgstr "Bewerbungen"
+
+msgid "Application event"
+msgstr "Bewerbungsereignis"
+
+msgid "Application events"
+msgstr "Bewerbungsereignisse"
+
+#, python-format
+msgid "Report for %(title)s"
+msgstr "Bericht zu %(title)s"
+
+#, python-format
+msgid "The report is attached: %(title)s"
+msgstr "Der Bericht ist angehängt: %(title)s"
+
+#, python-format
+msgid "Update on your application: %(title)s"
+msgstr "Neuigkeiten zu Ihrer Bewerbung: %(title)s"
+
+#, python-format
+msgid ""
+"Hello %(name)s,\n"
+"\n"
+"Your application to “%(title)s” at %(company)s is now: %(status)s."
+msgstr ""
+"Guten Tag %(name)s,\n"
+"\n"
+"Ihre Bewerbung auf „%(title)s“ bei %(company)s hat jetzt den Status: %(status)s."
+
+#, python-format
+msgid "%(count)d new job for “%(name)s”"
+msgid_plural "%(count)d new jobs for “%(name)s”"
+msgstr[0] "%(count)d neue Stelle für „%(name)s“"
+msgstr[1] "%(count)d neue Stellen für „%(name)s“"
+
+#, python-format
+msgid "Hello %(name)s,"
+msgstr "Guten Tag %(name)s,"
+
+#, python-format
+msgid "Stop this alert: %(url)s"
+msgstr "Diesen Alert beenden: %(url)s"
+
+msgid "Username"
+msgstr "Benutzername"
+
+msgid "Password"
+msgstr "Passwort"
+
+msgid "First name"
+msgstr "Vorname"
+
+msgid "Last name"
+msgstr "Nachname"
+
+msgid "Email"
+msgstr "E-Mail"
+
+msgid "Confirm password"
+msgstr "Passwort bestätigen"
+
+msgid ""
+"This email is already registered. Register with another email or sign in."
+msgstr ""
+"Diese E-Mail-Adresse ist bereits registriert. Registrieren Sie sich mit "
+"einer anderen Adresse oder melden Sie sich an."
+
+#, python-format
+msgid "The file is larger than %(limit)d MB. Choose a smaller file."
+msgstr ""
+"Die Datei ist größer als %(limit)d MB. Wählen Sie eine kleinere Datei."
+
+msgid "Only PDF files are allowed. Save your resume as a PDF."
+msgstr "Nur PDF-Dateien sind erlaubt. Speichern Sie Ihren Lebenslauf als PDF."
+
+msgid "This file is not a valid PDF. Save it again as a PDF."
+msgstr "Diese Datei ist kein gültiges PDF. Speichern Sie sie erneut als PDF."
+
+msgid "Headline"
+msgstr "Überschrift"
+
+msgid "City"
+msgstr "Stadt"
+
+msgid "This email is already registered."
+msgstr "Diese E-Mail-Adresse ist bereits registriert."
+
+msgid "Alert name"
+msgstr "Name des Alerts"
+
+msgid "Keywords"
+msgstr "Stichwörter"
+
+msgid "Search"
+msgstr "Suchen"
+
+msgid "Search jobs"
+msgstr "Stellen suchen"
+
+msgid "Work mode"
+msgstr "Arbeitsmodell"
+
+msgid "Any work mode"
+msgstr "Beliebiges Arbeitsmodell"
+
+msgid "Employment type"
+msgstr "Beschäftigungsart"
+
+msgid "Any type"
+msgstr "Beliebige Art"
+
+msgid "Seniority"
+msgstr "Karrierestufe"
+
+msgid "Any level"
+msgstr "Beliebige Stufe"
+
+msgid "Minimum salary"
+msgstr "Mindestgehalt"
+
+msgid "Skills"
+msgstr "Fähigkeiten"
+
+msgid "Remote only"
+msgstr "Nur Remote"
+
+msgid "Sort by"
+msgstr "Sortieren nach"
+
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+msgid "Highest salary"
+msgstr "Höchstes Gehalt"
+
+msgid "Closing soon"
+msgstr "Bald endend"
+
+msgid "Enter a valid phone number (digits, spaces, + ( ) - only)."
+msgstr ""
+"Geben Sie eine gültige Telefonnummer ein (nur Ziffern, Leerzeichen, + ( ) "
+"-)."
+
+msgid "Date of birth cannot be in the future."
+msgstr "Das Geburtsdatum darf nicht in der Zukunft liegen."
+
+#, python-format
+msgid "Candidates must be at least %(age)d years old."
+msgstr "Bewerber müssen mindestens %(age)d Jahre alt sein."
+
+msgid "High school"
+msgstr "Schulabschluss"
+
+msgid "Associate degree"
+msgstr "Fachschulabschluss"
+
+msgid "Bachelor's degree"
+msgstr "Bachelor"
+
+msgid "Master's degree"
+msgstr "Master"
+
+msgid "Doctorate"
+msgstr "Promotion"
+
+msgid "Phone number"
+msgstr "Telefonnummer"
+
+msgid "Address"
+msgstr "Adresse"
+
+msgid "Date of birth"
+msgstr "Geburtsdatum"
+
+msgid "One line about you, e.g. “Backend developer, 5 years”."
+msgstr "Eine Zeile über Sie, z. B. „Backend-Entwickler, 5 Jahre“."
+
+msgid "Years of experience"
+msgstr "Jahre Berufserfahrung"
+
+msgid "Education"
+msgstr "Ausbildung"
+
+msgid "Expected salary"
+msgstr "Gehaltswunsch"
+
+msgid "Salary currency"
+msgstr "Währung des Gehalts"
+
+msgid "Preferred work mode"
+msgstr "Bevorzugtes Arbeitsmodell"
+
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+msgid "Open to work"
+msgstr "Offen für Angebote"
+
+msgid "Preferred language"
+msgstr "Bevorzugte Sprache"
+
+msgid "Language of e-mails such as job alerts."
+msgstr "Sprache von E-Mails wie Job-Alerts."
+
+msgid "Candidate"
+msgstr "Bewerber/in"
+
+msgid "Candidates"
+msgstr "Bewerbende"
+
+msgid "Saved posting"
+msgstr "Gespeicherte Stelle"
+
+msgid "Saved postings"
+msgstr "Gespeicherte Stellen"
+
+msgid "Daily"
+msgstr "Täglich"
+
+msgid "Weekly"
+msgstr "Wöchentlich"
+
+msgid "How often"
+msgstr "Wie oft"
+
+msgid "Active"
+msgstr "Aktiv"
+
+msgid "Job alert"
+msgstr "Job-Alert"
+
+msgid "Job alerts"
+msgstr "Job-Alerts"
+
+msgid "This job posting was not found. It may have been deleted."
+msgstr ""
+"Diese Stellenanzeige wurde nicht gefunden. Möglicherweise wurde sie "
+"gelöscht."
+
+msgid "You have already applied for this job."
+msgstr "Sie haben sich bereits auf diese Stelle beworben."
+
+msgid "This job is no longer accepting applications."
+msgstr "Diese Stelle nimmt keine Bewerbungen mehr an."
+
+msgid "Your application was sent."
+msgstr "Ihre Bewerbung wurde gesendet."
+
+msgid "Job saved."
+msgstr "Stelle gespeichert."
+
+msgid "Job removed from your saved jobs."
+msgstr "Stelle aus Ihren gespeicherten Stellen entfernt."
+
+msgid "This application was not found."
+msgstr "Diese Bewerbung wurde nicht gefunden."
+
+msgid "This application can no longer be withdrawn."
+msgstr "Diese Bewerbung kann nicht mehr zurückgezogen werden."
+
+msgid "Your application was withdrawn."
+msgstr "Ihre Bewerbung wurde zurückgezogen."
+
+msgid "Your details were saved."
+msgstr "Ihre Angaben wurden gespeichert."
+
+msgid "Nothing was saved. Fix the form errors."
+msgstr "Es wurde nichts gespeichert. Korrigieren Sie die Formularfehler."
+
+msgid "Job alert created."
+msgstr "Job-Alert erstellt."
+
+msgid "This job alert was not found."
+msgstr "Dieser Job-Alert wurde nicht gefunden."
+
+msgid "Job alert switched on."
+msgstr "Job-Alert eingeschaltet."
+
+msgid "Job alert switched off."
+msgstr "Job-Alert ausgeschaltet."
+
+msgid "Job alert deleted."
+msgstr "Job-Alert gelöscht."
+
+msgid "Company name"
+msgstr "Firmenname"
+
+msgid "Company email"
+msgstr "Firmen-E-Mail"
+
+msgid "Description"
+msgstr "Beschreibung"
+
+msgid "Extra information about the company"
+msgstr "Zusätzliche Informationen über das Unternehmen"
+
+msgid "This company email is already registered. Enter another one."
+msgstr ""
+"Diese Firmen-E-Mail-Adresse ist bereits registriert. Geben Sie eine andere "
+"ein."
+
+msgid "Industry"
+msgstr "Branche"
+
+msgid "Job title"
+msgstr "Stellenbezeichnung"
+
+msgid "Job description"
+msgstr "Stellenbeschreibung"
+
+msgid "Country"
+msgstr "Land"
+
+msgid "You already have a posting with this title. Choose another."
+msgstr ""
+"Sie haben bereits eine Stellenanzeige mit diesem Titel. Wählen Sie einen "
+"anderen."
+
+msgid "The maximum salary cannot be lower than the minimum."
+msgstr "Das Höchstgehalt darf nicht unter dem Mindestgehalt liegen."
+
+msgid "Iranian rial (IRR)"
+msgstr "Iranischer Rial (IRR)"
+
+msgid "US dollar (USD)"
+msgstr "US-Dollar (USD)"
+
+msgid "Euro (EUR)"
+msgstr "Euro (EUR)"
+
+msgid "Pound sterling (GBP)"
+msgstr "Pfund Sterling (GBP)"
+
+msgid "Russian ruble (RUB)"
+msgstr "Russischer Rubel (RUB)"
+
+msgid "Chinese yuan (CNY)"
+msgstr "Chinesischer Yuan (CNY)"
+
+msgid "UAE dirham (AED)"
+msgstr "VAE-Dirham (AED)"
+
+msgid "On-site"
+msgstr "Vor Ort"
+
+msgid "Hybrid"
+msgstr "Hybrid"
+
+msgid "Remote"
+msgstr "Remote"
+
+msgid "1-10 employees"
+msgstr "1–10 Mitarbeitende"
+
+msgid "11-50 employees"
+msgstr "11–50 Mitarbeitende"
+
+msgid "51-200 employees"
+msgstr "51–200 Mitarbeitende"
+
+msgid "201-1000 employees"
+msgstr "201–1000 Mitarbeitende"
+
+msgid "More than 1000 employees"
+msgstr "Mehr als 1000 Mitarbeitende"
+
+msgid "User"
+msgstr "Benutzer"
+
+msgid "Website"
+msgstr "Website"
+
+msgid "Company size"
+msgstr "Unternehmensgröße"
+
+msgid "Language of reports and e-mails sent to the company."
+msgstr "Sprache der Berichte und E-Mails an das Unternehmen."
+
+msgid "Employer"
+msgstr "Arbeitgeber"
+
+msgid "Employers"
+msgstr "Arbeitgeber"
+
+msgid "Skill name"
+msgstr "Name der Fähigkeit"
+
+msgid "Skill"
+msgstr "Fähigkeit"
+
+msgid "Full-time"
+msgstr "Vollzeit"
+
+msgid "Part-time"
+msgstr "Teilzeit"
+
+msgid "Contract"
+msgstr "Befristeter Vertrag"
+
+msgid "Internship"
+msgstr "Praktikum"
+
+msgid "Freelance"
+msgstr "Freiberuflich"
+
+msgid "Intern"
+msgstr "Praktikant/in"
+
+msgid "Junior"
+msgstr "Junior"
+
+msgid "Mid-level"
+msgstr "Mittlere Stufe"
+
+msgid "Senior"
+msgstr "Senior"
+
+msgid "Lead / Manager"
+msgstr "Leitung / Management"
+
+msgid "Maximum salary"
+msgstr "Höchstgehalt"
+
+msgid "Application deadline"
+msgstr "Bewerbungsfrist"
+
+msgid "Accepting applications"
+msgstr "Nimmt Bewerbungen an"
+
+msgid "Job posting"
+msgstr "Stellenanzeige"
+
+msgid "Job postings"
+msgstr "Stellenanzeigen"
+
+msgid "Company details saved."
+msgstr "Unternehmensdaten gespeichert."
+
+msgid "Job posting created."
+msgstr "Stellenanzeige erstellt."
+
+msgid "Job posting updated."
+msgstr "Stellenanzeige aktualisiert."
+
+msgid "The posting is open for applications again."
+msgstr "Die Stelle nimmt wieder Bewerbungen an."
+
+msgid "The posting is closed to new applications."
+msgstr "Die Stelle nimmt keine neuen Bewerbungen mehr an."
+
+msgid "Job posting deleted."
+msgstr "Stellenanzeige gelöscht."
+
+msgid ""
+"Report requested. It is e-mailed to your company address within three "
+"working days."
+msgstr ""
+"Bericht angefordert. Er wird innerhalb von drei Werktagen an die E-Mail-"
+"Adresse Ihres Unternehmens gesendet."
+
+msgid "The resume file was not found. Ask the candidate to apply again."
+msgstr ""
+"Die Lebenslaufdatei wurde nicht gefunden. Bitten Sie die Bewerberin oder den"
+" Bewerber, sich erneut zu bewerben."
+
+msgid "The selected status is not valid."
+msgstr "Der gewählte Status ist ungültig."
+
+msgid "This status change is not allowed."
+msgstr "Diese Statusänderung ist nicht erlaubt."
+
+msgid "Application status updated."
+msgstr "Bewerbungsstatus aktualisiert."
+
+msgid ""
+"You do not have access to this area. Sign in with an account of this area."
+msgstr ""
+"Sie haben keinen Zugriff auf diesen Bereich. Melden Sie sich mit einem Konto"
+" dieses Bereichs an."
+
+msgid "Wrong username or password. Try again."
+msgstr "Benutzername oder Passwort falsch. Versuchen Sie es erneut."
+
+msgid "You are registered. Sign in now."
+msgstr "Registrierung abgeschlossen. Melden Sie sich jetzt an."
+
+msgid "Registration failed. Fix the form errors."
+msgstr "Registrierung fehlgeschlagen. Korrigieren Sie die Formularfehler."
+
+msgid "Page not found"
+msgstr "Seite nicht gefunden"
+
+msgid "Requester"
+msgstr "Requester"
+
+msgid "This page was not found"
+msgstr "Diese Seite wurde nicht gefunden"
+
+msgid ""
+"Check the address, or start again from the home page. The job or page you "
+"were looking for may have been deleted."
+msgstr ""
+"Prüfen Sie die Adresse oder beginnen Sie auf der Startseite neu. Die "
+"gesuchte Stelle oder Seite wurde möglicherweise gelöscht."
+
+msgid "Go to the home page"
+msgstr "Zur Startseite"
+
+msgid "Requester: a place to find a job and to hire"
+msgstr "Requester: ein Ort zum Jobfinden und Einstellen"
+
+msgid "Skip to the page content"
+msgstr "Zum Seiteninhalt springen"
+
+msgid ""
+"Candidates send resumes and follow the status of every application. "
+"Employers post jobs and review applications."
+msgstr ""
+"Bewerbende senden Lebensläufe und verfolgen den Status jeder Bewerbung. "
+"Arbeitgeber veröffentlichen Stellen und prüfen Bewerbungen."
+
+msgid "I am looking for a job"
+msgstr "Ich suche einen Job"
+
+msgid "Browse jobs, send your resume and follow the result from here."
+msgstr ""
+"Stellen durchsuchen, Lebenslauf senden und das Ergebnis von hier aus "
+"verfolgen."
+
+msgid "Open the candidate area"
+msgstr "Bereich für Bewerbende öffnen"
+
+msgid "I am hiring"
+msgstr "Ich stelle ein"
+
+msgid "Post a job, read resumes and accept or reject every application."
+msgstr ""
+"Stelle veröffentlichen, Lebensläufe lesen und jede Bewerbung annehmen oder "
+"ablehnen."
+
+msgid "Open the employer area"
+msgstr "Arbeitgeberbereich öffnen"
+
+msgid "Language"
+msgstr "Sprache"
+
+msgid "Change"
+msgstr "Ändern"
+
+msgid "Pagination"
+msgstr "Seitennavigation"
+
+msgid "Previous"
+msgstr "Zurück"
+
+msgid "Next"
+msgstr "Weiter"
+
+msgid "Employer area"
+msgstr "Arbeitgeberbereich"
+
+msgid "Candidate area"
+msgstr "Bereich für Bewerbende"
+
+msgid "Main menu"
+msgstr "Hauptmenü"
+
+msgid "Dashboard"
+msgstr "Dashboard"
+
+msgid "Jobs"
+msgstr "Stellen"
+
+msgid "Saved jobs"
+msgstr "Gespeicherte Stellen"
+
+msgid "My applications"
+msgstr "Meine Bewerbungen"
+
+msgid "Settings"
+msgstr "Einstellungen"
+
+msgid "Sign out"
+msgstr "Abmelden"
+
+msgid "Match"
+msgstr "Übereinstimmung"
+
+msgid "View and apply"
+msgstr "Ansehen und bewerben"
+
+msgid "Remove from saved"
+msgstr "Aus Gespeicherten entfernen"
+
+msgid "Save job"
+msgstr "Stelle speichern"
+
+msgid "Stop job alert"
+msgstr "Job-Alert beenden"
+
+msgid "This link is not valid"
+msgstr "Dieser Link ist ungültig"
+
+msgid ""
+"The link may be incomplete. Sign in and manage your job alerts from the "
+"alerts page."
+msgstr ""
+"Der Link ist möglicherweise unvollständig. Melden Sie sich an und verwalten "
+"Sie Ihre Job-Alerts auf der Alert-Seite."
+
+msgid "Job alert switched off"
+msgstr "Job-Alert ausgeschaltet"
+
+#, python-format
+msgid "You will no longer get e-mails for “%(name)s”."
+msgstr "Sie erhalten keine E-Mails mehr für „%(name)s“."
+
+msgid "Stop this job alert?"
+msgstr "Diesen Job-Alert beenden?"
+
+msgid "Back to the home page"
+msgstr "Zurück zur Startseite"
+
+msgid "We e-mail you when new jobs match a search you saved."
+msgstr ""
+"Wir senden Ihnen eine E-Mail, wenn neue Stellen zu einer gespeicherten Suche"
+" passen."
+
+msgid "Off"
+msgstr "Aus"
+
+#, python-format
+msgid "Last e-mail on %(date)s"
+msgstr "Letzte E-Mail am %(date)s"
+
+msgid "Switch off"
+msgstr "Ausschalten"
+
+msgid "Switch on"
+msgstr "Einschalten"
+
+msgid "Delete this job alert?"
+msgstr "Diesen Job-Alert löschen?"
+
+msgid "Delete"
+msgstr "Löschen"
+
+msgid "You have no job alerts yet. Create one below."
+msgstr "Sie haben noch keine Job-Alerts. Erstellen Sie unten einen."
+
+msgid "New job alert"
+msgstr "Neuer Job-Alert"
+
+msgid "Create alert"
+msgstr "Alert erstellen"
+
+msgid "Applications you have sent"
+msgstr "Von Ihnen gesendete Bewerbungen"
+
+msgid "Browse jobs"
+msgstr "Stellen durchsuchen"
+
+msgid "Job"
+msgstr "Stelle"
+
+msgid "Company"
+msgstr "Unternehmen"
+
+msgid "Date sent"
+msgstr "Gesendet am"
+
+msgid "You have not applied yet."
+msgstr "Sie haben sich noch nicht beworben."
+
+msgid "Candidate dashboard"
+msgstr "Dashboard für Bewerbende"
+
+msgid "Your applications"
+msgstr "Ihre Bewerbungen"
+
+msgid "Profile completeness"
+msgstr "Vollständigkeit des Profils"
+
+msgid "Active job alerts"
+msgstr "Aktive Job-Alerts"
+
+msgid "Complete your profile for better job matches."
+msgstr "Vervollständigen Sie Ihr Profil für bessere Stellenvorschläge."
+
+msgid "Application status"
+msgstr "Bewerbungsstatus"
+
+#, python-format
+msgid "%(n)s application sent"
+msgid_plural "%(n)s applications sent"
+msgstr[0] "%(n)s Bewerbung gesendet"
+msgstr[1] "%(n)s Bewerbungen gesendet"
+
+msgid "Accepted applications"
+msgstr "Angenommene Bewerbungen"
+
+msgid "In progress"
+msgstr "In Bearbeitung"
+
+msgid "Applications in progress"
+msgstr "Bewerbungen in Bearbeitung"
+
+msgid "Rejected applications"
+msgstr "Abgelehnte Bewerbungen"
+
+msgid "You have not applied yet. Pick a job and send your resume for it."
+msgstr ""
+"Sie haben sich noch nicht beworben. Wählen Sie eine Stelle und senden Sie "
+"Ihren Lebenslauf dafür."
+
+msgid "Make your resume stronger"
+msgstr "Verbessern Sie Ihren Lebenslauf"
+
+msgid "(guide in English)"
+msgstr "(Ratgeber auf Englisch)"
+
+msgid "(AI rewriting tool, in English)"
+msgstr "(KI-Tool zum Umschreiben, auf Englisch)"
+
+msgid "Back to the job list"
+msgstr "Zurück zur Stellenliste"
+
+msgid "Salary"
+msgstr "Gehalt"
+
+msgid "Match with your profile"
+msgstr "Übereinstimmung mit Ihrem Profil"
+
+msgid "About the company"
+msgstr "Über das Unternehmen"
+
+msgid "Your application"
+msgstr "Ihre Bewerbung"
+
+#, python-format
+msgid "Sent on %(date)s"
+msgstr "Gesendet am %(date)s"
+
+msgid "Application sent"
+msgstr "Bewerbung gesendet"
+
+msgid "Withdraw this application?"
+msgstr "Diese Bewerbung zurückziehen?"
+
+msgid "Withdraw application"
+msgstr "Bewerbung zurückziehen"
+
+msgid "Apply"
+msgstr "Bewerben"
+
+msgid "Send your resume as a PDF file of up to 5 MB."
+msgstr "Senden Sie Ihren Lebenslauf als PDF-Datei mit höchstens 5 MB."
+
+msgid "Send resume"
+msgstr "Lebenslauf senden"
+
+msgid "Applications closed"
+msgstr "Bewerbungen geschlossen"
+
+msgid "Open jobs"
+msgstr "Offene Stellen"
+
+msgid "Get alerts for new jobs"
+msgstr "Alerts für neue Stellen erhalten"
+
+msgid "Clear filters"
+msgstr "Filter zurücksetzen"
+
+msgid ""
+"No job matches these filters. Remove a filter or search for other words."
+msgstr ""
+"Keine Stelle passt zu diesen Filtern. Entfernen Sie einen Filter oder suchen"
+" Sie nach anderen Wörtern."
+
+msgid "No jobs are open right now. Check again later."
+msgstr "Derzeit sind keine Stellen offen. Schauen Sie später wieder vorbei."
+
+msgid "Candidate sign in"
+msgstr "Anmeldung für Bewerbende"
+
+msgid "Sign in to your account"
+msgstr "Bei Ihrem Konto anmelden"
+
+msgid "Sign in"
+msgstr "Anmelden"
+
+msgid "No account yet?"
+msgstr "Noch kein Konto?"
+
+msgid "Create a new account"
+msgstr "Neues Konto erstellen"
+
+msgid "Create a candidate account"
+msgstr "Konto für Bewerbende erstellen"
+
+msgid "Create account"
+msgstr "Konto erstellen"
+
+msgid "Already registered?"
+msgstr "Bereits registriert?"
+
+msgid ""
+"You have not saved any job yet. Use “Save job” to keep jobs you want to come"
+" back to."
+msgstr ""
+"Sie haben noch keine Stelle gespeichert. Mit „Stelle speichern“ merken Sie "
+"sich Stellen, zu denen Sie zurückkehren möchten."
+
+msgid "Profile settings"
+msgstr "Profileinstellungen"
+
+msgid ""
+"Your profile is used for job matching and alerts. Employers see your name "
+"and email with your resume."
+msgstr ""
+"Ihr Profil wird für Stellenvorschläge und Alerts verwendet. Arbeitgeber "
+"sehen Ihren Namen und Ihre E-Mail-Adresse zusammen mit Ihrem Lebenslauf."
+
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+msgid "Employer dashboard"
+msgstr "Arbeitgeber-Dashboard"
+
+msgid "Your activity at a glance"
+msgstr "Ihre Aktivität auf einen Blick"
+
+msgid "Post a new job"
+msgstr "Neue Stelle veröffentlichen"
+
+msgid "Jobs posted"
+msgstr "Veröffentlichte Stellen"
+
+msgid "Jobs open for applications"
+msgstr "Stellen mit offenen Bewerbungen"
+
+msgid "Applications received"
+msgstr "Eingegangene Bewerbungen"
+
+msgid "Waiting for your review"
+msgstr "Warten auf Ihre Prüfung"
+
+msgid "Jobs posted this month"
+msgstr "In diesem Monat veröffentlichte Stellen"
+
+msgid "Jobs posted last month"
+msgstr "Im letzten Monat veröffentlichte Stellen"
+
+msgid "Applications per day this month"
+msgstr "Bewerbungen pro Tag in diesem Monat"
+
+#, python-format
+msgid "Applications on %(day)s"
+msgstr "Bewerbungen am %(day)s"
+
+msgid "No applications have arrived this month yet."
+msgstr "In diesem Monat sind noch keine Bewerbungen eingegangen."
+
+msgid "Writing a better job post"
+msgstr "Bessere Stellenanzeigen schreiben"
+
+msgid "Back to jobs"
+msgstr "Zurück zu den Stellen"
+
+msgid "Closed"
+msgstr "Geschlossen"
+
+msgid "Close to new applications"
+msgstr "Für neue Bewerbungen schließen"
+
+msgid "Open for applications"
+msgstr "Für Bewerbungen öffnen"
+
+msgid "Get a report by e-mail"
+msgstr "Bericht per E-Mail erhalten"
+
+msgid "Job details"
+msgstr "Stellendetails"
+
+msgid "Search applicants"
+msgstr "Bewerbende suchen"
+
+msgid "Candidate name or email"
+msgstr "Name oder E-Mail der Bewerberin oder des Bewerbers"
+
+msgid "Any status"
+msgstr "Beliebiger Status"
+
+msgid "Download resume"
+msgstr "Lebenslauf herunterladen"
+
+msgid "Change the status of this application"
+msgstr "Status dieser Bewerbung ändern"
+
+msgid "Note (optional)"
+msgstr "Notiz (optional)"
+
+msgid "Change status"
+msgstr "Status ändern"
+
+msgid "Resume summary (generated by AI)"
+msgstr "Zusammenfassung des Lebenslaufs (von KI erstellt)"
+
+msgid "No application matches. Clear the search or try other words."
+msgstr ""
+"Keine Bewerbung passt. Löschen Sie die Suche oder versuchen Sie andere "
+"Wörter."
+
+msgid "Nobody has applied for this job yet."
+msgstr "Auf diese Stelle hat sich noch niemand beworben."
+
+msgid "My jobs"
+msgstr "Meine Stellen"
+
+msgid "Posted jobs"
+msgstr "Veröffentlichte Stellen"
+
+#, python-format
+msgid "Posted on %(date)s"
+msgstr "Veröffentlicht am %(date)s"
+
+#, python-format
+msgid "%(n)s application"
+msgid_plural "%(n)s applications"
+msgstr[0] "%(n)s Bewerbung"
+msgstr[1] "%(n)s Bewerbungen"
+
+msgid "View applications"
+msgstr "Bewerbungen ansehen"
+
+msgid "This job and all its applications will be deleted. Continue?"
+msgstr ""
+"Diese Stelle und alle zugehörigen Bewerbungen werden gelöscht. Fortfahren?"
+
+msgid "Delete job"
+msgstr "Stelle löschen"
+
+msgid ""
+"You have not posted any job yet. Fill in the form below to publish your "
+"first one."
+msgstr ""
+"Sie haben noch keine Stelle veröffentlicht. Füllen Sie das Formular unten "
+"aus, um Ihre erste Anzeige zu veröffentlichen."
+
+msgid "Publish job"
+msgstr "Stelle veröffentlichen"
+
+msgid "Employer sign in"
+msgstr "Anmeldung für Arbeitgeber"
+
+msgid "Create an employer account"
+msgstr "Arbeitgeberkonto erstellen"
+
+#, python-format
+msgid "Report for job: %(title)s"
+msgstr "Bericht zur Stelle: %(title)s"
+
+msgid "No applications yet."
+msgstr "Noch keine Bewerbungen."
+
+msgid "Company settings"
+msgstr "Unternehmenseinstellungen"
+
+msgid "The details candidates see next to your jobs."
+msgstr "Die Angaben, die Bewerbende neben Ihren Stellen sehen."

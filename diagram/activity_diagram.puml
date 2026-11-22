@@ -1,23 +1,66 @@
 @startuml activity_diagram
-
-|Worker|
-start
-:Login;
-:View Job Listings;
-:Apply for Job (Send Resume and Cover Letter);
-:Update Profile;
+title Requester - from posting a job to a decision
 
 |Employer|
-:Login;
-:Create New Job Listing;
-:View Job Applications;
-:Update Job Listing Status;
+start
+:Register / log in;
+:Post a job\n(location, work mode, type, salary, deadline, skills);
+
+|Candidate|
+:Register / log in\n(language is remembered);
+:Complete profile\n(skills, experience, expected salary);
+fork
+  :Create a job alert\n(daily or weekly);
+fork again
+  :Browse jobs with filters;
+  :See match score;
+  if (Interesting?) then (save)
+    :Save job;
+  else (apply)
+  endif
+end fork
+:Open the job page;
+
+if (Job open?\n(active and before deadline)) then (yes)
+  :Send resume (PDF) and cover letter;
+else (no)
+  :See "applications closed";
+  stop
+endif
+
+|System|
+:Store application (pending);
+fork
+  :Summarise resume with AI\n(OpenRouter or Ollama);
+fork again
+  :Send job-alert digests\nfor matching new postings;
+end fork
+
+|Employer|
+:Review application and AI summary;
+:Download resume;
+if (Decision) then (continue)
+  :Move to in review / shortlisted;
+else (final)
+  :Accept or reject;
+endif
+
+|System|
+:Log status event;
+:E-mail the candidate in their language;
+
+|Candidate|
+if (Still interested?) then (yes)
+  :Follow the status timeline;
+else (no)
+  :Withdraw application;
+endif
+
+|Employer|
+:Close the job (or let the deadline pass);
+stop
 
 |Admin|
-:Manage Users;
-:Manage Job Listings;
-:Manage Employers;
-
-stop
+:Manage users, postings and applications\nin the admin site;
 
 @enduml

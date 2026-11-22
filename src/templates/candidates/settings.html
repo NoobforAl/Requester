@@ -1,0 +1,17 @@
+{% extends "candidates/base.html" %}
+{% load i18n %}
+{% block title %}{% trans "Profile settings" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="page-head">
+        <h1>{% trans "Profile settings" %}</h1>
+        <p>{% trans "Your profile is used for job matching and alerts. Employers see your name and email with your resume." %}</p>
+    </div>
+    <form class="panel auth--wide" method="post" action="{% url 'candidate_settings' %}">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            {% include "assets/field.html" with field=field %}
+        {% endfor %}
+        <button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
+    </form>
+{% endblock content %}

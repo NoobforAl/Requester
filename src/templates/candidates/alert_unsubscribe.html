@@ -1,0 +1,24 @@
+{% extends "assets/body.html" %}
+{% load i18n %}
+{% block title %}{% trans "Stop job alert" %} | {% trans "Requester" %}{% endblock title %}
+{% block content %}
+    <div class="auth">
+        {% if not valid %}
+            <h1>{% trans "This link is not valid" %}</h1>
+            <p class="muted">{% trans "The link may be incomplete. Sign in and manage your job alerts from the alerts page." %}</p>
+        {% elif done %}
+            <h1>{% trans "Job alert switched off" %}</h1>
+            <p class="muted">{% blocktrans with name=alert.name %}You will no longer get e-mails for “{{ name }}”.{% endblocktrans %}</p>
+        {% else %}
+            <h1>{% trans "Stop this job alert?" %}</h1>
+            <p class="muted">{% blocktrans with name=alert.name %}You will no longer get e-mails for “{{ name }}”.{% endblocktrans %}</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-block">{% trans "Stop job alert" %}</button>
+            </form>
+        {% endif %}
+        <p class="auth__alt">
+            <a href="/">{% trans "Back to the home page" %}</a>
+        </p>
+    </div>
+{% endblock content %}

@@ -1,0 +1,23 @@
+{% extends "assets/body.html" %}
+{% load i18n %}
+{% block title %}{% trans "Candidate sign in" %} | {% trans "Requester" %}{% endblock title %}
+{% block portal %}candidate{% endblock portal %}
+{% block content %}
+    <div class="auth">
+        <p class="auth__portal">{% trans "Candidate area" %}</p>
+        <h1>{% trans "Sign in to your account" %}</h1>
+        <form action="{% url 'candidate_login' %}" method="post">
+            {% csrf_token %}
+            {% include "assets/field.html" with field=form.username %}
+            {% include "assets/field.html" with field=form.password %}
+            <button type="submit" class="btn btn-primary btn-block">{% trans "Sign in" %}</button>
+        </form>
+        <div class="auth__alt">
+            <p>{% trans "No account yet?" %}</p>
+            <a class="btn btn-block" href="{% url 'candidate_register' %}">{% trans "Create a new account" %}</a>
+        </div>
+        <p class="auth__alt">
+            <a href="/">{% trans "Back to the home page" %}</a>
+        </p>
+    </div>
+{% endblock content %}
