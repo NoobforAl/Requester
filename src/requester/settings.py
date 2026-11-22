@@ -231,9 +231,8 @@ if PROMETHEUS_ENABLED:
         "django.db.backends.mysql": "django_prometheus.db.backends.mysql",
         "django.db.backends.sqlite3": "django_prometheus.db.backends.sqlite3",
     }
-    DATABASES["default"]["ENGINE"] = _db_engines.get(
-        DATABASES["default"]["ENGINE"], DATABASES["default"]["ENGINE"]
-    )
+    _engine = str(DATABASES["default"]["ENGINE"])
+    DATABASES["default"]["ENGINE"] = _db_engines.get(_engine, _engine)
     if CACHES["default"]["BACKEND"] == "django.core.cache.backends.locmem.LocMemCache":
         CACHES["default"]["BACKEND"] = (
             "django_prometheus.cache.backends.locmem.LocMemCache"

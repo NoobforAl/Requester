@@ -43,10 +43,10 @@ def _single_process(monkeypatch):
 
 
 def _get(auth: str | None = None, remote_addr: str = "127.0.0.1"):
-    extra = {"REMOTE_ADDR": remote_addr}
+    request = RequestFactory().get("/metrics", REMOTE_ADDR=remote_addr)
     if auth is not None:
-        extra["HTTP_AUTHORIZATION"] = auth
-    return metrics_view(RequestFactory().get("/metrics", **extra))
+        request.META["HTTP_AUTHORIZATION"] = auth
+    return metrics_view(request)
 
 
 def _status(auth: str | None = None, remote_addr: str = "127.0.0.1") -> int:
