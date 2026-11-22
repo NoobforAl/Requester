@@ -175,3 +175,16 @@ class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = Worker
         fields = ["first_name", "last_name", "email"]
+
+    def save(self, commit=True):
+        worker = super().save(commit=False)
+        if commit:
+            # User carries a copy of these fields; keep both rows in step.
+            with transaction.atomic():
+                worker.save()
+                user = worker.user
+                user.first_name = worker.first_name
+                user.last_name = worker.last_name
+                user.email = worker.email
+                user.save(update_fields=["first_name", "last_name", "email"])
+        return worker

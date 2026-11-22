@@ -186,3 +186,19 @@ def test_failed_insert_does_not_leave_a_resume_file(
     assert JobRequest.objects.count() == 0
     after = set(storage.listdir("resumes")[1]) if storage.exists("resumes") else set()
     assert after == before
+
+
+def test_settings_update_keeps_the_user_row_in_sync(make_worker, client):
+    worker = make_worker("sara")
+    client.force_login(worker.user)
+
+    response = client.post(
+        reverse("worker_settings"),
+        {"first_name": "Sarah", "last_name": "New", "email": "sarah.new@example.com"},
+    )
+
+    assert response.status_code == 302
+    worker.refresh_from_db()
+    worker.user.refresh_from_db()
+    assert worker.email == worker.user.email == "sarah.new@example.com"
+    assert (worker.user.first_name, worker.user.last_name) == ("Sarah", "New")
