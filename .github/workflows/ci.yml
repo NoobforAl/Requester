@@ -42,7 +42,7 @@ jobs:
       - name: Tests (benchmarks run once, untimed)
         run: uv run pytest
 
-  # Fails a pull request when a benchmark mean gets more than 20% slower than on the
+  # Fails a pull request when a benchmark median gets more than 20% slower than on the
   # base commit. Both runs happen in this job, on the same runner, so the numbers
   # are comparable; no machine-specific baseline is committed.
   benchmarks:

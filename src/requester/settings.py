@@ -165,7 +165,7 @@ OPENROUTER_BASE_URL = os.environ.get(
 
 # Logging: structlog, one JSON object per line on stdout (see docs/log-schema.md).
 # LOG_FORMAT=console gives human-readable lines; it is the default with DEBUG on.
-LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_LEVEL = (os.environ.get("LOG_LEVEL") or "INFO").upper()
 LOG_FORMAT = os.environ.get("LOG_FORMAT") or ("console" if DEBUG else "json")
 configure_structlog(LOG_LEVEL, LOG_FORMAT)
 LOGGING = build_logging(LOG_LEVEL, LOG_FORMAT)

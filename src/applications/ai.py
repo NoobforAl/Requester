@@ -7,10 +7,7 @@ The API key is read from the environment only; it is never logged or stored.
 """
 
 import httpx
-import structlog
 from django.conf import settings
-
-logger = structlog.get_logger(__name__)
 
 OPENROUTER = "openrouter"
 

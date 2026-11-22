@@ -13,7 +13,7 @@ def main():
     if len(sys.argv) > 1 and sys.argv[1] == "runserver":
         from observability.tracing import setup_tracing
 
-        setup_tracing()
+        setup_tracing(celery=True)
 
     try:
         from django.core.management import execute_from_command_line

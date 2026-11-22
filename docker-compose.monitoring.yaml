@@ -14,8 +14,12 @@ services:
     web:
         environment:
             PROMETHEUS_ENABLED: "true"
+            # Prometheus scrapes with "Host: web:8000"; Django must accept that host.
+            ALLOWED_HOSTS: "${ALLOWED_HOSTS:-localhost,127.0.0.1},web"
             METRICS_TOKEN: "${METRICS_TOKEN:?set METRICS_TOKEN in .env}"
             PROMETHEUS_MULTIPROC_DIR: /tmp/prometheus-multiproc
+            # Vector/Loki parse JSON; DEBUG alone would default to console lines.
+            LOG_FORMAT: "json"
             OTEL_ENABLED: "true"
             OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
             OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
@@ -59,11 +63,15 @@ services:
 
     tasks:
         environment:
+            # Vector/Loki parse JSON; DEBUG alone would default to console lines.
+            LOG_FORMAT: "json"
             OTEL_ENABLED: "true"
             OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
             OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
     scheduler:
         environment:
+            # Vector/Loki parse JSON; DEBUG alone would default to console lines.
+            LOG_FORMAT: "json"
             OTEL_ENABLED: "true"
             OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
             OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
@@ -160,6 +168,8 @@ services:
         command: ["--config", "/etc/vector/vector.yaml"]
         volumes:
             - ./monitoring/vector/vector.yaml:/etc/vector/vector.yaml:ro
+            # Read-only, but socket access still means control over Docker: only run
+            # this on a host you trust (dev / monitoring box).
             - /var/run/docker.sock:/var/run/docker.sock:ro
             - vector_data:/var/lib/vector
         depends_on:

@@ -118,9 +118,10 @@ def test_middleware_records_requests_and_endpoint_exports_them(client):
 
 
 @override_settings(METRICS_TOKEN=TOKEN, ROOT_URLCONF=__name__)
-def test_post_is_rejected(client):
+def test_post_is_hidden_as_404(client):
+    # Even with a valid token: a 405 would reveal that the endpoint exists.
     response = client.post("/metrics", headers={"Authorization": f"Bearer {TOKEN}"})
-    assert response.status_code == 405
+    assert response.status_code == 404
 
 
 @override_settings(METRICS_TOKEN=TOKEN)

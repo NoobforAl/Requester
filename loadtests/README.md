@@ -2,7 +2,7 @@
 
 Locust scenarios that drive the server-rendered candidate and employer portals the way real users do: sign in, browse and search jobs, open a job, save a job, and publish a posting. Use them to find slow views and regressions before a release, and to check the Prometheus, Grafana and Loki pipeline under load.
 
-> **WARNING: NEVER run these load tests against production.** They sign in as real accounts, write data (save toggles, postings that are created and then deleted) and can overload the site. The locustfile refuses any host other than `localhost`, `127.0.0.1`, `::1` or a host whose name contains `staging`, unless `LOADTEST_ALLOW_HOST` is set to that exact host name. Never set `LOADTEST_ALLOW_HOST` to a production host.
+> **WARNING: NEVER run these load tests against production.** They sign in as real accounts, write data (save toggles, postings that are created and then deleted) and can overload the site. The locustfile refuses any host other than `localhost`, `127.0.0.1`, `::1` or a host with a DNS label starting with `staging` (e.g. `staging.example.com`), unless `LOADTEST_ALLOW_HOST` is set to that exact host name. Never set `LOADTEST_ALLOW_HOST` to a production host.
 
 ## Scenarios
 
@@ -108,9 +108,4 @@ uv run --group loadtest locust -f loadtests/locustfile.py --worker --master-host
 
 ## Results directory
 
-`loadtests/results/` holds local run output and must not be committed. Add this to the root `.gitignore`:
-
-```gitignore
-# Locust load test output
-loadtests/results/
-```
+`loadtests/results/` holds local run output; it is already git-ignored.

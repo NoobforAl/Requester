@@ -2,7 +2,8 @@
 """Locust load test scenarios for Requester (server-rendered Django views).
 
 NEVER run this against production. The production guard below refuses any host
-that is not localhost / 127.0.0.1 / ::1 / a host containing "staging", unless
+that is not localhost / 127.0.0.1 / ::1 / a host with a DNS label starting with
+"staging", unless
 ``LOADTEST_ALLOW_HOST`` names that exact host.
 
 Users:
@@ -55,14 +56,19 @@ def host_refusal(url: str | None) -> str | None:
     if not hostname:
         return f"cannot parse a host name from {url!r}"
     allowed_exact = os.environ.get("LOADTEST_ALLOW_HOST", "").strip().lower()
-    if hostname in SAFE_HOSTNAMES or "staging" in hostname:
+    # A DNS label must start with "staging" (staging.example.com, staging2.x.y);
+    # a substring match would also allow e.g. prod-not-staging.example.com.
+    if hostname in SAFE_HOSTNAMES or any(
+        label.startswith("staging") for label in hostname.split(".")
+    ):
         return None
     if allowed_exact and hostname == allowed_exact:
         return None
     return (
         f"refusing to load test {hostname!r}: only localhost, 127.0.0.1, ::1 or a "
-        "host containing 'staging' are allowed. Set LOADTEST_ALLOW_HOST to the exact "
-        "host name to override. NEVER point this at production."
+        "host with a label starting with 'staging' are allowed. Set "
+        "LOADTEST_ALLOW_HOST to the exact host name to override. "
+        "NEVER point this at production."
     )
 
 

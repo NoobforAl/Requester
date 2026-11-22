@@ -138,7 +138,8 @@ docker-pull: ## Pull every image used by the full stack (base, dev, monitoring, 
 dev-all: ## Dev stack + Faker data + monitoring + live load (Grafana :3000 admin/admin, Jaeger :16686)
 	mkdir -p es_data mariadb_data redis_data
 	$(COMPOSE_ALL) up -d --build
-	@echo "App http://localhost:8000  Grafana http://localhost:3000  Prometheus http://localhost:9090  Jaeger http://localhost:16686"
+	@echo "App http://localhost:8000  Grafana http://localhost:3000  Prometheus http://localhost:9090"
+	@echo "Jaeger http://localhost:16686  Loki http://localhost:3100  MailHog http://localhost:8025"
 	@echo "Seeding runs on first start; the load generator starts once web is healthy. Stop with: make dev-all-down"
 
 dev-all-down: ## Stop the dev-all stack
@@ -159,14 +160,16 @@ test-mariadb: ## Run the tests against a real MariaDB (starts and stops the comp
 # deploy: production-like (gunicorn, SECRET_KEY and ALLOWED_HOSTS required, no demo data).
 deploy: migrate import_legacy_data compilemessages create_es_fields ensure_superuser collectstatic
 	@echo "Starting gunicorn"
-	@# Prometheus multiprocess mode: start every run with an empty metrics directory.
-	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then rm -rf "$$PROMETHEUS_MULTIPROC_DIR" && mkdir -p "$$PROMETHEUS_MULTIPROC_DIR"; fi
+	@# Prometheus multiprocess mode: start every run with an empty metrics directory
+	@# (emptied, not removed: in compose it is a tmpfs mount point).
+	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then mkdir -p "$$PROMETHEUS_MULTIPROC_DIR" && find "$$PROMETHEUS_MULTIPROC_DIR" -mindepth 1 -delete; fi
 	cd $(SRC) && $(RUN) gunicorn -w 4 --bind 0.0.0.0:8000 requester.wsgi:application
 
 # deploy-dev: Django dev server, mock data, and an admin from DJANGO_SUPERUSER_*.
 # Seed first, then rebuild the search index, so bulk-inserted rows are always indexed.
 deploy-dev: migrate import_legacy_data compilemessages insert_mock_data insert_fake_data create_es_fields ensure_superuser
 	@echo "Starting the dev server"
+	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then mkdir -p "$$PROMETHEUS_MULTIPROC_DIR" && find "$$PROMETHEUS_MULTIPROC_DIR" -mindepth 1 -delete; fi
 	$(MANAGE) runserver 0.0.0.0:8000
 
 setup_celery: migrate compilemessages create_es_fields

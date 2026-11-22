@@ -23,7 +23,6 @@ from typing import Any
 from django.conf import settings
 from django.http import Http404, HttpRequest, HttpResponse
 from django.views.decorators.cache import never_cache
-from django.views.decorators.http import require_GET
 from django_prometheus.exports import ExportToDjangoView
 from prometheus_client import multiprocess
 
@@ -65,10 +64,12 @@ def _ip_ok(request: HttpRequest) -> bool:
 
 
 @never_cache
-@require_GET
 def metrics_view(request: HttpRequest) -> HttpResponse:
-    """Serve Prometheus metrics to authorised scrapers only, 404 otherwise."""
-    if not (_token_ok(request) and _ip_ok(request)):
+    """Serve Prometheus metrics to authorised scrapers only, 404 otherwise.
+
+    Any refusal, including a non-GET method, is a 404 so the endpoint stays hidden.
+    """
+    if request.method != "GET" or not (_token_ok(request) and _ip_ok(request)):
         raise Http404
     return ExportToDjangoView(request)
 

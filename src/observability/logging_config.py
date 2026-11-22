@@ -70,7 +70,7 @@ _EMAIL_RE = re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}")
 # 13 to 19 digits, optionally separated by single spaces or dashes.
 _CARD_RE = re.compile(r"(?<!\d)(?:\d[ -]?){12,18}\d(?!\d)")
 
-THIRD_PARTY_WARNING_LOGGERS = ("httpx", "urllib3", "elasticsearch")
+THIRD_PARTY_WARNING_LOGGERS = ("httpx", "urllib3", "elasticsearch", "elastic_transport")
 ROUTED_LOGGERS = (
     "django",
     "django.server",
@@ -104,8 +104,8 @@ def static_fields_processor() -> Processor:
     """Add ``service``, ``environment`` and ``version`` (read once, from env)."""
     fields = {
         "service": os.environ.get("SERVICE_NAME", "web"),
-        "environment": os.environ.get("APP_ENVIRONMENT", "development"),
-        "version": os.environ.get("APP_VERSION", "0.1.0"),
+        "environment": os.environ.get("APP_ENVIRONMENT") or "development",
+        "version": os.environ.get("APP_VERSION") or "0.1.0",
     }
 
     def add_static_fields(
