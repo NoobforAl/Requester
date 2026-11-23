@@ -3,6 +3,7 @@
 The formatter is built locally, so the global logging configuration is untouched.
 """
 
+import io
 import json
 import logging
 
@@ -65,3 +66,33 @@ def test_bench_redact_nested_payload(benchmark):
 
     assert result["password"] == logging_config.REDACTED
     assert "4111" not in result["event"]
+
+
+@pytest.mark.benchmark(group="logging")
+def test_bench_json_pipeline_1000_lines(benchmark, formatter):
+    """Throughput: 1000 log calls through a logger, the JSON formatter and a stream."""
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.setFormatter(formatter)
+    logger = logging.Logger("bench.pipeline", level=logging.INFO)  # not registered
+    logger.addHandler(handler)
+
+    def emit_1000():
+        stream.seek(0)
+        stream.truncate()
+        for i in range(1000):
+            logger.info(
+                "request %s done for %s",
+                i,
+                "sara@example.com",
+                extra={"status_code": "200", "duration_ms": "3.5", "path": "/jobs/"},
+            )
+        return stream.getvalue()
+
+    output = benchmark(emit_1000)
+
+    lines = output.splitlines()
+    assert len(lines) == 1000
+    last = json.loads(lines[-1])
+    assert last["event"].startswith("request 999 done for sha256:")
+    assert "sara@example.com" not in output

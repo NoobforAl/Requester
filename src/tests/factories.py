@@ -144,8 +144,9 @@ def make_application(
                 from_status=from_status,
                 to_status=to_status,
                 actor=actor,
+                note=note,
             )
-            for from_status, to_status, actor, _time in item.events
+            for from_status, to_status, actor, _time, note in item.events
         )
     return application
 

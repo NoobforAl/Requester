@@ -185,6 +185,33 @@ INDUSTRIES = (
     "Manufacturing",
     "Consulting",
 )
+#: Every DORMANT_EVERY-th employer has only old, closed postings.
+DORMANT_EVERY = 8
+#: Share of postings and applications dated in the last 7 days.
+RECENT_SHARE = 0.1
+
+#: Size presets of ``seed_fake_data --scale``: employers, postings, candidates,
+#: applications. "large" is the default: a lived-in dev site.
+SCALES: dict[str, dict[str, int]] = {
+    "small": {"employers": 8, "postings": 60, "candidates": 80, "applications": 300},
+    "medium": {
+        "employers": 20,
+        "postings": 200,
+        "candidates": 300,
+        "applications": 1500,
+    },
+    "large": {
+        "employers": 60,
+        "postings": 1200,
+        "candidates": 2000,
+        "applications": 10000,
+    },
+}
+#: How many postings the first (busiest) fake candidate applies to.
+FIRST_CANDIDATE_APPLIES = 15
+#: Above this many applications all resumes point at one shared file by default.
+SHARED_RESUME_ABOVE = 2000
+
 #: Status mix of fake applications (weights).
 STATUS_WEIGHTS = {
     Application.Status.PENDING: 35,
@@ -226,9 +253,11 @@ class FakePosting:
 @dataclass
 class FakeApplication:
     application: Application
-    #: (from_status, to_status, actor, time) for each status change, oldest first.
+    #: (from_status, to_status, actor, time, note) per status change, oldest first.
     #: Generated with the application, so random draws never depend on the database.
-    events: list[tuple[str, str, User | None, datetime]] = field(default_factory=list)
+    events: list[tuple[str, str, User | None, datetime, str]] = field(
+        default_factory=list
+    )
 
 
 class FakeDataGenerator:
@@ -252,6 +281,11 @@ class FakeDataGenerator:
         self.rng.seed(seed)
         self.now = timezone.now()
         self._titles: defaultdict[str, set[str]] = defaultdict(set)
+        #: Usernames of "dormant" employers: old, closed postings only.
+        self._dormant: set[str] = set()
+
+    def is_dormant(self, employer: Employer) -> bool:
+        return employer.user.username in self._dormant
 
     # ------------------------------------------------------------- helpers
     def locale(self) -> str:
@@ -312,6 +346,9 @@ class FakeDataGenerator:
         info = LOCALES[locale]
         fake = self.faker[locale]
         username = self.username("emp", index)
+        # Every 8th employer (never the first) stopped hiring a while ago.
+        if index % DORMANT_EVERY == DORMANT_EVERY - 1:
+            self._dormant.add(username)
         name = fake.company()
         industry = self.rng.choice(INDUSTRIES)
         created = self.past(365, 120)
@@ -319,7 +356,10 @@ class FakeDataGenerator:
             user=self.user(username),
             name=name,
             contact_email=f"hr.{username.replace('_', '.')}@example.com",
-            description=f"{fake.catch_phrase()}. {fake.paragraph(nb_sentences=3)}",
+            description=(
+                f"{fake.catch_phrase()}. {fake.paragraph(nb_sentences=4)}\n\n"
+                f"{fake.paragraph(nb_sentences=3)}"
+            ),
             website=f"https://{username.replace('_', '-')}.example.com",
             industry=industry,
             size=self.rng.choice(Employer.Size.values),
@@ -355,15 +395,23 @@ class FakeDataGenerator:
             count = self.rng.randint(1, min(4, len(wanted)))
             skill_names = self.rng.sample(wanted, count)
         salary_min, salary_max = (
-            self.salary(locale) if self.chance(0.85) else (None, None)
+            self.salary(locale) if self.chance(0.9) else (None, None)
         )
         kind = self.rng.choices(("none", "closed", "open"), weights=(1, 1, 8))[0]
+        dormant = self.is_dormant(employer)
+        if dormant:
+            kind = "closed"
         deadline = None
         if kind == "closed":
             deadline = timezone.localdate() - timedelta(days=self.rng.randint(1, 30))
         elif kind == "open":
             deadline = timezone.localdate() + timedelta(days=self.rng.randint(7, 60))
-        created = self.past(120)
+        # Some postings are brand new, so "this week" lists and charts have data.
+        recent = self.chance(RECENT_SHARE)
+        if dormant:
+            created = self.past(365, 150)
+        else:
+            created = self.past(7) if recent else self.past(120)
         requirements = "\n".join(f"- {name}" for name in skill_names)
         posting = JobPosting(
             title=title,
@@ -383,7 +431,7 @@ class FakeDataGenerator:
             salary_max=salary_max,
             salary_currency=info.currency,
             deadline=deadline,
-            is_active=self.chance(0.9),
+            is_active=not dormant and self.chance(0.92),
             created_at=created,
             updated_at=created,
         )
@@ -399,26 +447,30 @@ class FakeDataGenerator:
         user = self.user(username, first, last)
         role = self.role()
         years = self.rng.choices(range(26), weights=[3] * 6 + [2] * 10 + [1] * 10)[0]
-        salary = self.salary(locale)[0] if self.chance(0.7) else None
+        salary = self.salary(locale)[0] if self.chance(0.85) else None
         created = self.past(300, 1)
         candidate = Candidate(
             user=user,
             first_name=first,
             last_name=last,
             email=user.email,
-            phone_number=self.phone(locale) if self.chance(0.8) else "",
-            address=fake.address() if self.chance(0.6) else "",
+            phone_number=self.phone(locale) if self.chance(0.95) else "",
+            address=fake.address() if self.chance(0.85) else "",
             date_of_birth=fake.date_of_birth(minimum_age=18, maximum_age=60),
             headline=f"{role}, {years} years" if years else f"Junior {role}",
             city=self.rng.choice(info.cities),
             experience_years=years,
-            education_level=self.rng.choice(["", *Candidate.Education.values]),
+            education_level=self.rng.choice(Candidate.Education.values)
+            if self.chance(0.9)
+            else "",
             expected_salary=salary,
             expected_salary_currency=info.currency,
-            preferred_work_mode=self.rng.choice(["", *WorkMode.values]),
+            preferred_work_mode=self.rng.choice(WorkMode.values)
+            if self.chance(0.9)
+            else "",
             linkedin_url=(
                 f"https://www.linkedin.com/in/{username.replace('_', '-')}"
-                if self.chance(0.5)
+                if self.chance(0.7)
                 else ""
             ),
             is_open_to_work=self.chance(0.85),
@@ -441,31 +493,50 @@ class FakeDataGenerator:
         """An unsaved application (without a resume file) and its status history."""
         status = status or self.status()
         fake = self.faker[LOCALE_BY_LANGUAGE.get(candidate.language, "en_US")]
-        start = max(posting.created_at or self.now, self.past(90))
-        applied = min(start + timedelta(hours=self.rng.randint(1, 240)), self.now)
+        opened = posting.created_at or self.now
+        closed = (
+            posting.deadline is not None and posting.deadline < timezone.localdate()
+        )
+        if closed:  # applied while it was open
+            applied = opened + timedelta(hours=self.rng.randint(1, 240))
+        elif self.chance(RECENT_SHARE):  # recent activity for "this week" views
+            applied = max(opened, self.past(7))
+        else:
+            # Anywhere in the posting's life (at most the last 90 days).
+            start = max(opened, self.now - timedelta(days=90))
+            applied = start + (self.now - start) * self.rng.random()
+        applied = min(applied, self.now)
+        summary = self.chance(0.4)
         application = Application(
             candidate=candidate,
             posting=posting,
-            cover_letter=fake.paragraph(nb_sentences=4) if self.chance(0.7) else "",
+            cover_letter=(
+                f"{fake.paragraph(nb_sentences=4)}\n\n{fake.paragraph(nb_sentences=2)}"
+                if self.chance(0.8)
+                else ""
+            ),
             status=status,
-            employer_note=fake.sentence() if self.chance(0.2) else "",
+            employer_note=fake.sentence() if self.chance(0.35) else "",
+            ai_summary=fake.paragraph(nb_sentences=3) if summary else "",
+            ai_provider="fake" if summary else "",
             applied_at=applied,
             updated_at=applied,
         )
-        events: list[tuple[str, str, User | None, datetime]] = []
+        events: list[tuple[str, str, User | None, datetime, str]] = []
         previous: str = Application.Status.PENDING
         moment = applied
         for step in self.rng.choice(STATUS_PATHS[status]):
             actor = candidate.user if step == "withdrawn" else posting.employer.user
             moment = min(moment + timedelta(hours=self.rng.randint(2, 120)), self.now)
-            events.append((previous, step, actor, moment))
+            note = fake.sentence() if self.chance(0.6) else ""
+            events.append((previous, step, actor, moment, note))
             previous = step
+        application.updated_at = moment
         return FakeApplication(clip(application), events)
 
     def saved(self, candidate: Candidate, posting: JobPosting) -> SavedPosting:
-        return SavedPosting(
-            candidate=candidate, posting=posting, created_at=self.past(60)
-        )
+        moment = max(posting.created_at or self.now, self.past(60))
+        return SavedPosting(candidate=candidate, posting=posting, created_at=moment)
 
     def alert(
         self, candidate: Candidate, number: int = 1
@@ -485,7 +556,8 @@ class FakeDataGenerator:
             employment_type=self.rng.choice(["", JobPosting.EmploymentType.FULL_TIME]),
             min_salary=self.salary(locale)[0] if self.chance(0.3) else None,
             frequency=self.rng.choice(JobAlert.Frequency.values),
-            is_active=self.chance(0.9),
+            is_active=(active := self.chance(0.9)),
+            last_sent_at=self.past(7) if active and self.chance(0.6) else None,
             created_at=created,
             updated_at=created,
         )
@@ -503,6 +575,18 @@ def save_resume(application: Application) -> None:
         "resumes/", "resumes/fake/", 1
     )
     application.resume.name = default_storage.save(name, ContentFile(MINIMAL_PDF))
+
+
+def save_shared_resume(prefix: str) -> str:
+    """One tiny PDF that many fake applications point at; returns its name.
+
+    Much faster for big runs. The catch: deleting one of those applications deletes
+    the shared file for all (``applications.signals``); ``--wipe-fake`` and rerun.
+    """
+    name = f"resumes/fake/{prefix}shared.pdf"
+    if not default_storage.exists(name):
+        name = default_storage.save(name, ContentFile(MINIMAL_PDF))
+    return name
 
 
 def ensure_skills(names=SKILLS) -> dict[str, Skill]:
@@ -585,6 +669,7 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
     candidates: int,
     applications: int,
     password: str = "",
+    shared_resume: bool | None = None,
     batch_size: int = BATCH_SIZE,
     log: Callable[[str], None] = lambda _msg: None,
 ) -> SeedResult:
@@ -594,7 +679,14 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
     (candidate, alert name), so running it again with the same seed and counts
     creates nothing. The first fake employer and candidate get ``password`` (when
     given, for load tests); every other fake account has an unusable password.
+    The first candidate is the busiest one (many applications, saved postings and
+    alerts), so its pages show several pages of data.
+
+    ``shared_resume`` (default: when there are more than ``SHARED_RESUME_ABOVE``
+    applications) stores one PDF for all applications instead of one each.
     """
+    if shared_resume is None:
+        shared_resume = applications > SHARED_RESUME_ABOVE
     result = SeedResult()
     clock = time.perf_counter()
 
@@ -707,7 +799,11 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
             seen: set[tuple[int, int]] = set()
             attempts = 0
             pick_candidate = _weighted_picker(gen.rng, len(cand_list), 0.3)
-            pick_posting = _weighted_picker(gen.rng, len(posting_list), 0.5)
+            pick_posting = _weighted_picker(gen.rng, len(posting_list), 0.8)
+            # The first candidate applies to the first postings (one per employer).
+            for p in range(min(FIRST_CANDIDATE_APPLIES, len(posting_list), target)):
+                seen.add((0, p))
+                fake_apps.append(gen.application(cand_list[0], posting_list[p]))
             while len(fake_apps) < target and attempts < target * 20:
                 attempts += 1
                 c, p = pick_candidate(1)[0], pick_posting(1)[0]
@@ -728,19 +824,25 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
             if (app.candidate_id, app.posting_id) not in existing_apps:
                 new_apps.append(fa)
         lap("applications (generate)")
-        for fa in new_apps:
-            save_resume(fa.application)
+        if shared_resume and new_apps:
+            shared = save_shared_resume(gen.prefix)
+            for fa in new_apps:
+                fa.application.resume.name = shared
+        else:
+            for fa in new_apps:
+                save_resume(fa.application)
         lap("resumes")
         _bulk(Application, [fa.application for fa in new_apps], batch_size)
         events = []
         for fa in new_apps:
-            for from_status, to_status, actor, moment in fa.events:
+            for from_status, to_status, actor, moment, note in fa.events:
                 events.append(
                     ApplicationEvent(
                         application=fa.application,
                         from_status=from_status,
                         to_status=to_status,
                         actor=actor,
+                        note=note,
                         created_at=moment,
                     )
                 )
@@ -752,17 +854,17 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
 
         # ------------------------------------------- saved postings, alerts
         saved, alerts = [], []
-        for candidate in cand_list:
+        for index, candidate in enumerate(cand_list):
+            busiest = index == 0
             if posting_list:
+                wanted = gen.rng.randint(12, 15) if busiest else gen.rng.randint(0, 5)
                 picks = gen.rng.sample(
-                    range(len(posting_list)),
-                    min(len(posting_list), gen.rng.randint(0, 4)),
+                    range(len(posting_list)), min(len(posting_list), wanted)
                 )
                 saved += [gen.saved(candidate, posting_list[i]) for i in picks]
-            if gen.chance(0.6):
-                alerts += [
-                    gen.alert(candidate, n + 1) for n in range(gen.rng.randint(1, 2))
-                ]
+            if busiest or gen.chance(0.6):
+                count = 3 if busiest else gen.rng.randint(1, 2)
+                alerts += [gen.alert(candidate, n + 1) for n in range(count)]
         existing_saved = set(
             SavedPosting.objects.filter(
                 candidate__in=[c for c in cand_list if c.pk]
