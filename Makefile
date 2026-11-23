@@ -36,7 +36,7 @@ COMPOSE_PERF := docker compose -f docker-compose.yaml -f docker-compose.perf.yam
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
         format lint typecheck test bench bench-check loadtest audit fix \
         clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down docker-bench docker-bench-check docker-pull dev-all dev-all-down \
-        perf-up perf-down perf-load perf-bench deploy-perf \
+        perf-up perf-down perf-load perf-soak perf-bench deploy-perf \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \
         compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \
         i18n i18n-compile i18n-check diagrams
@@ -163,6 +163,11 @@ perf-up: ## Start the capped, production-like stack (gunicorn, DEBUG off, demo d
 perf-load: ## Locust load test against perf-up (PERF_USERS=150 PERF_RUN_TIME=3m); CSV in loadtests/results/
 	mkdir -p loadtests/results
 	$(COMPOSE_PERF) --profile perf-load run --rm loadtest
+
+perf-soak: ## Leak hunt: worker recycling off, 15 min of load (PERF_RUN_TIME=...); watch with docker stats
+	GUNICORN_MAX_REQUESTS=0 $(COMPOSE_PERF) up -d --wait web
+	mkdir -p loadtests/results
+	GUNICORN_MAX_REQUESTS=0 PERF_RUN_TIME=$${PERF_RUN_TIME:-15m} $(COMPOSE_PERF) --profile perf-load run --rm loadtest
 
 perf-bench: ## Run the benchmarks inside the capped web container; saved to ./.benchmarks
 	$(COMPOSE_PERF) run --rm --no-deps --build web make RUN= bench

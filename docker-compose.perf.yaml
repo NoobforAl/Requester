@@ -20,6 +20,9 @@ x-perf-env: &perf-env
     APP_ENVIRONMENT: "perf"
     DJANGO_SUPERUSER_USERNAME: "admin"
     DJANGO_SUPERUSER_PASSWORD: "admin"
+    # 0 turns gunicorn's worker recycling off, so a memory leak shows instead of
+    # being reset every few thousand requests (leak hunting: `make perf-soak`).
+    GUNICORN_MAX_REQUESTS: "${GUNICORN_MAX_REQUESTS:-}"
 
 x-dev-build: &dev-build
     args:
