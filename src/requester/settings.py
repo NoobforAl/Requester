@@ -13,6 +13,7 @@ from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
 
 from observability.logging_config import build_logging, configure_structlog
+from requester.runtime import container_cpu_count
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -119,6 +120,9 @@ if REDIS_URL:
             "LOCATION": REDIS_URL,
         }
     }
+    # Sessions are read on every signed-in request: serve them from Redis, with the
+    # database as the durable copy (a cache flush does not log anyone out).
+    SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 else:
     CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
@@ -137,6 +141,12 @@ CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 # Task events for celery-exporter (the worker also runs with -E).
 CELERY_WORKER_SEND_TASK_EVENTS = True
 CELERY_TASK_SEND_SENT_EVENT = True
+# Prefork children. Celery's default is os.cpu_count(), which counts the host's CPUs
+# inside a container: 8 children in a 0.5-CPU, 512 MB container nearly ran out of
+# memory. At least 2, because the AI summaries mostly wait on the network.
+CELERY_WORKER_CONCURRENCY = int(
+    os.environ.get("CELERY_WORKER_CONCURRENCY") or max(2, container_cpu_count())
+)
 
 # Celery beat: job-alert digests. Run with `celery -A requester beat` (the compose
 # `scheduler` service). Times are CELERY_TIMEZONE (UTC); 04:30 UTC = 08:00 Tehran.

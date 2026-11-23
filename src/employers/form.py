@@ -7,6 +7,8 @@ from django.db import transaction
 from django.utils.functional import Promise
 from django.utils.translation import gettext_lazy as _
 
+from requester.forms import FastRenderMixin
+
 from .models import Employer, JobPosting
 
 FORM_CONTROL = {"class": "form-control"}
@@ -138,7 +140,7 @@ class EmployerUpdateForm(forms.ModelForm):
         }
 
 
-class JobPostingForm(forms.ModelForm):
+class JobPostingForm(FastRenderMixin, forms.ModelForm):
     class Meta:
         model = JobPosting
         fields = [

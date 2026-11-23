@@ -17,6 +17,7 @@ dependencies = [
     "httpx>=0.27",
     "gunicorn>=23.0",
     "whitenoise>=6.9",
+    "jinja2>=3.1",  # faster form widget rendering (requester/forms.py)
     "mysqlclient>=2.2",
     "jdatetime>=5.0",
     "weasyprint>=66",

@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 
 from applications.models import Application
 from employers.models import JobPosting, Skill, WorkMode
+from requester.forms import FastRenderMixin
 
 from .models import Candidate, JobAlert
 
@@ -149,7 +150,7 @@ class ResumeUploadForm(forms.ModelForm):
         return resume
 
 
-class ProfileForm(forms.ModelForm):
+class ProfileForm(FastRenderMixin, forms.ModelForm):
     """Everything a candidate can edit about themself."""
 
     class Meta:
@@ -223,7 +224,7 @@ class ProfileForm(forms.ModelForm):
         return candidate
 
 
-class JobAlertForm(forms.ModelForm):
+class JobAlertForm(FastRenderMixin, forms.ModelForm):
     class Meta:
         model = JobAlert
         fields = [
@@ -248,7 +249,7 @@ class JobAlertForm(forms.ModelForm):
         }
 
 
-class JobFilterForm(forms.Form):
+class JobFilterForm(FastRenderMixin, forms.Form):
     """GET filters of the candidate's job list. Every field is optional."""
 
     SORT_NEWEST = "newest"
