@@ -71,7 +71,8 @@ Settings: `OPENROUTER_API_KEY`, `OPENROUTER_MODEL` (default `google/gemma-3-4b-i
 
 - **Python 3.12** and **uv** (`uv sync` installs everything from `pyproject.toml` / `uv.lock`)
 - **Docker** and Docker Compose for the full stack, translations extraction and diagrams
-- Services in the stack: **MariaDB** (`db`), **Redis** (`cache`, Celery broker), **Elasticsearch 9** (`search`), **MailHog** (`mailhog`), **Celery** worker (`tasks`) and beat (`scheduler`)
+- Services in the stack: **MariaDB** (`db`), **Redis** (`cache`, Celery broker), **MailHog** (`mailhog`), **Celery** worker (`tasks`) and beat (`scheduler`)
+- Optional analytics (`make analytics-up`): **Elasticsearch 9**, **Logstash** and **Kibana**, see [docs/analytics.md](docs/analytics.md)
 
 ## Makefile commands
 
@@ -101,6 +102,10 @@ Copy `.env.example` to `.env` to set secrets; nothing secret is written in the c
 
 Database settings are `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT` (MariaDB). Without `DB_NAME`, the app uses SQLite.
 
-### Elasticsearch 9
+### Analytics (Elasticsearch, Logstash, Kibana)
 
-The stack uses Elasticsearch **9.5.1** with `django-elasticsearch-dsl` 9 / client 9. The indices (`job_postings`, `applications`) are only a synced copy of database data: if you start from an `es_data` folder created by Elasticsearch 8, delete it (`make docker-clean` removes all data folders) and let `make deploy` rebuild the indices (`search_index --rebuild`). Elasticsearch 9 can only upgrade data from 8.19, so rebuilding is simpler than upgrading in place.
+The app does not use Elasticsearch. `make analytics-up` adds a copy of the business data for the data team: Logstash reads MariaDB every minute with a read-only user that cannot see personal data, and Kibana has a ready dashboard (searches, jobs, skills, applications). See [docs/analytics.md](docs/analytics.md). An `es_data` folder from Elasticsearch 8 must be deleted first (Elasticsearch 9 only upgrades data from 8.19); `make analytics-resync` fills it again.
+
+### Admin
+
+`/admin/` uses the [Unfold](https://unfoldadmin.com) theme, configured in Python only (`UNFOLD` in `settings.py`, callbacks in `requester/admin.py`): a grouped menu with live counts (open jobs, pending applications), colored status labels, dropdown and date-range filters, and the environment name in the header (`APP_ENVIRONMENT`).

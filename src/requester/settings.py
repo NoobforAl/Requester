@@ -11,6 +11,7 @@ from pathlib import Path
 
 from celery.schedules import crontab
 from django.core.exceptions import ImproperlyConfigured
+from django.urls import reverse_lazy
 
 from observability.logging_config import build_logging, configure_structlog
 from requester.runtime import container_cpu_count
@@ -200,6 +201,9 @@ INSTALLED_APPS = [
     "applications",
     "analytics",
     "django_extensions",
+    # Admin theme: must come before django.contrib.admin (its templates win).
+    "unfold",
+    "unfold.contrib.filters",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -281,6 +285,81 @@ if SILK_ENABLED:
 
 ROOT_URLCONF = "requester.urls"
 
+
+# Admin look and menu (django-unfold). Python only: no admin template or CSS of ours.
+# Callbacks live in requester/admin.py. Icons: https://fonts.google.com/icons
+def _admin_link(model: str, icon: str, title: str, **extra) -> dict:
+    app, name = model.split(".")
+    return {
+        "title": title,
+        "icon": icon,
+        "link": reverse_lazy(f"admin:{app}_{name}_changelist"),
+        "permission": lambda request: request.user.has_perm(f"{app}.view_{name}"),
+        **extra,
+    }
+
+
+UNFOLD = {
+    "SITE_TITLE": "Requester admin",
+    "SITE_HEADER": "Requester",
+    "SITE_SUBHEADER": "Jobs, candidates and applications",
+    "SITE_SYMBOL": "work",
+    "SITE_URL": "/",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True,
+    "ENVIRONMENT": "requester.admin.environment_callback",
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": True,
+        "navigation": [
+            {
+                "title": "Hiring",
+                "items": [
+                    _admin_link(
+                        "employers.jobposting",
+                        "work",
+                        "Job postings",
+                        badge="requester.admin.open_postings_badge",
+                        badge_variant="success",
+                    ),
+                    _admin_link("employers.employer", "apartment", "Employers"),
+                    _admin_link("employers.skill", "sell", "Skills"),
+                ],
+            },
+            {
+                "title": "Candidates",
+                "items": [
+                    _admin_link(
+                        "applications.application",
+                        "assignment_ind",
+                        "Applications",
+                        badge="requester.admin.pending_applications_badge",
+                        badge_variant="warning",
+                    ),
+                    _admin_link("candidates.candidate", "person_search", "Candidates"),
+                    _admin_link("candidates.savedposting", "bookmark", "Saved jobs"),
+                    _admin_link("candidates.jobalert", "notifications", "Job alerts"),
+                ],
+            },
+            {
+                "title": "Insights",
+                "items": [
+                    _admin_link(
+                        "candidates.jobsearch", "manage_search", "Job searches"
+                    ),
+                ],
+            },
+            {
+                "title": "Accounts",
+                "items": [
+                    _admin_link("auth.user", "people", "Users"),
+                    _admin_link("auth.group", "groups", "Groups"),
+                ],
+            },
+        ],
+    },
+}
 
 TEMPLATES = [
     {

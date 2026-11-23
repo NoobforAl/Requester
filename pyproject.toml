@@ -33,6 +33,7 @@ dependencies = [
     "opentelemetry-instrumentation-redis==0.66b2",
     "opentelemetry-instrumentation-httpx==0.66b2",
     "opentelemetry-instrumentation-celery==0.66b2",
+    "django-unfold>=0.110.1",
 ]
 
 [dependency-groups]

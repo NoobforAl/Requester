@@ -4,6 +4,7 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 from django.views.i18n import set_language
 
+import requester.admin  # noqa: F401 - admin theme callbacks, auth models in Unfold
 from observability.metrics import metrics_view
 from requester.views import home
 
