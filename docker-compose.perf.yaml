@@ -1,0 +1,101 @@
+# Performance overlay: a small, production-like box for benchmarks and load tests.
+#
+#   make perf-up        start the capped stack (gunicorn, DEBUG off, demo + Faker data)
+#   make perf-load      run a headless Locust load test against it (CSV in loadtests/results/)
+#   make perf-bench     run the pytest benchmarks inside the capped web container
+#   make perf-down      stop it
+#
+# Every service gets a CPU and memory cap, so numbers are repeatable on any laptop and
+# problems that only show up on a small server (too many workers, OOM kills) show up
+# here too. Totals: about 4.5 CPUs and 4.5 GB, plus 1 CPU / 512 MB for Locust.
+# Uses the dev image and demo accounts: never use this file for a real deployment.
+
+x-perf-env: &perf-env
+    # Production code paths (gunicorn, manifest static files, no debug tooling) ...
+    DJANGO_DEBUG: "false"
+    SECRET_KEY: "perf-only-not-secret"
+    ALLOWED_HOSTS: "localhost,127.0.0.1,web"
+    # ... but plain HTTP: secure cookies would never be sent back, so logins would fail.
+    SECURE_COOKIES: "false"
+    APP_ENVIRONMENT: "perf"
+    DJANGO_SUPERUSER_USERNAME: "admin"
+    DJANGO_SUPERUSER_PASSWORD: "admin"
+
+x-dev-build: &dev-build
+    args:
+        UV_SYNC_ARGS: "--dev" # Faker (seed data) and pytest-benchmark
+
+services:
+    web:
+        build: *dev-build
+        command: ["make", "RUN=", "deploy-perf"]
+        environment: *perf-env
+        ports: !override
+            - "${PERF_WEB_PORT:-8001}:8000" # 8000 is often taken on dev machines
+        deploy:
+            resources:
+                limits: { cpus: "2", memory: 1G }
+    tasks:
+        build: *dev-build
+        environment: *perf-env
+        deploy:
+            resources:
+                limits: { cpus: "0.5", memory: 512M }
+    scheduler:
+        build: *dev-build
+        environment: *perf-env
+        deploy:
+            resources:
+                limits: { cpus: "0.25", memory: 256M }
+    db:
+        deploy:
+            resources:
+                limits: { cpus: "1", memory: 768M }
+    cache:
+        deploy:
+            resources:
+                limits: { cpus: "0.25", memory: 128M }
+    search:
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms768m -Xmx768m # 512m trips the circuit breaker on the bulk reindex
+        deploy:
+            resources:
+                limits: { cpus: "0.5", memory: 1536M }
+    mailhog:
+        deploy:
+            resources:
+                limits: { cpus: "0.1", memory: 64M }
+
+    # One-shot load test (profile "perf-load"): `make perf-load`.
+    loadtest:
+        profiles: ["perf-load"]
+        image: locustio/locust:2.47.0
+        container_name: requester_loadtest
+        command:
+            - "-f"
+            - "/mnt/loadtests/locustfile.py"
+            - "--host=http://web:8000"
+            - "--headless"
+            - "--users=${PERF_USERS:-150}"
+            - "--spawn-rate=${PERF_SPAWN_RATE:-10}"
+            - "--run-time=${PERF_RUN_TIME:-3m}"
+            - "--csv=/mnt/results/perf"
+            - "--csv-full-history"
+            - "--only-summary"
+        environment:
+            LOADTEST_ALLOW_HOST: "web"
+            LOADTEST_CANDIDATE_USERNAME: "worker1"
+            LOADTEST_CANDIDATE_PASSWORD: "password123" # public dev-only demo password
+            LOADTEST_EMPLOYER_USERNAME: "alice"
+            LOADTEST_EMPLOYER_PASSWORD: "password123"
+        volumes:
+            - ./loadtests:/mnt/loadtests:ro
+            - ./loadtests/results:/mnt/results
+        depends_on:
+            web:
+                condition: service_healthy
+        deploy:
+            resources:
+                limits: { cpus: "1", memory: 512M }

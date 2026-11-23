@@ -61,6 +61,20 @@ uv run --group loadtest locust -f loadtests/locustfile.py --host http://127.0.0.
 
 This writes `loadtests/results/local_stats.csv`, `_stats_history.csv`, `_failures.csv` and `_exceptions.csv`. The exit code is non-zero when any request failed.
 
+### High load in Docker, on a capped "small server"
+
+`docker-compose.perf.yaml` runs the production code path (gunicorn, `DEBUG` off) with the demo and Faker data, and gives every service a CPU and memory cap (web: 2 CPUs / 1 GB, MariaDB: 1 CPU / 768 MB, Elasticsearch: 0.5 CPU / 1.5 GB, ...). Results then compare across machines, and problems that only show on a small server (too many workers, OOM kills) show up locally.
+
+```bash
+make perf-up                                  # build + start, waits until healthy (web on :8001)
+make perf-load                                # 150 users for 3 min -> loadtests/results/perf_*.csv
+make perf-load PERF_USERS=300 PERF_RUN_TIME=5m
+make perf-bench                               # pytest benchmarks inside the capped web container
+make perf-down
+```
+
+Watch the caps while it runs with `docker stats`. On this stack the web container is CPU-bound: MariaDB, Redis and Elasticsearch stay mostly idle, so CPU time per request in Django (mostly template and form rendering) is what limits throughput. The first ~30 s are slow by design: every simulated user signs in, and one PBKDF2 password check costs about 265 ms of CPU.
+
 ### Staging, with the web UI on port 8089
 
 ```bash

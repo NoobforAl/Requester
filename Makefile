@@ -29,12 +29,17 @@ COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitorin
 # monitoring/dev-defaults.env gives dev-only METRICS_TOKEN / GRAFANA_ADMIN_PASSWORD;
 # .env (if present) is loaded after it and wins.
 COMPOSE_ALL := docker compose --env-file monitoring/dev-defaults.env $(if $(wildcard .env),--env-file .env) 	-f docker-compose.yaml -f docker-compose.dev.yaml -f docker-compose.monitoring.yaml --profile loadgen
+# Production-like stack with a CPU/memory cap on every service (benchmarks, load tests).
+COMPOSE_PERF := docker compose -f docker-compose.yaml -f docker-compose.perf.yaml
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
         format lint typecheck test bench bench-check loadtest audit fix \
         clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down docker-bench docker-bench-check docker-pull dev-all dev-all-down \
-        deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \n        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \n        i18n i18n-compile i18n-check diagrams
+        perf-up perf-down perf-load perf-bench deploy-perf \
+        deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \
+        compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \
+        i18n i18n-compile i18n-check diagrams
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  make %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -151,6 +156,20 @@ dev-all: ## Dev stack + Faker data + monitoring + live load (Grafana :3000 admin
 dev-all-down: ## Stop the dev-all stack
 	$(COMPOSE_ALL) down
 
+perf-up: ## Start the capped, production-like stack (gunicorn, DEBUG off, demo data) on :8001
+	mkdir -p es_data mariadb_data redis_data
+	$(COMPOSE_PERF) up -d --build --wait
+
+perf-load: ## Locust load test against perf-up (PERF_USERS=150 PERF_RUN_TIME=3m); CSV in loadtests/results/
+	mkdir -p loadtests/results
+	$(COMPOSE_PERF) --profile perf-load run --rm loadtest
+
+perf-bench: ## Run the benchmarks inside the capped web container; saved to ./.benchmarks
+	$(COMPOSE_PERF) run --rm --no-deps --build web make RUN= bench
+
+perf-down: ## Stop the perf stack
+	$(COMPOSE_PERF) --profile perf-load down
+
 monitoring-up: ## Start the stack with Prometheus, Grafana, Loki and exporters (needs METRICS_TOKEN, GRAFANA_ADMIN_PASSWORD)
 	mkdir -p es_data mariadb_data redis_data
 	$(COMPOSE_MON) up -d --build
@@ -169,7 +188,14 @@ deploy: migrate import_legacy_data compilemessages create_es_fields ensure_super
 	@# Prometheus multiprocess mode: start every run with an empty metrics directory
 	@# (emptied, not removed: in compose it is a tmpfs mount point).
 	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then mkdir -p "$$PROMETHEUS_MULTIPROC_DIR" && find "$$PROMETHEUS_MULTIPROC_DIR" -mindepth 1 -delete; fi
-	cd $(SRC) && $(RUN) gunicorn -w 4 --bind 0.0.0.0:8000 requester.wsgi:application
+	@# Workers, bind address and recycling live in src/gunicorn.conf.py.
+	cd $(SRC) && $(RUN) gunicorn requester.wsgi:application
+
+# deploy-perf: `deploy` (gunicorn, DEBUG off) on top of the demo and Faker data, which
+# can only be seeded with DEBUG on. Used by docker-compose.perf.yaml only.
+deploy-perf:
+	DJANGO_DEBUG=true $(MAKE) insert_mock_data insert_fake_data
+	$(MAKE) deploy
 
 # deploy-dev: Django dev server, mock data, and an admin from DJANGO_SUPERUSER_*.
 # Seed first, then rebuild the search index, so bulk-inserted rows are always indexed.
