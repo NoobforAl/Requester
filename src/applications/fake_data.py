@@ -28,13 +28,11 @@ from collections.abc import Callable, Iterator
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from django.db import models, transaction
 from django.utils import timezone
-from django_elasticsearch_dsl.registries import registry
 from faker import Faker
 
 from applications.models import Application, ApplicationEvent, resume_upload_to
@@ -900,35 +898,6 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
         result.created["job alerts"] = len(new_alerts)
         lap("saved postings and alerts")
     return result
-
-
-def index_in_search(result: SeedResult, batch_size: int = BATCH_SIZE) -> int:
-    """Index the new postings and applications in Elasticsearch.
-
-    ``bulk_create`` sends no signals, so the autosync signal processor never sees
-    these rows. Does nothing unless ``ELASTICSEARCH_DSL_AUTOSYNC`` is on. Returns the
-    number of documents sent.
-    """
-    if not getattr(settings, "ELASTICSEARCH_DSL_AUTOSYNC", False):
-        return 0
-    querysets = {
-        JobPosting: (
-            JobPosting.objects.select_related("employer").prefetch_related("skills"),
-            result.posting_ids,
-        ),
-        Application: (
-            Application.objects.select_related("candidate", "posting__employer"),
-            result.application_ids,
-        ),
-    }
-    sent = 0
-    for model, (queryset, ids) in querysets.items():
-        for document in registry.get_documents([model]):
-            for start in range(0, len(ids), batch_size):
-                chunk = list(queryset.filter(pk__in=ids[start : start + batch_size]))
-                document().update(chunk)
-                sent += len(chunk)
-    return sent
 
 
 def wipe_fake_users(prefix: str = FAKE_PREFIX) -> int:

@@ -77,7 +77,8 @@ exists, which wins), and the files `docker-compose.yaml`,
 `loadgen` profile. That starts:
 
 * the app: `web` (Django dev server, `DEBUG` on, via `make deploy-dev`), `tasks`
-  (Celery worker), `scheduler` (Celery beat), MariaDB, Redis, Elasticsearch, MailHog;
+  (Celery worker), `scheduler` (Celery beat), MariaDB, Redis, MailHog
+  (Elasticsearch is in the separate analytics overlay, docs/analytics.md);
 * the monitoring stack: Prometheus, Grafana, Loki, Vector, OTel Collector,
   Jaeger, mysqld-, redis- and celery-exporter;
 * `loadgen`: a headless Locust (`locustio/locust:2.47.0`, `LOADGEN_USERS`
@@ -85,8 +86,7 @@ exists, which wins), and the files `docker-compose.yaml`,
   flowing so the dashboards have data.
 
 On the first start `deploy-dev` migrates, runs `seed_demo_data` (fixed demo
-accounts) and `seed_fake_data` (Faker volume data), rebuilds the search index
-and creates the admin. That can take several minutes; the `web` healthcheck has
+accounts) and `seed_fake_data` (Faker volume data) and creates the admin. That can take several minutes; the `web` healthcheck has
 a 10 minute start period.
 
 | What | URL | Login |

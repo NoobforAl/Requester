@@ -97,19 +97,9 @@ else:
         }
     }
 
-# Elasticsearch: only synced when a URL is configured.
-ELASTICSEARCH_URL = os.environ.get("ELASTICSEARCH_URL", "")
-_es_default: dict[str, object] = {"hosts": ELASTICSEARCH_URL}
-if os.environ.get("ELASTICSEARCH_USERNAME"):
-    _es_default["basic_auth"] = (
-        os.environ["ELASTICSEARCH_USERNAME"],
-        os.environ.get("ELASTICSEARCH_PASSWORD", ""),
-    )
-ELASTICSEARCH_DSL = {"default": _es_default}
-ELASTICSEARCH_DSL_AUTOSYNC = bool(ELASTICSEARCH_URL)
-ELASTICSEARCH_DSL_SIGNAL_PROCESSOR = (
-    "django_elasticsearch_dsl.signals.RealTimeSignalProcessor"
-)
+# Analytics: Logstash copies the data to Elasticsearch, not Django (docs/analytics.md).
+# Delete tombstones (analytics.DeletedRow) are kept this long, then removed.
+DELETED_ROW_RETENTION_DAYS = int(os.environ.get("DELETED_ROW_RETENTION_DAYS") or 7)
 
 # Cache: Redis when configured, local memory otherwise.
 REDIS_URL = os.environ.get("REDIS_URL", "")
@@ -175,6 +165,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "candidates.tasks.purge_old_searches",
         "schedule": crontab(hour=2, minute=15),
     },
+    "purge-old-deleted-rows": {
+        "task": "analytics.tasks.purge_deleted_rows",
+        "schedule": crontab(hour=2, minute=30),
+    },
 }
 
 # AI resume summaries through OpenRouter: on when OPENROUTER_API_KEY is set, skipped
@@ -204,8 +198,8 @@ INSTALLED_APPS = [
     "employers",
     "candidates",
     "applications",
+    "analytics",
     "django_extensions",
-    "django_elasticsearch_dsl",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -286,6 +280,7 @@ if SILK_ENABLED:
     SILKY_AUTHORISATION = True  # staff only
 
 ROOT_URLCONF = "requester.urls"
+
 
 TEMPLATES = [
     {

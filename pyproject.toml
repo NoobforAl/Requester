@@ -11,7 +11,7 @@ requires-python = "==3.12.*"
 dependencies = [
     "django>=6.1,<6.2",
     "django-extensions>=4.1",
-    "django-elasticsearch-dsl>=9.0,<10",  # client 9 matches the Elasticsearch 9.x server in compose
+    # client 9 matches the Elasticsearch 9.x server in compose
     "celery>=5.5",
     "redis>=6.0",
     "httpx>=0.27",

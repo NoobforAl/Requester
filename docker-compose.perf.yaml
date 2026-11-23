@@ -7,7 +7,7 @@
 #
 # Every service gets a CPU and memory cap, so numbers are repeatable on any laptop and
 # problems that only show up on a small server (too many workers, OOM kills) show up
-# here too. Totals: about 4.5 CPUs and 4.5 GB, plus 1 CPU / 512 MB for Locust.
+# here too. Totals: about 4 CPUs and 3 GB, plus 1 CPU / 512 MB for Locust.
 # Uses the dev image and demo accounts: never use this file for a real deployment.
 
 x-perf-env: &perf-env
@@ -61,14 +61,6 @@ services:
         deploy:
             resources:
                 limits: { cpus: "0.25", memory: 128M }
-    search:
-        environment:
-            - discovery.type=single-node
-            - xpack.security.enabled=false
-            - ES_JAVA_OPTS=-Xms768m -Xmx768m # 512m trips the circuit breaker on the bulk reindex
-        deploy:
-            resources:
-                limits: { cpus: "0.5", memory: 1536M }
     mailhog:
         deploy:
             resources:

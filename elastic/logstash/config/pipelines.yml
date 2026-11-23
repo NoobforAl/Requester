@@ -1,0 +1,23 @@
+# One pipeline per index (pipeline/*.conf), each with one worker: the work is
+# a few SQL queries a minute.
+- pipeline.id: postings
+  path.config: "/usr/share/logstash/pipeline/postings.conf"
+  pipeline.workers: 1
+- pipeline.id: applications
+  path.config: "/usr/share/logstash/pipeline/applications.conf"
+  pipeline.workers: 1
+- pipeline.id: application-events
+  path.config: "/usr/share/logstash/pipeline/application_events.conf"
+  pipeline.workers: 1
+- pipeline.id: searches
+  path.config: "/usr/share/logstash/pipeline/searches.conf"
+  pipeline.workers: 1
+- pipeline.id: candidates
+  path.config: "/usr/share/logstash/pipeline/candidates.conf"
+  pipeline.workers: 1
+- pipeline.id: daily-stats
+  path.config: "/usr/share/logstash/pipeline/daily_stats.conf"
+  pipeline.workers: 1
+- pipeline.id: deletions
+  path.config: "/usr/share/logstash/pipeline/deletions.conf"
+  pipeline.workers: 1

@@ -31,6 +31,12 @@ COMPOSE_MON := docker compose -f docker-compose.yaml -f docker-compose.monitorin
 COMPOSE_ALL := docker compose --env-file monitoring/dev-defaults.env $(if $(wildcard .env),--env-file .env) 	-f docker-compose.yaml -f docker-compose.dev.yaml -f docker-compose.monitoring.yaml --profile loadgen
 # Production-like stack with a CPU/memory cap on every service (benchmarks, load tests).
 COMPOSE_PERF := docker compose -f docker-compose.yaml -f docker-compose.perf.yaml
+# Analytics (Elasticsearch + Logstash + Kibana) on top of a running stack. ANALYTICS_BASE
+# must be the files that stack was started with, or compose recreates its containers:
+# the dev stack by default; ANALYTICS_BASE="-f docker-compose.yaml" on a server,
+# ANALYTICS_BASE="-f docker-compose.yaml -f docker-compose.perf.yaml" for perf-up.
+ANALYTICS_BASE    ?= -f docker-compose.yaml -f docker-compose.dev.yaml
+COMPOSE_ANALYTICS := docker compose $(ANALYTICS_BASE) -f docker-compose.analytics.yaml
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
@@ -175,6 +181,22 @@ perf-bench: ## Run the benchmarks inside the capped web container; saved to ./.b
 perf-down: ## Stop the perf stack
 	$(COMPOSE_PERF) --profile perf-load down
 
+analytics-up: ## Start Elasticsearch + Logstash + Kibana on the running stack (Kibana http://localhost:5601)
+	mkdir -p es_data
+	$(COMPOSE_ANALYTICS) up -d --build --wait search logstash kibana
+	$(COMPOSE_ANALYTICS) up analytics-kibana-setup
+	@echo "Kibana http://localhost:5601 -> Dashboards. Logstash copies new data every minute."
+
+analytics-down: ## Stop the analytics containers (the main stack keeps running)
+	$(COMPOSE_ANALYTICS) rm -fs search logstash kibana analytics-db-user analytics-kibana-setup
+
+analytics-resync: ## Copy every row again (forget where each Logstash pipeline stopped)
+	docker exec requester_logstash sh -c 'rm -f /usr/share/logstash/data/jdbc_last_run_*'
+	docker restart requester_logstash
+
+analytics-status: ## Documents per analytics index
+	@docker exec requester_search curl -fsS 'http://localhost:9200/_cat/indices/requester-*?v&s=index&h=index,docs.count,store.size'
+
 monitoring-up: ## Start the stack with Prometheus, Grafana, Loki and exporters (needs METRICS_TOKEN, GRAFANA_ADMIN_PASSWORD)
 	mkdir -p es_data mariadb_data redis_data
 	$(COMPOSE_MON) up -d --build
@@ -188,7 +210,7 @@ test-mariadb: ## Run the tests against a real MariaDB (starts and stops the comp
 
 # These run INSIDE the containers (see docker-compose.yaml / docker-compose.dev.yaml).
 # deploy: production-like (gunicorn, SECRET_KEY and ALLOWED_HOSTS required, no demo data).
-deploy: migrate import_legacy_data compilemessages create_es_fields ensure_superuser collectstatic
+deploy: migrate import_legacy_data compilemessages ensure_superuser collectstatic
 	@echo "Starting gunicorn"
 	@# Prometheus multiprocess mode: start every run with an empty metrics directory
 	@# (emptied, not removed: in compose it is a tmpfs mount point).
@@ -203,21 +225,17 @@ deploy-perf:
 	$(MAKE) deploy
 
 # deploy-dev: Django dev server, mock data, and an admin from DJANGO_SUPERUSER_*.
-# Seed first, then rebuild the search index, so bulk-inserted rows are always indexed.
-deploy-dev: migrate import_legacy_data compilemessages insert_mock_data insert_fake_data create_es_fields ensure_superuser
+deploy-dev: migrate import_legacy_data compilemessages insert_mock_data insert_fake_data ensure_superuser
 	@echo "Starting the dev server"
 	if [ -n "$$PROMETHEUS_MULTIPROC_DIR" ]; then mkdir -p "$$PROMETHEUS_MULTIPROC_DIR" && find "$$PROMETHEUS_MULTIPROC_DIR" -mindepth 1 -delete; fi
 	$(MANAGE) runserver 0.0.0.0:8000
 
-setup_celery: migrate compilemessages create_es_fields
+setup_celery: migrate compilemessages
 	cd $(SRC) && $(CELERY) -A requester worker -E --loglevel=info
 
 # Celery beat: sends the daily and weekly job-alert digests (CELERY_BEAT_SCHEDULE).
 setup_scheduler: migrate
 	cd $(SRC) && $(CELERY) -A requester beat --loglevel=info --schedule /tmp/celerybeat-schedule
-
-create_es_fields: migrate
-	$(MANAGE) search_index --rebuild -f
 
 collectstatic:
 	$(MANAGE) collectstatic --noinput

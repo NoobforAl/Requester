@@ -1,0 +1,102 @@
+{
+  "index_patterns": [
+    "requester-postings"
+  ],
+  "priority": 200,
+  "_meta": {
+    "description": "Requester analytics copy, written by Logstash (elastic/logstash). See docs/analytics.md."
+  },
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+        "title": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "description": {
+          "type": "text"
+        },
+        "location": {
+          "type": "keyword"
+        },
+        "country": {
+          "type": "keyword"
+        },
+        "work_mode": {
+          "type": "keyword"
+        },
+        "employment_type": {
+          "type": "keyword"
+        },
+        "seniority": {
+          "type": "keyword"
+        },
+        "salary_min": {
+          "type": "long"
+        },
+        "salary_max": {
+          "type": "long"
+        },
+        "salary_currency": {
+          "type": "keyword"
+        },
+        "deadline": {
+          "type": "date"
+        },
+        "is_active": {
+          "type": "boolean"
+        },
+        "is_open": {
+          "type": "boolean"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "changed_at": {
+          "type": "date"
+        },
+        "employer_id": {
+          "type": "long"
+        },
+        "employer_name": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "employer_industry": {
+          "type": "keyword"
+        },
+        "employer_size": {
+          "type": "keyword"
+        },
+        "employer_city": {
+          "type": "keyword"
+        },
+        "skills": {
+          "type": "keyword"
+        },
+        "applications": {
+          "type": "integer"
+        },
+        "saves": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

@@ -7,7 +7,6 @@ import pytest
 from django.contrib.auth.models import User
 from django.core.management import CommandError, call_command
 from django.test import override_settings
-from django_elasticsearch_dsl.registries import registry
 
 from applications.fake_data import FakeDataGenerator
 from applications.models import Application, ApplicationEvent
@@ -157,20 +156,3 @@ def test_generated_rows_pass_model_validation():
     for app in Application.objects.all()[:5]:
         with app.resume.open("rb") as resume:
             assert resume.read().startswith(b"%PDF")
-
-
-@pytest.mark.django_db
-def test_indexes_new_rows_when_search_autosync_is_on(monkeypatch):
-    sent = []
-
-    class FakeDocument:
-        def update(self, objects):
-            sent.extend(objects)
-
-    monkeypatch.setattr(registry, "get_documents", lambda models: [FakeDocument])
-    with override_settings(ELASTICSEARCH_DSL_AUTOSYNC=True):
-        output = seed()
-
-    # Called once per model (postings, then applications).
-    assert len(sent) == SMALL["postings"] + SMALL["applications"]
-    assert "20 search documents indexed" in output

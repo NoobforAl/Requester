@@ -1,0 +1,52 @@
+{
+  "index_patterns": [
+    "requester-application-events"
+  ],
+  "priority": 200,
+  "_meta": {
+    "description": "Requester analytics copy, written by Logstash (elastic/logstash). See docs/analytics.md."
+  },
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+        "application_id": {
+          "type": "long"
+        },
+        "posting_id": {
+          "type": "long"
+        },
+        "employer_name": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "from_status": {
+          "type": "keyword"
+        },
+        "to_status": {
+          "type": "keyword"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "hours_since_applied": {
+          "type": "float"
+        },
+        "actor": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

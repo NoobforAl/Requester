@@ -8,7 +8,6 @@ os.environ["DJANGO_DEBUG"] = "true"
 for _name in (
     "DB_NAME",
     "REDIS_URL",
-    "ELASTICSEARCH_URL",
     "CELERY_BROKER_URL",
     "OPENROUTER_API_KEY",
     # Observability and dev tools stay off in tests whatever the shell has set.

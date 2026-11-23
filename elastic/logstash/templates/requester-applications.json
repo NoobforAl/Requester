@@ -1,0 +1,81 @@
+{
+  "index_patterns": [
+    "requester-applications"
+  ],
+  "priority": 200,
+  "_meta": {
+    "description": "Requester analytics copy, written by Logstash (elastic/logstash). See docs/analytics.md."
+  },
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "id": {
+          "type": "long"
+        },
+        "status": {
+          "type": "keyword"
+        },
+        "applied_at": {
+          "type": "date"
+        },
+        "changed_at": {
+          "type": "date"
+        },
+        "has_ai_summary": {
+          "type": "boolean"
+        },
+        "posting_id": {
+          "type": "long"
+        },
+        "posting_title": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "work_mode": {
+          "type": "keyword"
+        },
+        "employment_type": {
+          "type": "keyword"
+        },
+        "seniority": {
+          "type": "keyword"
+        },
+        "posting_city": {
+          "type": "keyword"
+        },
+        "employer_id": {
+          "type": "long"
+        },
+        "employer_name": {
+          "type": "keyword",
+          "fields": {
+            "text": {
+              "type": "text"
+            }
+          }
+        },
+        "candidate_city": {
+          "type": "keyword"
+        },
+        "candidate_experience_years": {
+          "type": "integer"
+        },
+        "candidate_education": {
+          "type": "keyword"
+        },
+        "status_changes": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

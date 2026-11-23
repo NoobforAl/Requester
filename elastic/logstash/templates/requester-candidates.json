@@ -1,0 +1,47 @@
+{
+  "index_patterns": [
+    "requester-candidates"
+  ],
+  "priority": 200,
+  "_meta": {
+    "description": "Requester analytics copy, written by Logstash (elastic/logstash). See docs/analytics.md."
+  },
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "city": {
+          "type": "keyword"
+        },
+        "experience_years": {
+          "type": "integer"
+        },
+        "education_level": {
+          "type": "keyword"
+        },
+        "preferred_work_mode": {
+          "type": "keyword"
+        },
+        "is_open_to_work": {
+          "type": "boolean"
+        },
+        "language": {
+          "type": "keyword"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "changed_at": {
+          "type": "date"
+        },
+        "skills": {
+          "type": "keyword"
+        }
+      }
+    }
+  }
+}

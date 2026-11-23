@@ -1,0 +1,50 @@
+{
+  "index_patterns": [
+    "requester-daily-stats"
+  ],
+  "priority": 200,
+  "_meta": {
+    "description": "Requester analytics copy, written by Logstash (elastic/logstash). See docs/analytics.md."
+  },
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "day_id": {
+          "type": "keyword"
+        },
+        "day": {
+          "type": "date"
+        },
+        "measured_at": {
+          "type": "date"
+        },
+        "postings": {
+          "type": "integer"
+        },
+        "open_postings": {
+          "type": "integer"
+        },
+        "hiring_employers": {
+          "type": "integer"
+        },
+        "employers": {
+          "type": "integer"
+        },
+        "candidates": {
+          "type": "integer"
+        },
+        "open_to_work_candidates": {
+          "type": "integer"
+        },
+        "applications_in_progress": {
+          "type": "integer"
+        }
+      }
+    }
+  }
+}

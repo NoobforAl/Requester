@@ -1,8 +1,10 @@
 # Service names say what each container is for:
 #   web        Django (gunicorn)             tasks      Celery worker (AI summaries, reports, e-mails)
 #   scheduler  Celery beat (job alerts)      db         MariaDB
-#   cache      Redis (cache + Celery broker) search     Elasticsearch
-#   mailhog    catches outgoing mail
+#   cache      Redis (cache + Celery broker) mailhog    catches outgoing mail
+#
+# Elasticsearch, Logstash and Kibana (analytics) are in docker-compose.analytics.yaml:
+# the app itself does not need them (`make analytics-up`, docs/analytics.md).
 #
 # Secrets and per-machine settings come from a `.env` file next to this one
 # (see .env.example); nothing secret is written in this file.
@@ -23,9 +25,6 @@ x-app-env: &app-env
     EMAIL_HOST_USER: ""
     EMAIL_HOST_PASSWORD: ""
     EMAIL_USE_TLS: False
-    ELASTICSEARCH_URL: "http://search:9200"
-    ELASTICSEARCH_USERNAME: ""
-    ELASTICSEARCH_PASSWORD: ""
     CELERY_BROKER_URL: "redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
     CELERY_RESULT_BACKEND: "redis://:${REDIS_PASSWORD:-requester-dev-redis}@cache:6379/1"
     CELERY_ACCEPT_CONTENT: '["json"]'
@@ -59,8 +58,6 @@ x-app-deps: &app-deps
         condition: service_healthy
     cache:
         condition: service_healthy
-    search:
-        condition: service_healthy
     mailhog:
         condition: service_healthy
 
@@ -75,7 +72,7 @@ services:
         ports:
             - "${WEB_PORT:-8000}:8000" # host port; change WEB_PORT if 8000 is taken
         # Per service, not in the image: tasks and scheduler share the image but serve no HTTP.
-        # start_period covers the first start (migrations, seeding, search index).
+        # start_period covers the first start (migrations, seeding).
         healthcheck:
             test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8000/ || exit 1"]
             interval: 15s
@@ -114,24 +111,6 @@ services:
                 condition: service_healthy
             db:
                 condition: service_healthy
-
-    search:
-        image: elasticsearch:9.5.1
-        container_name: requester_search
-        environment:
-            - discovery.type=single-node
-            - xpack.security.enabled=false
-            - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
-        ports:
-            - "9200:9200"
-            - "9300:9300"
-        volumes:
-            - ./es_data:/usr/share/elasticsearch/data
-        healthcheck:
-            test: ["CMD-SHELL", "curl -f http://localhost:9200 || exit 1"]
-            interval: 1m
-            timeout: 10s
-            retries: 3
 
     mailhog:
         image: mailhog/mailhog:v1.0.1

@@ -1,0 +1,7 @@
+api.http.host: "0.0.0.0"
+# Fields stay as the queries name them (no ECS renaming, no data streams).
+pipeline.ecs_compatibility: disabled
+# Events need no order across a pipeline's one worker (silences a start-up warning).
+pipeline.ordered: false
+# Logstash's own monitoring would need a user in Elasticsearch: not used.
+xpack.monitoring.enabled: false

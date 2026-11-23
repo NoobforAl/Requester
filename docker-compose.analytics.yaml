@@ -1,0 +1,129 @@
+# Analytics overlay: a copy of the business data in Elasticsearch for the data
+# team, kept up to date by Logstash and explored in Kibana. Use it with the base file:
+#
+#   make analytics-up      (docker compose -f docker-compose.yaml -f docker-compose.analytics.yaml up -d)
+#
+#   Kibana          http://localhost:5601  ->  Dashboards -> "Requester: jobs and searches"
+#   Elasticsearch   http://localhost:9200
+#
+# Django never talks to Elasticsearch: Logstash reads MariaDB every minute with a
+# read-only user that cannot see names, e-mails, resumes or other personal data
+# (elastic/db/create_analytics_user.sh). Indices, fields and examples: docs/analytics.md.
+# Security is off in Elasticsearch and Kibana, so both are bound to 127.0.0.1 only.
+
+x-analytics-db: &analytics-db
+    DB_HOST: "db"
+    DB_PORT: 3306
+    DB_NAME: "${DB_NAME:-requester}"
+    ANALYTICS_DB_USER: "${ANALYTICS_DB_USER:-analytics}"
+    ANALYTICS_DB_PASSWORD: "${ANALYTICS_DB_PASSWORD:-requester-dev-analytics}"
+
+services:
+    search:
+        image: elasticsearch:9.5.3
+        container_name: requester_search
+        restart: unless-stopped
+        environment:
+            - discovery.type=single-node
+            - xpack.security.enabled=false
+            - ES_JAVA_OPTS=-Xms1024m -Xmx1024m
+        ports:
+            - "127.0.0.1:9200:9200"
+        volumes:
+            - ./es_data:/usr/share/elasticsearch/data
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS 'http://localhost:9200/_cluster/health?wait_for_status=yellow&timeout=5s' || exit 1"]
+            interval: 15s
+            timeout: 10s
+            retries: 10
+            start_period: 1m
+        deploy:
+            resources:
+                limits: { cpus: "1", memory: 2G }
+
+    # One-shot: (re)creates the read-only MariaDB user, after Django's migrations
+    # created the tables (web is healthy).
+    analytics-db-user:
+        image: mariadb:11.4
+        container_name: requester_analytics_db_user
+        restart: "no"
+        entrypoint: ["sh", "/setup/create_analytics_user.sh"]
+        volumes:
+            - ./elastic/db:/setup:ro
+        environment:
+            <<: *analytics-db
+            MARIADB_ROOT_PASSWORD: "${DB_ROOT_PASSWORD:-requester-dev-root}"
+        depends_on:
+            db:
+                condition: service_healthy
+            web:
+                condition: service_healthy
+
+    logstash:
+        build: ./elastic/logstash
+        image: requester-logstash:9.5.3
+        container_name: requester_logstash
+        restart: unless-stopped
+        environment:
+            <<: *analytics-db
+            ELASTICSEARCH_URL: "http://search:9200"
+            LS_JAVA_OPTS: "-Xms256m -Xmx256m"
+        volumes:
+            # Where each pipeline stopped (jdbc_last_run_*): survives restarts.
+            - logstash_data:/usr/share/logstash/data
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS http://localhost:9600/_node/pipelines >/dev/null || exit 1"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
+            start_period: 2m
+        depends_on:
+            search:
+                condition: service_healthy
+            analytics-db-user:
+                condition: service_completed_successfully
+        deploy:
+            resources:
+                limits: { cpus: "0.5", memory: 768M }
+
+    kibana:
+        image: kibana:9.5.3
+        container_name: requester_kibana
+        restart: unless-stopped
+        environment:
+            ELASTICSEARCH_HOSTS: '["http://search:9200"]'
+            SERVER_PUBLICBASEURL: "http://localhost:5601"
+            TELEMETRY_OPTIN: "false"
+            TELEMETRY_ALLOWCHANGINGOPTINSTATUS: "false" # no "help us improve" banner
+            # Security is off on purpose (local, 127.0.0.1 only): no banner about it.
+            SECURITY_SHOWINSECURECLUSTERWARNING: "false"
+            NODE_OPTIONS: "--max-old-space-size=768"
+        ports:
+            - "127.0.0.1:5601:5601"
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS http://localhost:5601/api/status | grep -q '\"level\":\"available\"' || exit 1"]
+            interval: 15s
+            timeout: 10s
+            retries: 20
+            start_period: 2m
+        depends_on:
+            search:
+                condition: service_healthy
+        deploy:
+            resources:
+                limits: { cpus: "1", memory: 1536M }
+
+    # One-shot: imports the data views and the dashboard (elastic/kibana).
+    analytics-kibana-setup:
+        image: curlimages/curl:8.23.0
+        container_name: requester_kibana_setup
+        restart: "no"
+        entrypoint: ["sh", "/setup/import.sh"]
+        volumes:
+            - ./elastic/kibana:/setup:ro
+        depends_on:
+            kibana:
+                condition: service_healthy
+
+volumes:
+    logstash_data:

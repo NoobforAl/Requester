@@ -20,8 +20,10 @@ dashboards and load tests to show something. Examples::
   Those two are also the busiest accounts, the best ones to look around with.
 * Big runs store one shared resume PDF instead of one per application
   (``--shared-resume`` / ``--no-shared-resume`` to choose).
-* Rows are bulk inserted (no signals), so the new postings and applications are
-  indexed in Elasticsearch here when autosync is on.
+* Rows are bulk inserted with backdated timestamps. Logstash's minute-by-minute
+  sync only picks up rows changed since its last run, so rows seeded into a
+  database it already copied show in Elasticsearch after the nightly full sync,
+  or at once with ``make analytics-resync`` (docs/analytics.md).
 """
 
 import argparse
@@ -105,19 +107,8 @@ class Command(BaseCommand):
             batch_size=options["batch_size"],
             log=self.stdout.write,
         )
-        indexed = 0
-        try:
-            indexed = fake_data.index_in_search(result, options["batch_size"])
-        except Exception as error:  # search is optional in dev
-            self.stderr.write(
-                f"Could not index the fake data in Elasticsearch ({error}); "
-                "run `manage.py search_index --rebuild -f`."
-            )
         created = ", ".join(f"{count} {name}" for name, count in result.created.items())
         elapsed = time.perf_counter() - started
         self.stdout.write(
-            self.style.SUCCESS(
-                f"Fake data ready in {elapsed:.2f}s: {created}"
-                + (f"; {indexed} search documents indexed." if indexed else ".")
-            )
+            self.style.SUCCESS(f"Fake data ready in {elapsed:.2f}s: {created}.")
         )

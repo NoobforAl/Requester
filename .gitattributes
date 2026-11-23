@@ -1,0 +1,6 @@
+# Files that run or are read inside Linux containers keep LF line endings, also on
+# Windows checkouts (core.autocrlf would turn them into CRLF and break `sh`).
+*.sh text eol=lf
+Makefile text eol=lf
+Dockerfile text eol=lf
+elastic/** text eol=lf
