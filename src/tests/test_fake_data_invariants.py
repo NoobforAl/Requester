@@ -135,8 +135,8 @@ def test_skew_popular_postings_dormant_employers_recent_activity(small_fake_site
     ]
     assert dormant
     for employer in dormant:
-        assert not employer.postings.open().exists()
-        assert not employer.postings.filter(is_active=True).exists()
+        assert not JobPosting.objects.open().filter(employer=employer).exists()
+        assert not JobPosting.objects.filter(employer=employer, is_active=True).exists()
 
     week = timezone.now() - timedelta(days=7)
     assert Application.objects.filter(applied_at__gte=week).exists()
@@ -151,8 +151,12 @@ def test_status_mix_covers_every_status(small_fake_site):
 
 def test_first_accounts_are_the_busiest(small_fake_site):
     first = small_fake_site.candidate
-    others = Candidate.objects.exclude(pk=first.pk).annotate(n=Count("applications"))
-    assert first.applications.count() >= max(c.n for c in others) * 0.5
+    others = (
+        Candidate.objects.exclude(pk=first.pk)
+        .annotate(n=Count("applications"))
+        .values_list("n", flat=True)
+    )
+    assert first.applications.count() >= max(others) * 0.5
     assert first.saved_postings.count() >= 10
     assert first.job_alerts.count() == 3
 

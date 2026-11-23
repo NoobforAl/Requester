@@ -58,6 +58,7 @@ dev = [
     "django-debug-toolbar==8.0.0",
     "django-silk==5.6.0",
     "faker==40.63.0",
+    "celery-types>=0.26.0",
 ]
 # Needs the native Graphviz headers (graphviz-dev); install with `uv sync --group diagram`.
 diagram = [
@@ -116,6 +117,17 @@ warn_unreachable = true
 no_implicit_optional = true
 ignore_missing_imports = true
 exclude = ["migrations/"]
+
+# Pylance / Pyright (the editor's checker). It has no Django plugin, so models
+# declare the attributes Django adds at runtime (id, *_id, reverse relations).
+[tool.pyright]
+pythonVersion = "3.12"
+venvPath = "."
+venv = ".venv"
+include = ["src"]
+extraPaths = ["src"]
+exclude = ["**/migrations", "**/__pycache__", "src/staticfiles"]
+typeCheckingMode = "standard"
 
 [tool.django-stubs]
 django_settings_module = "requester.settings_test"

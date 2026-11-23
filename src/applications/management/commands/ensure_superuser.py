@@ -27,5 +27,8 @@ class Command(BaseCommand):
             self.stdout.write(f"Admin user '{username}' already exists; left as is.")
             return
 
-        user_model.objects.create_superuser(username, email, password)
+        # get_user_model() is typed as a plain Model; ours is auth.User (UserManager).
+        user_model.objects.create_superuser(  # pyright: ignore
+            username, email, password
+        )
         self.stdout.write(self.style.SUCCESS(f"Admin user '{username}' created."))

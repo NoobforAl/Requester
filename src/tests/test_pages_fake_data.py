@@ -109,7 +109,9 @@ def test_candidate_settings(as_candidate, fake_site):
 def test_candidate_job_search_with_filters_and_sort(as_candidate, sort):
     # Filter on the most common work mode and skill so the result is not empty.
     posting = newest_open(work_mode=WorkMode.ONSITE, skills__isnull=False).first()
+    assert posting is not None
     skill = posting.skills.first()
+    assert skill is not None
     params = {
         "q": posting.title.split()[-1],
         "work_mode": WorkMode.ONSITE,
@@ -125,7 +127,9 @@ def test_candidate_job_search_with_filters_and_sort(as_candidate, sort):
     )
     assert expected.exists()
     if sort in ("", "newest"):
-        assert_shows(content, expected.first().title)
+        first = expected.first()
+        assert first is not None
+        assert_shows(content, first.title)
     else:  # another order: some match must be on the first page
         titles = [escape(p.title) for p in expected]
         assert any(title in content for title in titles)
@@ -135,7 +139,9 @@ def test_candidate_job_search_without_results(as_candidate):
     content = html(
         as_candidate.get(reverse("candidate_jobs"), {"q": "no-such-job-zzz"})
     )
-    assert escape(newest_open().first().title) not in content
+    newest = newest_open().first()
+    assert newest is not None
+    assert escape(newest.title) not in content
 
 
 # ------------------------------------------------------------------- employer

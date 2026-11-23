@@ -3,7 +3,7 @@ from datetime import timedelta
 import pytest
 from django.contrib.auth.models import User
 from django.core import mail
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.urls import reverse
 from django.utils import timezone
 
@@ -163,6 +163,22 @@ def test_save_and_unsave_a_posting(signed_in_candidate, posting, client):
     assert not SavedPosting.objects.exists()
 
 
+def test_saving_a_posting_deleted_meanwhile_is_not_a_server_error(
+    signed_in_candidate, posting, client, monkeypatch
+):
+    # The posting is deleted after the view looked it up, so the insert fails on
+    # the foreign key. SQLite defers FK checks to the commit (never reached in a
+    # test transaction), so the MariaDB error is simulated.
+    def deleted_meanwhile(**_kwargs):
+        raise IntegrityError("foreign key constraint fails")
+
+    monkeypatch.setattr(SavedPosting.objects, "get_or_create", deleted_meanwhile)
+    response = client.post(reverse("candidate_job_save", args=[posting.pk]))
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("candidate_jobs")
+
+
 def test_save_ignores_an_external_next_url(signed_in_candidate, posting, client):
     response = client.post(
         reverse("candidate_job_save", args=[posting.pk]),
@@ -296,7 +312,9 @@ def test_resume_file_is_removed_when_the_posting_is_deleted(
 def test_failed_insert_does_not_leave_a_resume_file(
     signed_in_candidate, posting, client, monkeypatch
 ):
-    storage = Application._meta.get_field("resume").storage
+    resume_field = Application._meta.get_field("resume")
+    assert isinstance(resume_field, models.FileField)
+    storage = resume_field.storage
     before = set(storage.listdir("resumes")[1]) if storage.exists("resumes") else set()
 
     def boom(self, *args, **kwargs):

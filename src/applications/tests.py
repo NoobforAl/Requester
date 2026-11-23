@@ -232,7 +232,9 @@ def test_summary_task_retries_rate_limits_but_drops_hard_failures(
     tasks.summarize_application.run(application.pk)  # logged, not raised
     application.refresh_from_db()
     assert application.ai_summary == ""
-    assert httpx.TransportError in tasks.summarize_application.autoretry_for
+    # Set by @shared_task(autoretry_for=...) at runtime; not in the Task stubs.
+    task = tasks.summarize_application
+    assert httpx.TransportError in task.autoretry_for  # type: ignore[attr-defined]
 
 
 # ------------------------------------------------------------------ app logic

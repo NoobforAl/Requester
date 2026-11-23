@@ -29,7 +29,7 @@ from .form import (
     UserLoginForm,
     UserRegistrationForm,
 )
-from .models import JobPosting
+from .models import Employer, JobPosting
 
 logger = structlog.get_logger(__name__)
 
@@ -44,9 +44,18 @@ def start_of_day(day: date) -> datetime:
 
 
 class EmployerAccessMixin(PortalAccessMixin):
-    """Employer-only views. Every query below is scoped to ``req.user.employer``."""
+    """Employer-only views. Every query below is scoped to ``employer_of(req)``."""
 
     portal = "employer"
+
+
+def employer_of(req: AuthenticatedRequest) -> Employer:
+    """The signed-in user's profile (``EmployerAccessMixin`` checked that it exists).
+
+    ``user.employer`` is the reverse one-to-one Django adds at runtime: mypy's
+    django-stubs plugin knows it, Pylance/Pyright do not.
+    """
+    return req.user.employer  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class Login(PortalLoginView):
@@ -67,7 +76,7 @@ class Register(PortalRegisterView):
 
 class Dashboard(EmployerAccessMixin, View):
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
-        employer = req.user.employer
+        employer = employer_of(req)
         language = translation.get_language()
         postings = JobPosting.objects.filter(employer=employer)
         applications = Application.objects.filter(posting__employer=employer)
@@ -98,7 +107,9 @@ class Dashboard(EmployerAccessMixin, View):
             "employers/dashboard.html",
             {
                 "num_of_postings": postings.count(),
-                "num_of_open_postings": postings.open().count(),
+                "num_of_open_postings": JobPosting.objects.open()
+                .filter(employer=employer)
+                .count(),
                 "num_of_applications": applications.count(),
                 "postings_current_month": postings.filter(
                     created_at__gte=current_start
@@ -119,11 +130,11 @@ class Dashboard(EmployerAccessMixin, View):
 
 class Settings(EmployerAccessMixin, View):
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
-        form = EmployerUpdateForm(instance=req.user.employer)
+        form = EmployerUpdateForm(instance=employer_of(req))
         return render(req, "employers/settings.html", {"form": form})
 
     def post(self, req: AuthenticatedRequest) -> HttpResponse:
-        form = EmployerUpdateForm(req.POST, instance=req.user.employer)
+        form = EmployerUpdateForm(req.POST, instance=employer_of(req))
         if form.is_valid():
             form.save()
             messages.success(req, _("Company details saved."))
@@ -147,7 +158,7 @@ class Postings(EmployerAccessMixin, View):
         )
 
     def post(self, req: AuthenticatedRequest) -> HttpResponse:
-        employer = req.user.employer
+        employer = employer_of(req)
         form = JobPostingForm(req.POST, employer=employer)
         if form.is_valid():
             posting = form.save(commit=False)
@@ -167,7 +178,7 @@ class Postings(EmployerAccessMixin, View):
     @staticmethod
     def _page(req: AuthenticatedRequest, number: int | str | None) -> Page:
         postings = (
-            JobPosting.objects.filter(employer=req.user.employer)
+            JobPosting.objects.filter(employer=employer_of(req))
             .annotate(application_count=Count("applications"))
             .order_by("-created_at", "-id")
         )
@@ -179,7 +190,7 @@ class OwnedPostingMixin(EmployerAccessMixin):
 
     @staticmethod
     def get_posting(req: AuthenticatedRequest, pk: int) -> JobPosting | None:
-        return JobPosting.objects.filter(pk=pk, employer=req.user.employer).first()
+        return JobPosting.objects.filter(pk=pk, employer=employer_of(req)).first()
 
 
 class PostingDetail(OwnedPostingMixin, View):
@@ -229,7 +240,7 @@ class PostingEdit(OwnedPostingMixin, View):
             messages.error(req, POSTING_NOT_FOUND)
             return redirect("employer_jobs")
 
-        form = JobPostingForm(req.POST, instance=posting, employer=req.user.employer)
+        form = JobPostingForm(req.POST, instance=posting, employer=employer_of(req))
         if form.is_valid():
             form.save()
             messages.success(req, _("Job posting updated."))
@@ -291,7 +302,7 @@ class OwnedApplicationMixin(EmployerAccessMixin):
     def get_application(self, req: AuthenticatedRequest, pk: int) -> Application | None:
         return (
             Application.objects.select_related("posting")
-            .filter(pk=pk, posting__employer=req.user.employer)
+            .filter(pk=pk, posting__employer=employer_of(req))
             .first()
         )
 

@@ -63,16 +63,16 @@ class UserRegistrationForm(UserCreationForm):
         ),
     )
 
-    class Meta:
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = [
+        fields = (
             "username",
             "first_name",
             "last_name",
             "email",
             "password1",
             "password2",
-        ]
+        )
 
     def clean_email(self):
         email = self.cleaned_data["email"]

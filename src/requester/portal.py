@@ -25,7 +25,8 @@ NO_ACCESS_MESSAGE = _(
 class AuthenticatedRequest(HttpRequest):
     """Request of a signed-in user; use it in views behind ``PortalAccessMixin``."""
 
-    user: User
+    # Narrower than HttpRequest.user on purpose (mypy allows it, Pyright flags it).
+    user: User  # pyright: ignore[reportIncompatibleVariableOverride]
 
 
 def has_profile(user, portal: str) -> bool:

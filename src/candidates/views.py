@@ -29,7 +29,7 @@ from .form import (
     UserRegistrationForm,
 )
 from .matching import candidate_skill_ids, match_score
-from .models import JobAlert, SavedPosting
+from .models import Candidate, JobAlert, SavedPosting
 
 logger = structlog.get_logger(__name__)
 
@@ -40,6 +40,15 @@ JOBS_PER_PAGE = 6
 
 class CandidateAccessMixin(PortalAccessMixin):
     portal = "candidate"
+
+
+def candidate_of(req: AuthenticatedRequest) -> Candidate:
+    """The signed-in user's profile (``CandidateAccessMixin`` checked that it exists).
+
+    ``user.candidate`` is the reverse one-to-one Django adds at runtime: mypy's
+    django-stubs plugin knows it, Pylance/Pyright do not.
+    """
+    return req.user.candidate  # pyright: ignore[reportAttributeAccessIssue]
 
 
 class Login(PortalLoginView):
@@ -60,7 +69,7 @@ class Register(PortalRegisterView):
 
 class Dashboard(CandidateAccessMixin, View):
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
-        candidate = req.user.candidate
+        candidate = candidate_of(req)
         counts = Application.objects.filter(candidate=candidate).aggregate(
             total=Count("id"),
             accepted=Count("id", filter=Q(status=Application.Status.ACCEPTED)),
@@ -112,7 +121,7 @@ class Postings(CandidateAccessMixin, View):
         if pk:
             return self._detail(req, pk)
 
-        candidate = req.user.candidate
+        candidate = candidate_of(req)
         form = JobFilterForm(req.GET or None)
         query = form.cleaned_data["q"] if form.is_valid() else ""
         sort = form.cleaned_data["sort"] if form.is_valid() else ""
@@ -145,7 +154,7 @@ class Postings(CandidateAccessMixin, View):
         )
 
     def _detail(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
-        candidate = req.user.candidate
+        candidate = candidate_of(req)
         posting = (
             JobPosting.objects.select_related("employer")
             .prefetch_related("skills")
@@ -194,7 +203,7 @@ class Postings(CandidateAccessMixin, View):
                     messages.error(req, str(error))
             return redirect(job_url, pk=posting.pk)
 
-        candidate = req.user.candidate
+        candidate = candidate_of(req)
         if Application.objects.filter(candidate=candidate, posting=posting).exists():
             messages.error(req, ALREADY_APPLIED)
             return redirect(job_url, pk=posting.pk)
@@ -237,9 +246,15 @@ class PostingSave(CandidateAccessMixin, View):
             messages.error(req, POSTING_NOT_FOUND)
             return redirect("candidate_jobs")
 
-        saved, created = SavedPosting.objects.get_or_create(
-            candidate=req.user.candidate, posting=posting
-        )
+        try:
+            saved, created = SavedPosting.objects.get_or_create(
+                candidate=candidate_of(req), posting=posting
+            )
+        except IntegrityError:
+            # The employer deleted the posting between the lookup above and this
+            # insert (the foreign key fails). Found by the load test: it was a 500.
+            messages.error(req, POSTING_NOT_FOUND)
+            return redirect("candidate_jobs")
         if created:
             messages.success(req, _("Job saved."))
         else:
@@ -255,7 +270,7 @@ class PostingSave(CandidateAccessMixin, View):
 class SavedPostings(CandidateAccessMixin, View):
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
         saved = (
-            SavedPosting.objects.filter(candidate=req.user.candidate)
+            SavedPosting.objects.filter(candidate=candidate_of(req))
             .select_related("posting__employer")
             .prefetch_related("posting__skills")
         )
@@ -268,7 +283,7 @@ class Applications(CandidateAccessMixin, View):
 
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
         applications = (
-            Application.objects.filter(candidate=req.user.candidate)
+            Application.objects.filter(candidate=candidate_of(req))
             .select_related("posting__employer")
             .order_by("-applied_at")
         )
@@ -279,7 +294,7 @@ class Applications(CandidateAccessMixin, View):
 class ApplicationWithdraw(CandidateAccessMixin, View):
     def post(self, req: AuthenticatedRequest, pk: int) -> HttpResponse:
         application = Application.objects.filter(
-            pk=pk, candidate=req.user.candidate
+            pk=pk, candidate=candidate_of(req)
         ).first()
         if application is None:
             messages.error(req, _("This application was not found."))
@@ -295,11 +310,11 @@ class ApplicationWithdraw(CandidateAccessMixin, View):
 
 class Settings(CandidateAccessMixin, View):
     def get(self, req: AuthenticatedRequest) -> HttpResponse:
-        form = ProfileForm(instance=req.user.candidate)
+        form = ProfileForm(instance=candidate_of(req))
         return render(req, "candidates/settings.html", {"form": form})
 
     def post(self, req: AuthenticatedRequest) -> HttpResponse:
-        form = ProfileForm(req.POST, instance=req.user.candidate)
+        form = ProfileForm(req.POST, instance=candidate_of(req))
         if form.is_valid():
             form.save()
             messages.success(req, _("Your details were saved."))
@@ -319,7 +334,7 @@ class Alerts(CandidateAccessMixin, View):
         form = JobAlertForm(req.POST)
         if form.is_valid():
             alert = form.save(commit=False)
-            alert.candidate = req.user.candidate
+            alert.candidate = candidate_of(req)
             alert.save()
             form.save_m2m()
             messages.success(req, _("Job alert created."))
@@ -330,7 +345,7 @@ class Alerts(CandidateAccessMixin, View):
 
     @staticmethod
     def _render(req: AuthenticatedRequest, form: JobAlertForm) -> HttpResponse:
-        alerts = JobAlert.objects.filter(candidate=req.user.candidate).prefetch_related(
+        alerts = JobAlert.objects.filter(candidate=candidate_of(req)).prefetch_related(
             "skills"
         )
         return render(req, "candidates/alerts.html", {"form": form, "alerts": alerts})
@@ -339,7 +354,7 @@ class Alerts(CandidateAccessMixin, View):
 class OwnedAlertMixin(CandidateAccessMixin):
     @staticmethod
     def get_alert(req: AuthenticatedRequest, pk: int) -> JobAlert | None:
-        return JobAlert.objects.filter(pk=pk, candidate=req.user.candidate).first()
+        return JobAlert.objects.filter(pk=pk, candidate=candidate_of(req)).first()
 
 
 class AlertToggle(OwnedAlertMixin, View):

@@ -1,6 +1,7 @@
 """A candidate's application to a job posting, and its status history."""
 
 import uuid
+from typing import TYPE_CHECKING
 
 from django.contrib.auth.models import User
 from django.db import models, transaction
@@ -8,6 +9,9 @@ from django.utils.translation import gettext_lazy as _
 
 from candidates.models import Candidate
 from employers.models import JobPosting
+
+if TYPE_CHECKING:
+    from django.db.models.fields.related_descriptors import RelatedManager
 
 
 def resume_upload_to(instance: "Application", filename: str) -> str:
@@ -61,6 +65,14 @@ class Application(models.Model):
     ai_provider = models.CharField(max_length=20, blank=True, default="")
     applied_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    # Added by Django at runtime. Declared for editors without the django-stubs mypy
+    # plugin (Pylance/Pyright); the annotations do not create fields.
+    id: int
+    candidate_id: int
+    posting_id: int
+    if TYPE_CHECKING:
+        events: RelatedManager["ApplicationEvent"]
 
     class Meta:
         verbose_name = _("Application")
@@ -126,6 +138,11 @@ class ApplicationEvent(models.Model):
     )
     note = models.TextField(blank=True, default="")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    # Added by Django at runtime (see Application).
+    id: int
+    application_id: int
+    actor_id: int | None
 
     class Meta:
         verbose_name = _("Application event")

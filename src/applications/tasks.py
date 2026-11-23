@@ -153,7 +153,7 @@ def notify_status_change(application_id: int) -> None:
             "name": candidate.first_name,
             "title": application.posting.title,
             "company": application.posting.employer.name,
-            "status": application.get_status_display(),
+            "status": Application.Status(application.status).label,
         }
     send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [candidate.email])
 

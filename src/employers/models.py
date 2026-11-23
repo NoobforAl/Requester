@@ -1,5 +1,8 @@
 """The hiring side: employers, their job postings and the skills they use."""
 
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Self
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -98,7 +101,7 @@ class Skill(models.Model):
 
 
 class JobPostingQuerySet(models.QuerySet["JobPosting"]):
-    def open(self):
+    def open(self) -> Self:
         """Postings a candidate can still apply to: active and not past the deadline."""
         return self.filter(is_active=True).filter(
             Q(deadline__isnull=True) | Q(deadline__gte=timezone.localdate())
@@ -113,9 +116,9 @@ class JobPostingQuerySet(models.QuerySet["JobPosting"]):
         employment_type: str = "",
         seniority: str = "",
         min_salary: int | None = None,
-        skills=(),
+        skills: Iterable["Skill | int"] = (),
         remote_only: bool = False,
-    ):
+    ) -> Self:
         """Filter the list shown to candidates. Blank filters are ignored."""
         postings = self
         query = query.strip()
@@ -140,10 +143,51 @@ class JobPostingQuerySet(models.QuerySet["JobPosting"]):
                 Q(salary_max__gte=min_salary)
                 | Q(salary_max__isnull=True, salary_min__gte=min_salary)
             )
-        skill_ids = [skill.pk if hasattr(skill, "pk") else skill for skill in skills]
+        skill_ids = [
+            skill.pk if isinstance(skill, Skill) else skill for skill in skills
+        ]
         if skill_ids:
             postings = postings.filter(skills__in=skill_ids).distinct()
         return postings
+
+
+class JobPostingManager(models.Manager["JobPosting"]):
+    """``JobPosting.objects``: the queryset methods, also on the manager.
+
+    A real class instead of ``JobPostingQuerySet.as_manager()``: that one is built
+    at runtime, so editors without the django-stubs mypy plugin (Pylance/Pyright)
+    reported "Cannot access attribute 'open'". Related managers
+    (``employer.postings``) are subclasses of this one and get the methods too.
+    """
+
+    def get_queryset(self) -> JobPostingQuerySet:
+        return JobPostingQuerySet(self.model, using=self._db)
+
+    def open(self) -> JobPostingQuerySet:
+        return self.get_queryset().open()
+
+    def search(  # noqa: PLR0913 - same keywords as JobPostingQuerySet.search
+        self,
+        query: str = "",
+        *,
+        location: str = "",
+        work_mode: str = "",
+        employment_type: str = "",
+        seniority: str = "",
+        min_salary: int | None = None,
+        skills: Iterable["Skill | int"] = (),
+        remote_only: bool = False,
+    ) -> JobPostingQuerySet:
+        return self.get_queryset().search(
+            query,
+            location=location,
+            work_mode=work_mode,
+            employment_type=employment_type,
+            seniority=seniority,
+            min_salary=min_salary,
+            skills=skills,
+            remote_only=remote_only,
+        )
 
 
 class JobPosting(models.Model):
@@ -220,7 +264,16 @@ class JobPosting(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
-    objects = JobPostingQuerySet.as_manager()
+    objects = JobPostingManager()
+
+    # Added by Django at runtime. Declared for editors without the django-stubs mypy
+    # plugin (Pylance/Pyright); the annotations do not create fields.
+    id: int
+    employer_id: int
+    if TYPE_CHECKING:
+        # Set per row by the candidate job list (candidates.views.Postings).
+        match: int
+        is_saved: bool
 
     class Meta:
         verbose_name = _("Job posting")

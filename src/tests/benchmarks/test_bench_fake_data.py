@@ -68,6 +68,7 @@ def test_bench_jobs_search(benchmark, client, sized):
     candidate, _employer = sized
     client.force_login(candidate.user)
     skill = JobPosting.objects.open().filter(skills__isnull=False)[0].skills.first()
+    assert skill is not None
     params = {"q": "developer", "skills": skill.pk, "sort": "salary", "page": 2}
     benchmark(_get_ok, client, reverse("candidate_jobs"), params)
 
