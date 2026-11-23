@@ -73,7 +73,15 @@ services:
         volumes:
             - .:/app
         ports:
-            - "8000:8000"
+            - "${WEB_PORT:-8000}:8000" # host port; change WEB_PORT if 8000 is taken
+        # Per service, not in the image: tasks and scheduler share the image but serve no HTTP.
+        # start_period covers the first start (migrations, seeding, search index).
+        healthcheck:
+            test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8000/ || exit 1"]
+            interval: 15s
+            timeout: 5s
+            retries: 5
+            start_period: 10m
         environment:
             <<: *app-env
             SERVICE_NAME: "web" # `service` field of every log line
@@ -132,7 +140,8 @@ services:
             - "1025:1025"
             - "8025:8025"
         healthcheck:
-            test: ["CMD-SHELL", "wget http://0.0.0.0:8025 || exit 1"]
+            # -O /dev/null: a saved index.html made every later check fail ("File exists").
+            test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8025 || exit 1"]
             interval: 1m
             timeout: 10s
             retries: 3

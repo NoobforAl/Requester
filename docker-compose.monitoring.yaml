@@ -25,13 +25,6 @@ services:
             OTEL_TRACES_SAMPLER_ARG: "${OTEL_TRACES_SAMPLER_ARG:-1.0}"
         tmpfs:
             - /tmp/prometheus-multiproc # fresh on every container start
-        # Lets the load generator wait until migrations and seeding are done.
-        healthcheck:
-            test: ["CMD-SHELL", "curl -fsS -o /dev/null http://localhost:8000/ || exit 1"]
-            interval: 15s
-            timeout: 5s
-            retries: 5
-            start_period: 10m
 
     # --- optional traffic for dev dashboards (profile "loadgen", see `make dev-all`) ---
     # Logs in with the seed_demo_data accounts, which exist only on a dev stack

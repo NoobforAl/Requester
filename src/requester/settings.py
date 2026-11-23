@@ -173,6 +173,8 @@ LOGGING = build_logging(LOG_LEVEL, LOG_FORMAT)
 # raw URL). Keep django.request for 5xx only, so 4xx lines are not duplicated and
 # raw paths (e.g. signed unsubscribe tokens) are not logged for 404s.
 LOGGING["loggers"]["django.request"]["level"] = "ERROR"
+# runserver writes its own access line per request; http_request already covers it.
+LOGGING["loggers"]["django.server"]["level"] = "WARNING"
 
 INSTALLED_APPS = [
     "employers",
