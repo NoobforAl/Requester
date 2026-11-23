@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Candidate, JobAlert, SavedPosting
+from .models import Candidate, JobAlert, JobSearch, SavedPosting
 
 
 @admin.register(Candidate)
@@ -21,3 +21,32 @@ class JobAlertAdmin(admin.ModelAdmin):
     list_display = ("name", "candidate", "frequency", "is_active", "last_sent_at")
     list_filter = ("frequency", "is_active")
     filter_horizontal = ("skills",)
+
+
+@admin.register(JobSearch)
+class JobSearchAdmin(admin.ModelAdmin):
+    """Read-only: rows are written by the job list (see candidates/search_log.py)."""
+
+    list_display = (
+        "query",
+        "location",
+        "work_mode",
+        "results",
+        "language",
+        "created_at",
+    )
+    list_filter = (
+        "work_mode",
+        "employment_type",
+        "seniority",
+        "language",
+        "created_at",
+    )
+    search_fields = ("query", "location")
+    date_hierarchy = "created_at"
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

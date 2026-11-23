@@ -28,8 +28,10 @@ PINNED = {
     "employer_dashboard": 10,
     "employer_jobs": 7,
     "employer_job": 8,
-    # One more than the plain list: the form validates the chosen skill ids.
-    "candidate_jobs_search": 10,
+    # One more than the plain list: the form validates the chosen skill ids. Then
+    # four to record the search (candidates.search_log): the search and its skill
+    # links in one atomic block (a SAVEPOINT pair inside the test's transaction).
+    "candidate_jobs_search": 14,
 }
 
 

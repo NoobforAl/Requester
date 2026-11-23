@@ -73,6 +73,8 @@ make perf-bench                               # pytest benchmarks inside the cap
 make perf-down
 ```
 
+To measure what the job-list caches bring (search results and job cards, see `src/candidates/job_cache.py`), run once with them off and once with them on: `JOB_SEARCH_CACHE_SECONDS=0 JOB_CARD_CACHE_SECONDS=0 make perf-load`, then `make perf-load`. Compare the two runs against each other, not against an older run: a stack that has just started (Elasticsearch still settling, cold workers) is slower everywhere, including pages the change does not touch.
+
 Watch the caps while it runs with `docker stats`. On this stack the web container is CPU-bound: MariaDB, Redis and Elasticsearch stay mostly idle, so CPU time per request in Django (mostly template and form rendering) is what limits throughput. The first ~30 s are slow by design: every simulated user signs in, and one PBKDF2 password check costs about 265 ms of CPU.
 
 ### Staging, with the web UI on port 8089

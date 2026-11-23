@@ -140,7 +140,7 @@ paths = ["src"]
 exclude = ["migrations/"]
 min_confidence = 80
 # pytest fixture arguments, Django command/signature parameters
-ignore_names = ["db", "options", "filename", "args", "kwargs", "sender", "a", "k", "no_ai", "legacy_tables", "translated"]
+ignore_names = ["db", "options", "filename", "args", "kwargs", "sender", "a", "k", "no_ai", "legacy_tables", "translated", "signed_in", "search_cache", "clean_cache"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "requester.settings_test"

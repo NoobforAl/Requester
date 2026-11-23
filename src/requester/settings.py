@@ -126,6 +126,16 @@ if REDIS_URL:
 else:
     CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
 
+# Candidate job list: how long a search's result (posting ids and total) is reused.
+# 0 turns it off. See candidates/job_cache.py for what can be stale.
+JOB_SEARCH_CACHE_SECONDS = int(os.environ.get("JOB_SEARCH_CACHE_SECONDS") or 60)
+# Job cards (title, company, skills, summary) are cached per posting and language;
+# an edit changes the key, so this only bounds memory. 0 turns it off.
+JOB_CARD_CACHE_SECONDS = int(os.environ.get("JOB_CARD_CACHE_SECONDS") or 3600)
+# Job searches are recorded for statistics (manage.py top_searches) and deleted
+# after this many days.
+SEARCH_LOG_RETENTION_DAYS = int(os.environ.get("SEARCH_LOG_RETENTION_DAYS") or 365)
+
 # Celery (read with the CELERY_ namespace, see requester/celery.py)
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "")
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND") or None
@@ -160,6 +170,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "applications.tasks.send_job_alerts",
         "schedule": crontab(hour=4, minute=30, day_of_week="mon"),
         "args": ("weekly",),
+    },
+    "purge-old-job-searches": {
+        "task": "candidates.tasks.purge_old_searches",
+        "schedule": crontab(hour=2, minute=15),
     },
 }
 

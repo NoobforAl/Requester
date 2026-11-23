@@ -31,3 +31,6 @@ STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
+# Off by default so a test that lists, changes and lists again sees the change; the
+# cache's own tests turn it on.
+JOB_SEARCH_CACHE_SECONDS = 0

@@ -274,6 +274,8 @@ class JobPosting(models.Model):
         # Set per row by the candidate job list (candidates.views.Postings).
         match: int
         is_saved: bool
+        # Cached card HTML (candidates.job_cache.attach_card_bodies).
+        card_body: str
 
     class Meta:
         verbose_name = _("Job posting")

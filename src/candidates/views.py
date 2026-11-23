@@ -5,6 +5,7 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count, F, Q
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
+from django.utils.translation import get_language
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
@@ -19,6 +20,7 @@ from requester.portal import (
     PortalRegisterView,
 )
 
+from . import job_cache, search_log
 from .alerts import alert_from_token
 from .form import (
     JobAlertForm,
@@ -125,15 +127,22 @@ class Postings(CandidateAccessMixin, View):
         form = JobFilterForm(req.GET or None)
         query = form.cleaned_data["q"] if form.is_valid() else ""
         sort = form.cleaned_data["sort"] if form.is_valid() else ""
+        filters = form.search_kwargs()
         postings = (
             JobPosting.objects.open()
-            .search(query, **form.search_kwargs())
+            .search(query, **filters)
             .select_related("employer")
             .prefetch_related("skills")
         )
-        page = Paginator(_order(postings, sort), JOBS_PER_PAGE).get_page(
-            req.GET.get("page")
+        page_param = req.GET.get("page")
+        page = job_cache.search_page(
+            _order(postings, sort),
+            job_cache.search_key(query, filters, sort, page_param or ""),
+            page_param,
+            JOBS_PER_PAGE,
         )
+        if not page_param:  # the pager's links are the same search again
+            search_log.record_search(form, page.paginator.count, get_language())
 
         skill_ids = candidate_skill_ids(candidate)
         saved_ids = set(
@@ -144,6 +153,7 @@ class Postings(CandidateAccessMixin, View):
         for posting in page:
             posting.match = match_score(candidate, posting, skill_ids)
             posting.is_saved = posting.pk in saved_ids
+        job_cache.attach_card_bodies(page)
 
         params = req.GET.copy()
         params.pop("page", None)
@@ -275,6 +285,7 @@ class SavedPostings(CandidateAccessMixin, View):
             .prefetch_related("posting__skills")
         )
         page = Paginator(saved, 10).get_page(req.GET.get("page"))
+        job_cache.attach_card_bodies(item.posting for item in page)
         return render(req, "candidates/saved.html", {"saved": page})
 
 

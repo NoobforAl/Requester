@@ -247,3 +247,72 @@ class JobAlert(models.Model):
             min_salary=self.min_salary,
             skills=list(self.skills.all()),
         )
+
+
+class JobSearch(models.Model):
+    """One search on the candidate job list, kept to learn what people look for.
+
+    Written by ``candidates.search_log`` on the first page of a search that has at
+    least one filter. Who searched is not stored: the statistics only need the
+    words and filters. ``manage.py top_searches`` summarizes them; rows older than
+    ``SEARCH_LOG_RETENTION_DAYS`` are deleted every night.
+    """
+
+    #: Longest query kept; longer text is cut.
+    QUERY_MAX_LENGTH = 100
+
+    query = models.CharField(
+        max_length=QUERY_MAX_LENGTH,
+        blank=True,
+        default="",
+        verbose_name=_("Search words"),
+        help_text=_("Lower case, spaces collapsed, so the same words group together."),
+    )
+    location = models.CharField(
+        max_length=80, blank=True, default="", verbose_name=_("City")
+    )
+    work_mode = models.CharField(
+        max_length=10,
+        choices=WorkMode,
+        blank=True,
+        default="",
+        verbose_name=_("Work mode"),
+    )
+    employment_type = models.CharField(
+        max_length=12,
+        choices=JobPosting.EmploymentType,
+        blank=True,
+        default="",
+        verbose_name=_("Employment type"),
+    )
+    seniority = models.CharField(
+        max_length=10,
+        choices=JobPosting.Seniority,
+        blank=True,
+        default="",
+        verbose_name=_("Seniority"),
+    )
+    min_salary = models.PositiveIntegerField(
+        blank=True, null=True, verbose_name=_("Minimum salary")
+    )
+    remote_only = models.BooleanField(default=False, verbose_name=_("Remote only"))
+    skills = models.ManyToManyField(
+        Skill, blank=True, related_name="searches", verbose_name=_("Skills")
+    )
+    language = models.CharField(
+        max_length=7, blank=True, default="", verbose_name=_("Site language")
+    )
+    results = models.PositiveIntegerField(verbose_name=_("Jobs found"))
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Searched at"))
+
+    class Meta:
+        verbose_name = _("Job search")
+        verbose_name_plural = _("Job searches")
+        ordering = ("-created_at", "-id")
+        indexes = (
+            models.Index(fields=["created_at"], name="jobsearch_created_idx"),
+            models.Index(fields=["query", "created_at"], name="jobsearch_query_idx"),
+        )
+
+    def __str__(self):
+        return f"“{self.query}” ({self.results})" if self.query else str(self.pk)
