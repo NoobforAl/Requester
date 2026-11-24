@@ -23,8 +23,9 @@ workers = int(os.environ.get("WEB_CONCURRENCY") or 2 * container_cpu_count() + 1
 max_requests = int(os.environ.get("GUNICORN_MAX_REQUESTS") or 2000)
 max_requests_jitter = max_requests // 10
 # Worker heartbeat files in RAM: on a container's overlay filesystem a slow write
-# can stall a worker long enough for gunicorn to kill it.
-worker_tmp_dir = "/dev/shm"  # noqa: S108  # nosec B108 - the container's own tmpfs
+# can stall a worker long enough for gunicorn to kill it. /dev/shm is the container's
+# own tmpfs, not a shared temp folder, so the hard-coded path is safe.
+worker_tmp_dir = "/dev/shm"  # noqa: S108  # nosec B108
 
 # gunicorn.error propagates to our root handler, so its lines are JSON too.
 logconfig_dict = build_logging(_level, _fmt)
@@ -33,7 +34,7 @@ accesslog = None
 errorlog = "-"
 
 
-def child_exit(server, worker):
+def child_exit(_server, worker):
     """Drop a dead worker's metric files (Prometheus multiprocess mode)."""
     if os.environ.get("PROMETHEUS_MULTIPROC_DIR"):
         from prometheus_client import multiprocess  # noqa: PLC0415

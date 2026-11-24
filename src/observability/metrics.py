@@ -74,7 +74,7 @@ def metrics_view(request: HttpRequest) -> HttpResponse:
     return ExportToDjangoView(request)
 
 
-def child_exit(server: Any, worker: Any) -> None:
+def child_exit(_server: Any, worker: Any) -> None:
     """Gunicorn `child_exit` hook: drop the dead worker's live gauges.
 
     Without this, gauges with `multiprocess_mode="live*"` keep reporting

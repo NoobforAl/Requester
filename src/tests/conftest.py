@@ -66,12 +66,14 @@ def build_fake_site(django_db_blocker, scale: str, seed: int = FAKE_SITE_SEED):
 
 
 @pytest.fixture(scope="module")
-def fake_site(django_db_setup, django_db_blocker):
+def fake_site(request, django_db_blocker):
     """A medium ``seed_fake_data`` site shared by the tests of one module."""
+    request.getfixturevalue("django_db_setup")
     yield from build_fake_site(django_db_blocker, "medium")
 
 
 @pytest.fixture(scope="module")
-def small_fake_site(django_db_setup, django_db_blocker):
+def small_fake_site(request, django_db_blocker):
     """A small ``seed_fake_data`` site shared by the tests of one module."""
+    request.getfixturevalue("django_db_setup")
     yield from build_fake_site(django_db_blocker, "small")

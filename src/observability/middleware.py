@@ -99,9 +99,9 @@ class RequestLogMiddleware:
     def process_view(
         self,
         request: HttpRequest,
-        view_func: Callable[..., Any],
-        view_args: Any,
-        view_kwargs: Any,
+        _view_func: Callable[..., Any],
+        _view_args: Any,
+        _view_kwargs: Any,
     ) -> None:
         user_id = _user_id(request)
         if user_id is not None:

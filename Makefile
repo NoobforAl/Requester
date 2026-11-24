@@ -20,6 +20,18 @@ MANAGE := cd $(SRC) && $(PYTHON) manage.py
 
 export PYTHON
 
+# Portable helpers. Windows runs recipes through cmd.exe (no find, rm, mkdir -p, awk or
+# FOO=bar prefixes), so file chores go through scripts/mk.py and environment variables are
+# set with target-specific `export`. Recipes marked "INSIDE the containers" below only run
+# in Linux, where the shell is sh.
+MK     := $(PYTHON) scripts/mk.py
+MKDIRS := $(MK) mkdir es_data mariadb_data redis_data
+ifeq ($(OS),Windows_NT)
+RMDIRS := $(MK) rm
+else
+RMDIRS := sudo rm -rf
+endif
+
 # Docker: the base file is production-like, the dev file adds DEBUG, mock data and
 # a known admin login. `make docker-up` uses both.
 COMPOSE     := docker compose
@@ -40,33 +52,38 @@ COMPOSE_ANALYTICS := docker compose $(ANALYTICS_BASE) -f docker-compose.analytic
 
 .DEFAULT_GOAL := help
 .PHONY: help install dev seed seed-fake insert_fake_data migrate migrations superuser shell check \
-        format lint typecheck test bench bench-check loadtest audit fix \
-        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down docker-bench docker-bench-check docker-pull dev-all dev-all-down \
+        format lint typecheck deprecated test bench bench-check loadtest audit fix \
+        clean clean-all docker-up docker-down docker-clean monitoring-up monitoring-down docker-bench docker-bench-check docker-pull dev-all dev-all-with-load dev-all-down \
         perf-up perf-down perf-load perf-soak perf-bench deploy-perf \
         deploy deploy-dev setup_celery setup_scheduler ensure_superuser collectstatic \
         compilemessages import_legacy_data insert_mock_data test-mariadb database_diagram \
         i18n i18n-compile i18n-check diagrams
 
 help: ## Show this help
-	@awk 'BEGIN {FS = ":.*## "} /^[a-zA-Z_-]+:.*## / {printf "  make %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+	@$(MK) help
 
 # ---------------------------------------------------------------- setup
 install: ## Install dependencies (runtime + dev tools)
 	uv sync
 
 # ---------------------------------------------------------- development
+dev: export DJANGO_DEBUG := true
 dev: ## Run the dev server on SQLite (change with PORT=8001 HOST=0.0.0.0)
 	@echo "Dev server on SQLite (src/db.sqlite3) at http://$(HOST):$(PORT), tasks run inline, no services needed"
-	cd $(SRC) && DJANGO_DEBUG=true $(PYTHON) manage.py migrate --noinput
-	cd $(SRC) && DJANGO_DEBUG=true $(PYTHON) manage.py import_legacy_data
+	cd $(SRC) && $(PYTHON) manage.py migrate --noinput
+	cd $(SRC) && $(PYTHON) manage.py import_legacy_data
 	$(PYTHON) scripts/compile_messages.py
-	cd $(SRC) && DJANGO_DEBUG=true $(PYTHON) manage.py runserver $(HOST):$(PORT)
+	cd $(SRC) && $(PYTHON) manage.py runserver $(HOST):$(PORT)
 
+seed: export DJANGO_DEBUG := true
+seed: export PYTHONUTF8 := 1
 seed: ## Fill the SQLite dev database with demo employers, jobs, candidates and applications
-	cd $(SRC) && DJANGO_DEBUG=true PYTHONUTF8=1 $(PYTHON) manage.py seed_demo_data
+	cd $(SRC) && $(PYTHON) manage.py seed_demo_data
 
+seed-fake: export DJANGO_DEBUG := true
+seed-fake: export PYTHONUTF8 := 1
 seed-fake: ## Fill the SQLite dev database with lots of Faker data (fake_* users; FAKE_ARGS="--seed 7 --wipe-fake")
-	cd $(SRC) && DJANGO_DEBUG=true PYTHONUTF8=1 $(PYTHON) manage.py seed_fake_data $(FAKE_ARGS)
+	cd $(SRC) && $(PYTHON) manage.py seed_fake_data $(FAKE_ARGS)
 
 migrate: ## Apply database migrations
 	$(MANAGE) migrate --noinput
@@ -83,24 +100,29 @@ shell: ## Open the Django shell
 import_legacy_data: ## Copy data from the pre-rename offer_*/worker_* tables (no-op on a fresh database)
 	$(MANAGE) import_legacy_data
 
+check: export DJANGO_DEBUG := true
 check: ## Django system checks and "are migrations missing?"
-	cd $(SRC) && DJANGO_DEBUG=true $(PYTHON) manage.py check
-	cd $(SRC) && DJANGO_DEBUG=true $(PYTHON) manage.py makemigrations --check --dry-run
+	cd $(SRC) && $(PYTHON) manage.py check
+	cd $(SRC) && $(PYTHON) manage.py makemigrations --check --dry-run
 
 # -------------------------------------------------- quality: lint, test
 format: ## Format all Python code (ruff, import order, unused imports)
 	$(RUN) ruff check --select I,UP,F401 --fix .
 	$(RUN) ruff format .
 
+lint: export PYTHONUTF8 := 1
 lint: ## Run every linter (ruff, flake8, djlint, bandit, vulture)
 	$(RUN) ruff check . --fix
 	$(RUN) flake8 $(SRC)
 	$(RUN) djlint $(SRC)/templates --lint
-	PYTHONUTF8=1 $(RUN) bandit -c pyproject.toml -r $(SRC) -ll -q
+	$(RUN) bandit -c pyproject.toml -r $(SRC) -ll -q
 	$(RUN) vulture
 
 typecheck: ## Static type check (mypy + django-stubs)
 	cd $(SRC) && $(RUN) mypy .
+
+deprecated: ## Fail on calls to deprecated functions (mypy static check; `make test` fails on runtime deprecation warnings)
+	cd $(SRC) && $(RUN) mypy . --enable-error-code deprecated
 
 test: ## Run the test suite
 	$(RUN) pytest
@@ -117,31 +139,28 @@ loadtest: ## Headless Locust smoke against the local dev server (needs LOADTEST_
 audit: ## Scan dependencies for known vulnerabilities (needs network)
 	$(RUN) pip-audit
 
-fix: format lint typecheck test check ## Format everything, then run all linters, type check, tests and Django checks
+fix: format lint typecheck deprecated test check ## Format everything, then run all linters, type check, deprecation check, tests and Django checks
 	@echo "All good."
 
 # --------------------------------------------------------------- cleaning
 clean: ## Remove caches, bytecode and build artifacts
-	find . -type d \( -name __pycache__ -o -name .pytest_cache -o -name .mypy_cache \
-	  -o -name .ruff_cache -o -name htmlcov \) -not -path "./.venv/*" -prune -exec rm -rf {} +
-	rm -rf $(SRC)/staticfiles .coverage coverage.xml test.png
-	@echo "Clean."
+	@$(MK) clean
 
-clean-all: clean ## clean + remove the virtualenv and the SQLite dev database
-	rm -rf .venv $(SRC)/db.sqlite3
+clean-all: ## clean + remove the virtualenv and the SQLite dev database
+	@$(MK) clean-all
 
 # ------------------------------------------------------- docker / deploy
 docker-up: ## Build and start the dev stack
-	mkdir -p es_data mariadb_data redis_data
+	$(MKDIRS)
 	$(COMPOSE_DEV) down
 	$(COMPOSE_DEV) up -d --build
 
 docker-down: ## Stop the dev stack
 	$(COMPOSE_DEV) down
 
-docker-clean: ## Stop the stack and delete its data folders (asks sudo)
+docker-clean: ## Stop the stack and delete its data folders (asks sudo on Linux)
 	$(COMPOSE_DEV) down
-	sudo rm -rf es_data mariadb_data redis_data
+	$(RMDIRS) es_data mariadb_data redis_data
 
 docker-bench: ## Run the benchmarks inside the dev image; results are saved to ./.benchmarks on the host
 	$(COMPOSE_ALL) run --rm --no-deps --build web make RUN= bench
@@ -153,27 +172,41 @@ docker-pull: ## Pull every image used by the full stack (base, dev, monitoring, 
 	$(COMPOSE_ALL) pull --ignore-buildable
 
 dev-all: ## Dev stack + Faker data + monitoring + live load (Grafana :3000 admin/admin, Jaeger :16686)
-	mkdir -p es_data mariadb_data redis_data
+	$(MKDIRS)
 	$(COMPOSE_ALL) up -d --build
 	@echo "App http://localhost:8000  Grafana http://localhost:3000  Prometheus http://localhost:9090"
 	@echo "Jaeger http://localhost:16686  Loki http://localhost:3100  MailHog http://localhost:8025"
 	@echo "Seeding runs on first start; the load generator starts once web is healthy. Stop with: make dev-all-down"
 
-dev-all-down: ## Stop the dev-all stack
+# Same stack as dev-all, but busier: LOADGEN_USERS (default 5) becomes 30 virtual users
+# (candidates browsing, saving and applying, employers editing postings), enough to make
+# the Grafana panels, Prometheus alerts, Loki logs and Jaeger traces move.
+dev-all-with-load: export LOADGEN_USERS ?= 30
+dev-all-with-load: ## dev-all with a heavier live load (LOADGEN_USERS=30, change with LOADGEN_USERS=100)
+	$(MKDIRS)
+	$(COMPOSE_ALL) up -d --build
+	@echo "Load: $(LOADGEN_USERS) users start once web is healthy (first start seeds demo and Faker data: minutes)"
+	@echo "App http://localhost:8000  Grafana http://localhost:3000 (admin/admin)  Prometheus http://localhost:9090"
+	@echo "Jaeger http://localhost:16686  Loki http://localhost:3100  MailHog http://localhost:8025"
+	@echo "Watch the load: docker logs -f requester_loadgen   Stop everything: make dev-all-down"
+
+dev-all-down: ## Stop the dev-all and dev-all-with-load stack
 	$(COMPOSE_ALL) down
 
 perf-up: ## Start the capped, production-like stack (gunicorn, DEBUG off, demo data) on :8001
-	mkdir -p es_data mariadb_data redis_data
+	$(MKDIRS)
 	$(COMPOSE_PERF) up -d --build --wait
 
 perf-load: ## Locust load test against perf-up (PERF_USERS=150 PERF_RUN_TIME=3m); CSV in loadtests/results/
-	mkdir -p loadtests/results
+	$(MK) mkdir loadtests/results
 	$(COMPOSE_PERF) --profile perf-load run --rm loadtest
 
+perf-soak: export GUNICORN_MAX_REQUESTS := 0
+perf-soak: export PERF_RUN_TIME ?= 15m
 perf-soak: ## Leak hunt: worker recycling off, 15 min of load (PERF_RUN_TIME=...); watch with docker stats
-	GUNICORN_MAX_REQUESTS=0 $(COMPOSE_PERF) up -d --wait web
-	mkdir -p loadtests/results
-	GUNICORN_MAX_REQUESTS=0 PERF_RUN_TIME=$${PERF_RUN_TIME:-15m} $(COMPOSE_PERF) --profile perf-load run --rm loadtest
+	$(COMPOSE_PERF) up -d --wait web
+	$(MK) mkdir loadtests/results
+	$(COMPOSE_PERF) --profile perf-load run --rm loadtest
 
 perf-bench: ## Run the benchmarks inside the capped web container; saved to ./.benchmarks
 	$(COMPOSE_PERF) run --rm --no-deps --build web make RUN= bench
@@ -182,7 +215,7 @@ perf-down: ## Stop the perf stack
 	$(COMPOSE_PERF) --profile perf-load down
 
 analytics-up: ## Start Elasticsearch + Logstash + Kibana on the running stack (Kibana http://localhost:5601)
-	mkdir -p es_data
+	$(MK) mkdir es_data
 	$(COMPOSE_ANALYTICS) up -d --build --wait search logstash kibana
 	$(COMPOSE_ANALYTICS) up analytics-kibana-setup
 	@echo "Kibana http://localhost:5601 -> Dashboards. Logstash copies new data every minute."
@@ -191,22 +224,23 @@ analytics-down: ## Stop the analytics containers (the main stack keeps running)
 	$(COMPOSE_ANALYTICS) rm -fs search logstash kibana analytics-db-user analytics-kibana-setup
 
 analytics-resync: ## Copy every row again (forget where each Logstash pipeline stopped)
-	docker exec requester_logstash sh -c 'rm -f /usr/share/logstash/data/jdbc_last_run_*'
+	docker exec requester_logstash sh -c "rm -f /usr/share/logstash/data/jdbc_last_run_*"
 	docker restart requester_logstash
 
 analytics-status: ## Documents per analytics index
-	@docker exec requester_search curl -fsS 'http://localhost:9200/_cat/indices/requester-*?v&s=index&h=index,docs.count,store.size'
+	@docker exec requester_search curl -fsS "http://localhost:9200/_cat/indices/requester-*?v&s=index&h=index,docs.count,store.size"
 
 monitoring-up: ## Start the stack with Prometheus, Grafana, Loki and exporters (needs METRICS_TOKEN, GRAFANA_ADMIN_PASSWORD)
-	mkdir -p es_data mariadb_data redis_data
+	$(MKDIRS)
 	$(COMPOSE_MON) up -d --build
 
 monitoring-down: ## Stop the monitoring stack
 	$(COMPOSE_MON) down
 
+test-mariadb: export DB_HOST := 127.0.0.1
 test-mariadb: ## Run the tests against a real MariaDB (starts and stops the compose service)
 	$(COMPOSE) up -d --wait db
-	DB_HOST=127.0.0.1 $(RUN) pytest --ds=requester.settings_mariadb_test --create-db; 	  status=$$?; $(COMPOSE) stop db; exit $$status
+	$(MK) guard $(COMPOSE) stop db -- $(RUN) pytest --ds=requester.settings_mariadb_test --create-db
 
 # These run INSIDE the containers (see docker-compose.yaml / docker-compose.dev.yaml).
 # deploy: production-like (gunicorn, SECRET_KEY and ALLOWED_HOSTS required, no demo data).
@@ -264,7 +298,7 @@ database_diagram: ## Draw the model diagram (needs `uv sync --group diagram`)
 # .po files (GNU gettext lives in the Docker image, not on a Windows dev machine). Fill
 # the new empty msgstr entries, then `make i18n-check`.
 i18n: ## Extract translatable text into src/locale/*/LC_MESSAGES/django.po (via Docker)
-	$(COMPOSE) run --rm --no-deps -e DJANGO_DEBUG=true -w /app/src web 	  python manage.py makemessages --all --no-location --no-wrap -e html,py 	  --ignore 'staticfiles/*' --ignore '.venv/*'
+	$(COMPOSE) run --rm --no-deps -e DJANGO_DEBUG=true -w /app/src web 	  python manage.py makemessages --all --no-location --no-wrap -e html,py 	  --ignore "staticfiles/*" --ignore ".venv/*"
 
 i18n-compile: ## Compile the .po files to .mo without GNU gettext (pure Python, for local use)
 	$(RUN) python scripts/compile_messages.py
