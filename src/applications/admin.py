@@ -1,11 +1,12 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin, TabularInline
+from unfold.admin import TabularInline
 from unfold.contrib.filters.admin import (
     ChoicesDropdownFilter,
-    RangeDateFilter,
     RelatedDropdownFilter,
 )
 from unfold.decorators import display
+
+from requester.unfold_admin import ModelAdmin, RangeDateTimeFilter
 
 from .models import Application, ApplicationEvent
 
@@ -37,7 +38,7 @@ class ApplicationAdmin(ModelAdmin):
     list_filter = (
         ("status", ChoicesDropdownFilter),
         ("posting__employer", RelatedDropdownFilter),
-        ("applied_at", RangeDateFilter),
+        ("applied_at", RangeDateTimeFilter),
     )
     list_filter_submit = True
     list_select_related = ("candidate", "posting__employer")

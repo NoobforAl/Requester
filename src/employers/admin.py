@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.db.models import Count, Q
 from django.utils import timezone
-from unfold.admin import ModelAdmin
 from unfold.contrib.filters.admin import (
     ChoicesDropdownFilter,
     RangeDateFilter,
     RangeNumericFilter,
 )
 from unfold.decorators import display
+
+from requester.unfold_admin import ModelAdmin, RangeDateTimeFilter
 
 from .models import Employer, JobPosting, Skill, WorkMode
 
@@ -91,7 +92,7 @@ class JobPostingAdmin(ModelAdmin):
         ("seniority", ChoicesDropdownFilter),
         ("salary_max", RangeNumericFilter),
         ("deadline", RangeDateFilter),
-        ("created_at", RangeDateFilter),
+        ("created_at", RangeDateTimeFilter),
     )
     list_filter_submit = True
     search_fields = ("title", "description", "employer__name", "location")

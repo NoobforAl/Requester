@@ -48,7 +48,7 @@ def test_filters_and_change_pages_render(staff_client, some_data):
     pages = [
         admin_url(Application, "changelist") + "?status=accepted",
         admin_url(type(posting), "changelist")
-        + "?created_at_from=2000-01-01&salary_max_from=0",
+        + "?created_at_from_0=2000-01-01&created_at_from_1=00:00:00&salary_max_from=0",
         admin_url(Application, "change", some_data.pk),
         admin_url(type(posting), "change", posting.pk),
         admin_url(type(posting), "add"),

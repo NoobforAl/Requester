@@ -13,11 +13,11 @@ from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
 from django.http import HttpRequest
-from unfold.admin import ModelAdmin
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
 
 from applications.models import Application
 from employers.models import JobPosting
+from requester.unfold_admin import ModelAdmin
 
 admin.site.unregister(User)
 admin.site.unregister(Group)

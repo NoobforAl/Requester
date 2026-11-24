@@ -13,7 +13,7 @@ dependencies = [
     "django-extensions>=4.1",
     # client 9 matches the Elasticsearch 9.x server in compose
     "celery>=5.5",
-    "redis>=6.0",
+    "redis>=8.2",
     "httpx>=0.27",
     "gunicorn>=23.0",
     "whitenoise>=6.9",
@@ -141,7 +141,7 @@ paths = ["src"]
 exclude = ["migrations/"]
 min_confidence = 80
 # pytest fixture arguments, Django command/signature parameters
-ignore_names = ["db", "options", "filename", "args", "kwargs", "sender", "a", "k", "no_ai", "legacy_tables", "translated", "signed_in", "search_cache", "clean_cache"]
+ignore_names = ["db", "options", "filename", "args", "kwargs", "sender", "a", "k", "no_ai", "legacy_tables", "translated", "signed_in", "search_cache", "clean_cache", "default_choices"]
 
 [tool.pytest.ini_options]
 DJANGO_SETTINGS_MODULE = "requester.settings_test"
@@ -151,4 +151,12 @@ python_files = ["tests.py", "test_*.py"]
 addopts = "-q --benchmark-disable"
 filterwarnings = [
     "ignore:No directory at.*staticfiles:UserWarning",
+    # Deprecated API is an error wherever it is called from, ours or a dependency's
+    # (`make deprecated` runs the static half of this check). Django's
+    # RemovedInDjango*Warning subclasses DeprecationWarning. If a third-party package
+    # triggers one we cannot fix, ignore that one message below instead of loosening this.
+    "error::DeprecationWarning",
+    "error::PendingDeprecationWarning",
+    # A naive datetime on a DateTimeField (USE_TZ is on) is a latent timezone bug.
+    "error:DateTimeField .* received a naive datetime:RuntimeWarning",
 ]

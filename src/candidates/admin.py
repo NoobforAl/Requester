@@ -1,11 +1,11 @@
 from django.contrib import admin
-from unfold.admin import ModelAdmin
 from unfold.contrib.filters.admin import (
     ChoicesDropdownFilter,
-    RangeDateFilter,
     RangeNumericFilter,
 )
 from unfold.decorators import display
+
+from requester.unfold_admin import ModelAdmin, RangeDateTimeFilter
 
 from .models import Candidate, JobAlert, JobSearch, SavedPosting
 
@@ -22,7 +22,7 @@ class CandidateAdmin(ModelAdmin):
         ("preferred_work_mode", ChoicesDropdownFilter),
         ("language", ChoicesDropdownFilter),
         ("experience_years", RangeNumericFilter),
-        ("created_at", RangeDateFilter),
+        ("created_at", RangeDateTimeFilter),
     )
     list_filter_submit = True
     search_fields = ("first_name", "last_name", "email", "user__username", "city")
@@ -44,7 +44,7 @@ class CandidateAdmin(ModelAdmin):
 class SavedPostingAdmin(ModelAdmin):
     list_display = ("candidate", "posting", "created_at")
     list_select_related = ("candidate", "posting")
-    list_filter = (("created_at", RangeDateFilter),)
+    list_filter = (("created_at", RangeDateTimeFilter),)
     list_filter_submit = True
     autocomplete_fields = ("candidate", "posting")
 
@@ -74,7 +74,7 @@ class JobSearchAdmin(ModelAdmin):
         ("employment_type", ChoicesDropdownFilter),
         ("seniority", ChoicesDropdownFilter),
         ("results", RangeNumericFilter),
-        ("created_at", RangeDateFilter),
+        ("created_at", RangeDateTimeFilter),
     )
     list_filter_submit = True
     search_fields = ("query", "location")
