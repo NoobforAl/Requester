@@ -10,7 +10,7 @@ from django.test import override_settings
 
 from applications.fake_data import FakeDataGenerator
 from applications.models import Application, ApplicationEvent
-from candidates.models import Candidate, JobAlert, SavedPosting
+from candidates.models import Candidate, JobAlert, JobSearch, SavedPosting
 from employers.models import Employer, JobPosting
 
 SMALL = {"employers": 3, "postings": 8, "candidates": 6, "applications": 12}
@@ -156,3 +156,30 @@ def test_generated_rows_pass_model_validation():
     for app in Application.objects.all()[:5]:
         with app.resume.open("rb") as resume:
             assert resume.read().startswith(b"%PDF")
+
+
+@pytest.mark.django_db
+def test_fills_the_search_log_once():
+    JobSearch.objects.all().delete()  # a shared fixture may have seeded some
+    seed(searches=40)
+
+    assert JobSearch.objects.count() == 40
+    assert JobSearch.objects.filter(results=0).exists()  # words nobody matches
+    assert JobSearch.objects.exclude(query="").exists()
+    assert JobSearch.skills.through.objects.exists()
+    first, last = (
+        JobSearch.objects.earliest("created_at"),
+        JobSearch.objects.latest("created_at"),
+    )
+    assert (last.created_at - first.created_at).days >= 1  # spread over time
+
+    seed(searches=40)  # same seed again: the log is not empty, nothing is added
+    assert JobSearch.objects.count() == 40
+
+
+@pytest.mark.django_db
+def test_searches_default_to_half_the_applications():
+    JobSearch.objects.all().delete()
+    seed()
+
+    assert JobSearch.objects.count() == SMALL["applications"] // 2

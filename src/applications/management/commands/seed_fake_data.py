@@ -20,6 +20,8 @@ dashboards and load tests to show something. Examples::
   Those two are also the busiest accounts, the best ones to look around with.
 * Big runs store one shared resume PDF instead of one per application
   (``--shared-resume`` / ``--no-shared-resume`` to choose).
+* The search log (``manage.py top_searches``, admin "Job searches") gets
+  ``--searches`` rows (half the applications by default), but only while it is empty.
 * Rows are bulk inserted with backdated timestamps. Logstash's minute-by-minute
   sync only picks up rows changed since its last run, so rows seeded into a
   database it already copied show in Elasticsearch after the nightly full sync,
@@ -51,6 +53,12 @@ class Command(BaseCommand):
         )
         for name in COUNTS:
             parser.add_argument(f"--{name}", type=int, default=None)
+        parser.add_argument(
+            "--searches",
+            type=int,
+            default=None,
+            help="Job searches for the search log (default: half the applications).",
+        )
         parser.add_argument("--seed", type=int, default=42)
         parser.add_argument(
             "--wipe-fake",
@@ -102,6 +110,7 @@ class Command(BaseCommand):
         result = fake_data.seed_database(
             gen,
             **counts,
+            searches=options["searches"],
             password=os.environ.get("FAKE_DATA_PASSWORD", ""),
             shared_resume=options["shared_resume"],
             batch_size=options["batch_size"],

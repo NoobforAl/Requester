@@ -85,6 +85,11 @@ exists, which wins), and the files `docker-compose.yaml`,
   users, 5 by default) that starts once `web` is healthy and keeps traffic
   flowing so the dashboards have data.
 
+`make dev-all-with-load` starts the same stack with a busier generator: 30
+virtual users instead of 5 (`make dev-all-with-load LOADGEN_USERS=100` for more).
+Use it when you want the dashboards, alerts, logs and traces to move: watch the
+generator with `docker logs -f requester_loadgen`. `make dev-all-down` stops both.
+
 On the first start `deploy-dev` migrates, runs `seed_demo_data` (fixed demo
 accounts) and `seed_fake_data` (Faker volume data) and creates the admin. That can take several minutes; the `web` healthcheck has
 a 10 minute start period.
@@ -99,15 +104,29 @@ a 10 minute start period.
 | MailHog | http://localhost:8025 | none |
 
 Demo users from `seed_demo_data` all use the password `password123`: employers
-`alice`, `frank`, `grace`, `heidi`, `ivan`, `judy`; candidates `worker1`, ...
-The load generator logs in as `worker1` and `alice`. The command refuses to run
-unless `DJANGO_DEBUG` is on.
+`alice`, `frank`, `grace`, `heidi`, `ivan`, `judy`, `karen`, `leo`, `mia`, `nick`;
+candidates `worker1` to `worker12`. The load generator logs in as `worker1` and
+`alice`. The command refuses to run unless `DJANGO_DEBUG` is on.
+
+The demo world is small but lived-in. Ten employers in seven languages and about
+thirty postings (open, past the deadline, closed by the employer, with and without
+salary or deadline, Persian and French titles for right-to-left and accent
+checks). Twelve candidates: complete profiles, one not looking for work
+(`worker11`) and an empty one (`worker12`, profile 0%). Each candidate has
+applications in all six statuses, with a status history, employer notes and AI
+summaries, plus saved postings and job alerts (`worker1` has an extra paused one).
+New rows are backdated over the last weeks, so charts show a timeline. Running it
+again changes nothing.
 
 `seed_fake_data` (also `make seed-fake` for the SQLite dev database) adds about
 20 employers, 200 postings, 300 candidates and 1500 applications with usernames
 `fake_s<seed>_...`. Fake accounts cannot log in, except the first fake employer
 and candidate when `FAKE_DATA_PASSWORD` is set. Options go through `FAKE_ARGS`,
-for example `FAKE_ARGS="--seed 7 --wipe-fake"`.
+for example `FAKE_ARGS="--seed 7 --wipe-fake"`. It also fills the search log
+(`manage.py top_searches`, admin "Job searches") with about half as many searches
+as applications over the last 45 days, popular roles most often and a few words
+with no results; `--searches N` sets the number. The log is only seeded while it
+is empty.
 
 The dev token for `/metrics` is `dev-metrics-token` (`monitoring/dev-defaults.env`).
 

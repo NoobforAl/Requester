@@ -36,7 +36,7 @@ from django.utils import timezone
 from faker import Faker
 
 from applications.models import Application, ApplicationEvent, resume_upload_to
-from candidates.models import Candidate, JobAlert, SavedPosting
+from candidates.models import Candidate, JobAlert, JobSearch, SavedPosting
 from employers.models import Employer, JobPosting, Skill, WorkMode
 
 #: Every fake account's username starts with this, so they can be wiped safely.
@@ -205,6 +205,12 @@ SCALES: dict[str, dict[str, int]] = {
         "applications": 10000,
     },
 }
+#: Words people search for that no posting matches ("searches with no results").
+MISSING_QUERIES = ("cobol", "fortran", "blockchain", "rust embedded", "sap abap")
+#: How many job searches are recorded per application (``seed_database(searches=)``).
+SEARCHES_PER_APPLICATION = 0.5
+#: Searches are spread over this many days, newest most likely (the log keeps a year).
+SEARCH_HISTORY_DAYS = 45
 #: How many postings the first (busiest) fake candidate applies to.
 FIRST_CANDIDATE_APPLIES = 15
 #: Above this many applications all resumes point at one shared file by default.
@@ -532,6 +538,57 @@ class FakeDataGenerator:
         application.updated_at = moment
         return FakeApplication(clip(application), events)
 
+    def search(self) -> tuple[JobSearch, list[str]]:
+        """An unsaved job-list search and the names of 0-2 skills it filtered on.
+
+        Popular roles are searched more (the first roles in ``ROLES`` the most), some
+        searches are only filters, and a few words match nothing.
+        """
+        locale = self.locale()
+        info = LOCALES[locale]
+        roles = list(ROLES)
+        role = self.rng.choices(
+            roles, weights=[1 / (i + 1) for i in range(len(roles))]
+        )[0]
+        missing = self.chance(0.06)
+        if missing:
+            query = self.rng.choice(MISSING_QUERIES)
+        elif self.chance(0.25):
+            query = ""
+        else:
+            query = role.lower() if self.chance(0.5) else role.split()[0].lower()
+        remote_only = self.chance(0.12)
+        # Newer searches are likelier: the square of a uniform number leans to 0.
+        days = int(SEARCH_HISTORY_DAYS * self.rng.random() ** 2)
+        search = JobSearch(
+            query=query,
+            location=self.rng.choice(info.cities) if self.chance(0.4) else "",
+            work_mode="remote"
+            if remote_only
+            else (self.rng.choice(WorkMode.values) if self.chance(0.3) else ""),
+            employment_type=(
+                self.rng.choice(JobPosting.EmploymentType.values)
+                if self.chance(0.15)
+                else ""
+            ),
+            seniority=(
+                self.rng.choice(JobPosting.Seniority.values)
+                if self.chance(0.15)
+                else ""
+            ),
+            min_salary=self.salary(locale)[0] if self.chance(0.1) else None,
+            remote_only=remote_only,
+            language=info.language,
+            results=0 if missing else self.rng.randint(1, 60),
+            created_at=self.past(days + 1, days),
+        )
+        skills = (
+            self.rng.sample(list(ROLES[role]), self.rng.randint(1, 2))
+            if self.chance(0.35)
+            else []
+        )
+        return clip(search), skills
+
     def saved(self, candidate: Candidate, posting: JobPosting) -> SavedPosting:
         moment = max(posting.created_at or self.now, self.past(60))
         return SavedPosting(candidate=candidate, posting=posting, created_at=moment)
@@ -623,6 +680,7 @@ def _timestamp_fields() -> list[models.DateTimeField]:
         (ApplicationEvent, ("created_at",)),
         (SavedPosting, ("created_at",)),
         (JobAlert, ("created_at", "updated_at")),
+        (JobSearch, ("created_at",)),
     ]
     return [
         model._meta.get_field(name)  # type: ignore[misc]
@@ -666,6 +724,7 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
     postings: int,
     candidates: int,
     applications: int,
+    searches: int | None = None,
     password: str = "",
     shared_resume: bool | None = None,
     batch_size: int = BATCH_SIZE,
@@ -897,6 +956,27 @@ def seed_database(  # noqa: PLR0912, PLR0913, PLR0915 - one linear recipe
         result.created["saved postings"] = len(new_saved)
         result.created["job alerts"] = len(new_alerts)
         lap("saved postings and alerts")
+
+        # ------------------------------------------------- job searches
+        # No natural key, so only seed an empty log: running again (or on a site
+        # people already searched on) adds nothing.
+        if searches is None:
+            searches = int(applications * SEARCHES_PER_APPLICATION)
+        new_searches = []
+        if searches and not JobSearch.objects.exists():
+            new_searches = [gen.search() for _ in range(searches)]
+            _bulk(JobSearch, [js for js, _ in new_searches], batch_size)
+            search_skills = JobSearch.skills.through
+            search_skills.objects.bulk_create(
+                [
+                    search_skills(jobsearch_id=js.pk, skill_id=skills[name].pk)
+                    for js, names in new_searches
+                    for name in names
+                ],
+                batch_size=batch_size,
+            )
+        result.created["job searches"] = len(new_searches)
+        lap("job searches")
     return result
 
 

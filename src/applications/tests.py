@@ -11,6 +11,7 @@ from django.core import mail
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.db import connection
+from django.utils import timezone
 
 from applications import ai, tasks
 from applications.models import Application
@@ -307,6 +308,44 @@ def test_demo_data_is_created_once_when_debug_is_on(settings):
     )
     assert JobPosting.objects.filter(work_mode="remote").exists()
     assert Skill.objects.exists()
+
+
+def test_demo_data_is_lived_in(settings):
+    settings.DEBUG = True
+
+    call_command("seed_demo_data")
+
+    # Every status, with a history and backdated timestamps.
+    assert set(Application.objects.values_list("status", flat=True)) == {
+        "pending",
+        "in_review",
+        "shortlisted",
+        "accepted",
+        "rejected",
+        "withdrawn",
+    }
+    reviewed = Application.objects.exclude(status="pending")
+    assert all(app.events.exists() for app in reviewed)
+    assert Application.objects.exclude(ai_summary="").exists()
+    oldest = Application.objects.order_by("applied_at").first()
+    assert oldest is not None
+    assert (timezone.now() - oldest.applied_at).days >= 5
+    for app in Application.objects.select_related("posting"):
+        assert app.applied_at >= app.posting.created_at
+        assert app.updated_at >= app.applied_at
+
+    # Open, expired and closed postings; with and without salary.
+    today = timezone.localdate()
+    assert JobPosting.objects.filter(is_active=False).exists()
+    assert JobPosting.objects.filter(deadline__lt=today).exists()
+    assert JobPosting.objects.filter(salary_min__isnull=True).exists()
+    assert JobPosting.objects.filter(is_active=True, deadline__gte=today).exists()
+
+    # Logins the load generator and the docs rely on, and an empty profile.
+    for username in ("alice", "worker1"):
+        assert User.objects.get(username=username).check_password("password123")
+    assert Candidate.objects.get(user__username="worker12").profile_completeness == 0
+    assert Candidate.objects.filter(is_open_to_work=False).exists()
 
 
 # -------------------------------------------------------------- legacy import
